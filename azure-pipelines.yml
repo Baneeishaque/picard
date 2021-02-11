@@ -13,7 +13,7 @@ steps:
 
 - task: DownloadFile@1
   inputs:
-    FileUrl: 'http://ftp.musicbrainz.org/pub/musicbrainz/libdiscid/'
+    FileUrl: 'http://ftp.musicbrainz.org/pub/musicbrainz/libdiscid/libdiscid-0.6.1-win32.zip'
     DestinationFolder: '$(System.DefaultWorkingDirectory)'
     requireAuthentication: false
 
