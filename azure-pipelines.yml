@@ -20,7 +20,7 @@ steps:
 - task: ExtractFiles@1
   inputs:
     archiveFilePatterns: 'libdiscid-0.6.1-win32.zip'
-    destinationFolder: 'libdiscid-0.6.1-win32'
+    destinationFolder: ''
     cleanDestinationFolder: true
     overwriteExistingFiles: false
 
