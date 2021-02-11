@@ -52,7 +52,7 @@ steps:
   inputs:
     SourceFolder: 'libdiscid-0.6.1-win32'
     Contents: 'discid.dll'
-    TargetFolder: ''
+    TargetFolder: '$(Build.SourcesDirectory)'
 
 - script: pyinstaller --noconfirm picard.spec
   displayName: 'Build the Windows executable'
