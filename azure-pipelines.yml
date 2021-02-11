@@ -54,8 +54,9 @@ steps:
     Contents: 'discid.dll'
     TargetFolder: '$(Build.SourcesDirectory)'
 
-- script: pyinstaller --noconfirm picard.spec
-  workingDirectory: '$(Build.SourcesDirectory)'
+- script: |
+    dir
+    pyinstaller --noconfirm picard.spec
   displayName: 'Build the Windows executable'
 
 - script: dir dist/picard
