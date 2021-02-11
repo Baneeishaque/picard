@@ -1,0 +1,68 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '>=3.5'
+    addToPath: true
+    architecture: 'x64'
+
+- task: DownloadFile@1
+  inputs:
+    FileUrl: 'http://ftp.musicbrainz.org/pub/musicbrainz/libdiscid/'
+    DestinationFolder: '$(System.DefaultWorkingDirectory)'
+    requireAuthentication: false
+
+- task: ExtractFiles@1
+  inputs:
+    archiveFilePatterns: 'libdiscid-0.6.1-win32.zip'
+    destinationFolder: 'libdiscid-0.6.1-win32'
+    cleanDestinationFolder: true
+    overwriteExistingFiles: false
+
+- script: dir libdiscid-0.6.1-win32
+  displayName: 'Show libdiscid-0.6.1-win32 folder'
+
+- script: python -m pip install --upgrade pip setuptools wheel
+  displayName: 'Install tools'
+
+- script: pip3 install -r requirements.txt
+  displayName: 'Install requirements'
+
+- script: pip3 install -r requirements-build.txt
+  displayName: 'Install build requirements'
+  
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'setup.py'
+    arguments: 'build_ext -i'
+
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'setup.py'
+    arguments: 'build_locales -i'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'libdiscid-0.6.1-win32'
+    Contents: 'discid.dll'
+    TargetFolder: ''
+
+- script: pyinstaller --noconfirm picard.spec
+  displayName: 'Build the Windows executable'
+
+- script: dir dist/picard
+  displayName: 'Show release folder'
+
+- task: nsis@1
+  inputs:
+    scriptFile: 'installer\picard-setup.nsi'
+    arguments: '/INPUTCHARSET UTF8'
+    justInclude: 'no'
+    includeMorePlugins: 'no'
