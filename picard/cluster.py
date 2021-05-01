@@ -18,6 +18,7 @@
 # Copyright (C) 2018 Vishal Choudhary
 # Copyright (C) 2020 Ray Bouchard
 # Copyright (C) 2020 Gabriel Ferreira
+# Copyright (C) 2021 Petit Minion
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -82,10 +83,9 @@ class FileList(QtCore.QObject, FileListItem):
         FileListItem.__init__(self, files)
         self.metadata = Metadata()
         self.orig_metadata = Metadata()
-        for file in self.files:
-            if self.can_show_coverart:
+        if self.files and self.can_show_coverart:
+            for file in self.files:
                 file.metadata_images_changed.connect(self.update_metadata_images)
-        if self.files:
             update_metadata_images(self)
 
     def iterfiles(self, save=False):
@@ -159,9 +159,9 @@ class Cluster(FileList):
         added_files = sorted(added_files, key=attrgetter('discnumber', 'tracknumber', 'base_filename'))
         self.files.extend(added_files)
         self.metadata['totaltracks'] = len(self.files)
-        self.item.add_files(added_files)
         if self.can_show_coverart:
             add_metadata_images(self, added_files)
+        self.item.add_files(added_files)
         if new_album:
             self._update_related_album(added_files=added_files)
 
@@ -230,7 +230,7 @@ class Cluster(FileList):
     def column(self, column):
         if column == 'title':
             return '%s (%d)' % (self.metadata['album'], len(self.files))
-        elif self.special and (column in ['~length', 'album']):
+        elif self.special and (column in ['~length', 'album', 'covercount']):
             return ''
         elif column == '~length':
             return format_time(self.metadata.length)
@@ -240,6 +240,8 @@ class Cluster(FileList):
             return self.metadata['totaltracks']
         elif column == 'discnumber':
             return self.metadata['totaldiscs']
+        elif column == 'covercount':
+            return self.cover_art_description()
         return self.metadata[column]
 
     def _lookup_finished(self, document, http, error):
@@ -473,7 +475,7 @@ class ClusterDict(object):
         index, count = self.words[word]
         if index == -1:
             token = self.tokenize(word)
-            if token == '':
+            if token == '':  # nosec
                 return -1
             index = self.id
             self.ids[index] = (word, token)

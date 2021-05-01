@@ -21,6 +21,7 @@
 # Copyright (C) 2018 Vishal Choudhary
 # Copyright (C) 2019 Joel Lintunen
 # Copyright (C) 2020 Gabriel Ferreira
+# Copyright (C) 2021 Petit Minion
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -479,7 +480,7 @@ class Album(DataObject, Item):
         config = get_config()
         require_authentication = False
         inc = ['release-groups', 'media', 'discids', 'recordings', 'artist-credits',
-               'artists', 'aliases', 'labels', 'isrcs', 'collections']
+               'artists', 'aliases', 'labels', 'isrcs', 'collections', 'annotation']
         if self.tagger.webservice.oauth_manager.is_authorized():
             require_authentication = True
             inc += ['user-collections']
@@ -659,29 +660,18 @@ class Album(DataObject, Item):
                     if track.is_linked():
                         linked_tracks += 1
 
-                text = '%s\u200E (%d/%d' % (title, linked_tracks, len(self.tracks))
+                elems = ['%d/%d' % (linked_tracks, len(self.tracks))]
                 unmatched = self.get_num_unmatched_files()
                 if unmatched:
-                    text += '; %d?' % (unmatched,)
+                    elems.append('%d?' % (unmatched,))
                 unsaved = self.get_num_unsaved_files()
                 if unsaved:
-                    text += '; %d*' % (unsaved,)
-                # CoverArt.set_metadata uses the orig_metadata.images if metadata.images is empty
-                # in order to show existing cover art if there's no cover art for a release. So
-                # we do the same here in order to show the number of images consistently.
-                if self.metadata.images:
-                    metadata = self.metadata
-                else:
-                    metadata = self.orig_metadata
+                    elems.append('%d*' % (unsaved,))
+                ca_detailed = self.cover_art_description_detailed()
+                if ca_detailed:
+                    elems.append(ca_detailed)
 
-                number_of_images = len(metadata.images)
-                if getattr(metadata, 'has_common_images', True):
-                    text += ngettext("; %i image", "; %i images",
-                                     number_of_images) % number_of_images
-                else:
-                    text += ngettext("; %i image not in all tracks", "; %i different images among tracks",
-                                     number_of_images) % number_of_images
-                return text + ')'
+                return '%s\u200E (%s)' % (title, '; '.join(elems))
             else:
                 return title
         elif column == '~length':
@@ -696,6 +686,8 @@ class Album(DataObject, Item):
             return self.metadata['~totalalbumtracks']
         elif column == 'discnumber':
             return self.metadata['totaldiscs']
+        elif column == 'covercount':
+            return self.cover_art_description()
         else:
             return self.metadata[column]
 

@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2007 Oliver Charles
 # Copyright (C) 2007, 2010-2011 Lukáš Lalinský
-# Copyright (C) 2007-2011, 2014, 2018-2020 Philipp Wolfer
+# Copyright (C) 2007-2011, 2014, 2018-2021 Philipp Wolfer
 # Copyright (C) 2011 Michael Wiencek
 # Copyright (C) 2011-2012, 2015 Wieland Hoffmann
 # Copyright (C) 2013-2015, 2018-2019 Laurent Monin
@@ -42,6 +42,7 @@ from PyQt5.QtCore import (
 
 from picard import log
 from picard.config import get_config
+from picard.const import DEFAULT_COVER_IMAGE_FILENAME
 from picard.coverart.utils import translate_caa_type
 from picard.metadata import Metadata
 from picard.util import (
@@ -63,7 +64,7 @@ class DataHash:
         self._filename = None
         _datafile_mutex.lock()
         try:
-            m = md5()
+            m = md5()  # nosec
             m.update(data)
             self._hash = m.hexdigest()
             if self._hash not in _datafiles:
@@ -289,7 +290,7 @@ class CoverArtImage:
             metadata.add_unique("coverart_types", cover_type)
         filename = script_to_filename(filename, metadata)
         if not filename:
-            filename = "cover"
+            filename = DEFAULT_COVER_IMAGE_FILENAME
         if not is_absolute_path(filename):
             filename = os.path.join(dirname, filename)
         return encode_filename(filename)
@@ -305,8 +306,7 @@ class CoverArtImage:
         if not self.can_be_saved_to_disk:
             return
         config = get_config()
-        if (config.setting["caa_image_type_as_filename"]
-            and not self.is_front_image()):
+        if config.setting["image_type_as_filename"] and not self.is_front_image():
             filename = self.maintype
             log.debug("Make cover filename from types: %r -> %r",
                       self.types, filename)
@@ -337,7 +337,8 @@ class CoverArtImage:
             except OSError as e:
                 raise CoverArtImageIOError(e)
 
-    def _next_filename(self, filename, counters):
+    @staticmethod
+    def _next_filename(filename, counters):
         if counters[filename]:
             new_filename = "%s (%d)" % (decode_filename(filename), counters[filename])
         else:

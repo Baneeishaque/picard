@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2004 Robert Kaye
 # Copyright (C) 2006-2009, 2011-2013, 2017 Lukáš Lalinský
-# Copyright (C) 2007-2011, 2015, 2018-2020 Philipp Wolfer
+# Copyright (C) 2007-2011, 2015, 2018-2021 Philipp Wolfer
 # Copyright (C) 2008 Gary van der Merwe
 # Copyright (C) 2008-2009 Nikolai Prokoschenko
 # Copyright (C) 2009 Carlin Mangar
@@ -16,7 +16,7 @@
 # Copyright (C) 2012-2014 Wieland Hoffmann
 # Copyright (C) 2013 Calvin Walton
 # Copyright (C) 2013-2014 Ionuț Ciocîrlan
-# Copyright (C) 2013-2014, 2017 Sophist-UK
+# Copyright (C) 2013-2014, 2017, 2021 Sophist-UK
 # Copyright (C) 2013-2014, 2017-2019 Laurent Monin
 # Copyright (C) 2016 Rahul Raturi
 # Copyright (C) 2016 Ville Skyttä
@@ -25,6 +25,7 @@
 # Copyright (C) 2019 Joel Lintunen
 # Copyright (C) 2020 Ray Bouchard
 # Copyright (C) 2020 Gabriel Ferreira
+# Copyright (C) 2021 Petit Minion
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -78,7 +79,7 @@ from picard.util import (
     is_absolute_path,
     samefile,
     thread,
-    tracknum_from_filename,
+    tracknum_and_title_from_filename,
 )
 from picard.util.filenaming import (
     make_short_filename,
@@ -156,9 +157,22 @@ class File(QtCore.QObject, Item):
     def __repr__(self):
         return '<%s %r>' % (type(self).__name__, self.base_filename)
 
-    @property
-    def new_metadata(self):
-        return self.metadata
+    # pylint: disable=no-self-use
+    def format_specific_metadata(self, metadata, tag, settings=None):
+        """Can be overridden to customize how a tag is displayed in the UI.
+        This is useful if a tag saved to the underlying format will differ from
+        the internal representation in a way that would cause data loss. This is e.g.
+        the case for some ID3v2.3 tags.
+
+        Args:
+            metadata: The metadata object to read the tag from
+            tag: Name of the tag
+            settings: Dictionary of settings. If not set, config.setting should be used
+
+        Returns:
+            An array of values for the tag
+        """
+        return metadata.getall(tag)
 
     def load(self, callback):
         thread.run_task(
@@ -184,6 +198,7 @@ class File(QtCore.QObject, Item):
     def _loading_finished(self, callback, result=None, error=None):
         if self.state != File.PENDING or self.tagger.stopping:
             return
+        config = get_config()
         if error is not None:
             self.state = self.ERROR
             self.error_append(str(error))
@@ -214,9 +229,11 @@ class File(QtCore.QObject, Item):
         else:
             self.clear_errors()
             self.state = self.NORMAL
-            self._copy_loaded_metadata(result)
+            postprocessors = []
+            if config.setting["guess_tracknumber_and_title"]:
+                postprocessors.append(self._guess_tracknumber_and_title)
+            self._copy_loaded_metadata(result, postprocessors)
         # use cached fingerprint from file metadata
-        config = get_config()
         if not config.setting["ignore_existing_acoustid_fingerprints"]:
             fingerprints = self.metadata.getall('acoustid_fingerprint')
             if fingerprints:
@@ -225,23 +242,21 @@ class File(QtCore.QObject, Item):
         self.update()
         callback(self)
 
-    def _copy_loaded_metadata(self, metadata):
-        filename, _ = os.path.splitext(self.base_filename)
+    def _copy_loaded_metadata(self, metadata, postprocessors=None):
         metadata['~length'] = format_time(metadata.length)
-        if 'tracknumber' not in metadata:
-            tracknumber = tracknum_from_filename(self.base_filename)
-            if tracknumber is not None:
-                tracknumber = str(tracknumber)
-                metadata['tracknumber'] = tracknumber
-                if 'title' not in metadata:
-                    stripped_filename = filename.lstrip('0')
-                    tnlen = len(tracknumber)
-                    if stripped_filename[:tnlen] == tracknumber:
-                        metadata['title'] = stripped_filename[tnlen:].lstrip()
-        if 'title' not in metadata:
-            metadata['title'] = filename
+        if postprocessors:
+            for processor in postprocessors:
+                processor(metadata)
         self.orig_metadata = metadata
         self.metadata.copy(metadata)
+
+    def _guess_tracknumber_and_title(self, metadata):
+        if 'tracknumber' not in metadata or 'title' not in metadata:
+            tracknumber, title = tracknum_and_title_from_filename(self.base_filename)
+            if 'tracknumber' not in metadata:
+                metadata['tracknumber'] = tracknumber
+            if 'title' not in metadata:
+                metadata['title'] = title
 
     def copy_metadata(self, metadata, preserve_deleted=True):
         acoustid = self.metadata["acoustid_id"]
@@ -370,14 +385,14 @@ class File(QtCore.QObject, Item):
             temp_info = {}
             for info in FILE_INFO_TAGS:
                 temp_info[info] = self.orig_metadata[info]
-            images_changed = self.orig_metadata.images != self.new_metadata.images
+            images_changed = self.orig_metadata.images != self.metadata.images
             # Data is copied from New to Original because New may be
             # a subclass to handle id3v23
             config = get_config()
             if config.setting["clear_existing_tags"]:
-                self.orig_metadata.copy(self.new_metadata)
+                self.orig_metadata.copy(self.metadata)
             else:
-                self.orig_metadata.update(self.new_metadata)
+                self.orig_metadata.update(self.metadata)
             # After saving deleted tags should no longer be marked deleted
             self.metadata.clear_deleted()
             self.orig_metadata.clear_deleted()
@@ -516,7 +531,7 @@ class File(QtCore.QObject, Item):
         counters = defaultdict(lambda: 0)
         images = []
         config = get_config()
-        if config.setting["caa_save_single_front_image"]:
+        if config.setting["save_only_one_front_image"]:
             front = metadata.images.get_front_image()
             if front:
                 images.append(front)
@@ -630,22 +645,21 @@ class File(QtCore.QObject, Item):
         return self.similarity == 1.0 and self.state == File.NORMAL
 
     def update(self, signal=True):
-        new_metadata = self.new_metadata
-        names = set(new_metadata.keys())
-        names.update(self.orig_metadata.keys())
+        metadata = self.metadata
+        names = set(metadata) | set(self.orig_metadata)
         config = get_config()
         clear_existing_tags = config.setting["clear_existing_tags"]
         ignored_tags = config.setting["compare_ignore_tags"]
         for name in names:
             if (not name.startswith('~') and self.supports_tag(name)
                 and name not in ignored_tags):
-                new_values = new_metadata.getall(name)
+                new_values = metadata.getall(name)
                 if not (new_values or clear_existing_tags
-                        or name in new_metadata.deleted_tags):
+                        or name in metadata.deleted_tags):
                     continue
                 orig_values = self.orig_metadata.getall(name)
                 if orig_values != new_values:
-                    self.similarity = self.orig_metadata.compare(new_metadata, ignored_tags)
+                    self.similarity = self.orig_metadata.compare(metadata, ignored_tags)
                     if self.state == File.NORMAL:
                         self.state = File.CHANGED
                     break
@@ -730,6 +744,8 @@ class File(QtCore.QObject, Item):
         m = self.metadata
         if column == "title" and not m["title"]:
             return self.base_filename
+        elif column == "covercount":
+            return self.cover_art_description()
         return m[column]
 
     def _lookup_finished(self, lookuptype, document, http, error):

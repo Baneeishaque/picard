@@ -4,17 +4,19 @@
 #
 # Copyright (C) 2006-2008, 2011 Lukáš Lalinský
 # Copyright (C) 2008-2009 Nikolai Prokoschenko
-# Copyright (C) 2009-2010, 2014-2015, 2018-2020 Philipp Wolfer
+# Copyright (C) 2009-2010, 2014-2015, 2018-2021 Philipp Wolfer
 # Copyright (C) 2011-2013 Michael Wiencek
 # Copyright (C) 2011-2013 Wieland Hoffmann
 # Copyright (C) 2013 Calvin Walton
 # Copyright (C) 2013 Ionuț Ciocîrlan
 # Copyright (C) 2013-2014 Sophist-UK
-# Copyright (C) 2013-2015, 2018-2019 Laurent Monin
+# Copyright (C) 2013-2015, 2018-2019, 2021 Laurent Monin
 # Copyright (C) 2015 Alex Berman
 # Copyright (C) 2015 Ohm Patel
 # Copyright (C) 2016 Suhas
 # Copyright (C) 2016-2017 Sambhav Kothari
+# Copyright (C) 2021 Gabriel Ferreira
+# Copyright (C) 2021 Bob Swift
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -43,24 +45,23 @@ from picard.config import (
     TextOption,
     get_config,
 )
-from picard.const import (
-    DEFAULT_FILE_NAMING_FORMAT,
-    PICARD_URLS,
-)
+from picard.const import DEFAULT_FILE_NAMING_FORMAT
 from picard.const.sys import IS_WIN
-from picard.file import File
-from picard.script import (
-    ScriptError,
-    ScriptParser,
-)
-from picard.util.settingsoverride import SettingsOverride
+from picard.script import ScriptParser
 
 from picard.ui.options import (
     OptionsCheckError,
     OptionsPage,
     register_options_page,
 )
-from picard.ui.options.scripting import ScriptCheckError
+from picard.ui.options.scripting import (
+    ScriptCheckError,
+    ScriptingDocumentationDialog,
+)
+from picard.ui.scripteditor import (
+    ScriptEditorExamples,
+    ScriptEditorPage,
+)
 from picard.ui.ui_options_renaming import Ui_RenamingOptionsPage
 from picard.ui.util import enabledSlot
 
@@ -95,14 +96,15 @@ class RenamingOptionsPage(OptionsPage):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.script_text = ""
         self.ui = Ui_RenamingOptionsPage()
         self.ui.setupUi(self)
 
-        self.ui.ascii_filenames.clicked.connect(self.update_examples)
-        self.ui.windows_compatibility.clicked.connect(self.update_examples)
-        self.ui.rename_files.clicked.connect(self.update_examples)
-        self.ui.move_files.clicked.connect(self.update_examples)
-        self.ui.move_files_to.editingFinished.connect(self.update_examples)
+        self.ui.ascii_filenames.clicked.connect(self.update_examples_from_local)
+        self.ui.windows_compatibility.clicked.connect(self.update_examples_from_local)
+        self.ui.rename_files.clicked.connect(self.update_examples_from_local)
+        self.ui.move_files.clicked.connect(self.update_examples_from_local)
+        self.ui.move_files_to.editingFinished.connect(self.update_examples_from_local)
 
         self.ui.move_files.toggled.connect(
             partial(
@@ -116,15 +118,52 @@ class RenamingOptionsPage(OptionsPage):
                 self.toggle_file_renaming
             )
         )
-        self.ui.file_naming_format.textChanged.connect(self.check_formats)
-        self.ui.file_naming_format_default.clicked.connect(self.set_file_naming_format_default)
+        self.ui.open_script_editor.clicked.connect(self.show_script_editing_page)
         self.ui.move_files_to_browse.clicked.connect(self.move_files_to_browse)
 
-        script_edit = self.ui.file_naming_format
+        self.ui.example_filename_after.itemSelectionChanged.connect(self.match_before_to_after)
+        self.ui.example_filename_before.itemSelectionChanged.connect(self.match_after_to_before)
+
+        script_edit = self.ui.move_additional_files_pattern
         self.script_palette_normal = script_edit.palette()
         self.script_palette_readonly = QPalette(self.script_palette_normal)
         disabled_color = self.script_palette_normal.color(QPalette.Inactive, QPalette.Window)
         self.script_palette_readonly.setColor(QPalette.Disabled, QPalette.Base, disabled_color)
+
+        self.ui.example_filename_sample_files_button.clicked.connect(self.update_example_files)
+
+        self.examples = ScriptEditorExamples(tagger=self.tagger)
+
+        self.ui.example_selection_note.setText(self.examples.notes_text)
+        self.ui.example_filename_sample_files_button.setToolTip(self.examples.tooltip_text)
+
+        self.script_editor_page = ScriptEditorPage(parent=self, examples=self.examples)
+        self.script_editor_page.signal_save.connect(self.save_from_editor)
+        self.script_editor_page.signal_update.connect(self.update_from_editor)
+
+        # Sync example lists vertical scrolling and selection colors
+        self.script_editor_page.synchronize_vertical_scrollbars((self.ui.example_filename_before, self.ui.example_filename_after))
+
+        self.current_row = -1
+
+    def match_after_to_before(self):
+        """Sets the selected item in the 'after' list to the corresponding item in the 'before' list.
+        """
+        self.script_editor_page.synchronize_selected_example_lines(self.current_row, self.ui.example_filename_before, self.ui.example_filename_after)
+
+    def match_before_to_after(self):
+        """Sets the selected item in the 'before' list to the corresponding item in the 'after' list.
+        """
+        self.script_editor_page.synchronize_selected_example_lines(self.current_row, self.ui.example_filename_after, self.ui.example_filename_before)
+
+    def show_script_editing_page(self):
+        self.script_editor_page.show()
+        self.script_editor_page.raise_()
+        self.script_editor_page.activateWindow()
+        self.update_examples_from_local()
+
+    def show_scripting_documentation(self):
+        ScriptingDocumentationDialog.show_instance(parent=self)
 
     def toggle_file_moving(self, state):
         self.toggle_file_naming_format()
@@ -139,52 +178,40 @@ class RenamingOptionsPage(OptionsPage):
 
     def toggle_file_naming_format(self):
         active = self.ui.move_files.isChecked() or self.ui.rename_files.isChecked()
-        self.ui.file_naming_format.setEnabled(active)
-        self.ui.file_naming_format_default.setEnabled(active)
-        palette = self.script_palette_normal if active else self.script_palette_readonly
-        self.ui.file_naming_format.setPalette(palette)
-
+        self.ui.open_script_editor.setEnabled(active)
         self.ui.ascii_filenames.setEnabled(active)
         if not IS_WIN:
             self.ui.windows_compatibility.setEnabled(active)
 
+    def save_from_editor(self):
+        self.script_text = self.script_editor_page.get_script()
+
+    def update_from_editor(self):
+        self.display_examples()
+
     def check_formats(self):
         self.test()
-        self.update_examples()
+        self.update_examples_from_local()
 
-    def _example_to_filename(self, file):
-        config = get_config()
-        settings = SettingsOverride(config.setting, {
+    def update_example_files(self):
+        self.examples.update_sample_example_files()
+        self.script_editor_page.display_examples()
+
+    def update_examples_from_local(self):
+        override = {
             'ascii_filenames': self.ui.ascii_filenames.isChecked(),
-            'file_naming_format': self.ui.file_naming_format.toPlainText(),
             'move_files': self.ui.move_files.isChecked(),
             'move_files_to': os.path.normpath(self.ui.move_files_to.text()),
             'rename_files': self.ui.rename_files.isChecked(),
             'windows_compatibility': self.ui.windows_compatibility.isChecked(),
-        })
+        }
+        self.examples.update_examples(override=override)
+        self.script_editor_page.display_examples()
 
-        try:
-            if config.setting["enable_tagger_scripts"]:
-                for s_pos, s_name, s_enabled, s_text in config.setting["list_of_scripts"]:
-                    if s_enabled and s_text:
-                        parser = ScriptParser()
-                        parser.eval(s_text, file.metadata)
-            filename = file.make_filename(file.filename, file.metadata, settings)
-            if not settings["move_files"]:
-                return os.path.basename(filename)
-            return filename
-        except ScriptError:
-            return ""
-        except TypeError:
-            return ""
-
-    def update_examples(self):
-        # TODO: Here should be more examples etc.
-        # TODO: Would be nice to show diffs too....
-        example1 = self._example_to_filename(self.example_1())
-        example2 = self._example_to_filename(self.example_2())
-        self.ui.example_filename.setText(example1)
-        self.ui.example_filename_va.setText(example2)
+    def display_examples(self):
+        self.current_row = -1
+        examples = self.examples.get_examples()
+        self.script_editor_page.update_example_listboxes(self.ui.example_filename_before, self.ui.example_filename_after, examples)
 
     def load(self):
         config = get_config()
@@ -196,19 +223,13 @@ class RenamingOptionsPage(OptionsPage):
         self.ui.rename_files.setChecked(config.setting["rename_files"])
         self.ui.move_files.setChecked(config.setting["move_files"])
         self.ui.ascii_filenames.setChecked(config.setting["ascii_filenames"])
-        self.ui.file_naming_format.setPlainText(config.setting["file_naming_format"])
-        args = {
-            "picard-doc-scripting-url": PICARD_URLS['doc_scripting'],
-        }
-        text = _('<a href="%(picard-doc-scripting-url)s">Open Scripting'
-                 ' Documentation in your browser</a>') % args
-        self.ui.file_naming_format_documentation.setText(text)
+        self.script_text = config.setting["file_naming_format"]
         self.ui.move_files_to.setText(config.setting["move_files_to"])
         self.ui.move_files_to.setCursorPosition(0)
         self.ui.move_additional_files.setChecked(config.setting["move_additional_files"])
         self.ui.move_additional_files_pattern.setText(config.setting["move_additional_files_pattern"])
         self.ui.delete_empty_dirs.setChecked(config.setting["delete_empty_dirs"])
-        self.update_examples()
+        self.update_examples_from_local()
 
     def check(self):
         self.check_format()
@@ -218,11 +239,11 @@ class RenamingOptionsPage(OptionsPage):
     def check_format(self):
         parser = ScriptParser()
         try:
-            parser.eval(self.ui.file_naming_format.toPlainText())
+            parser.eval(self.script_text)
         except Exception as e:
             raise ScriptCheckError("", str(e))
         if self.ui.rename_files.isChecked():
-            if not self.ui.file_naming_format.toPlainText().strip():
+            if not self.script_text.strip():
                 raise ScriptCheckError("", _("The file naming format must not be empty."))
 
     def save(self):
@@ -230,7 +251,7 @@ class RenamingOptionsPage(OptionsPage):
         config.setting["windows_compatibility"] = self.ui.windows_compatibility.isChecked()
         config.setting["ascii_filenames"] = self.ui.ascii_filenames.isChecked()
         config.setting["rename_files"] = self.ui.rename_files.isChecked()
-        config.setting["file_naming_format"] = self.ui.file_naming_format.toPlainText()
+        config.setting["file_naming_format"] = self.script_text.strip()
         self.tagger.window.enable_renaming_action.setChecked(config.setting["rename_files"])
         config.setting["move_files"] = self.ui.move_files.isChecked()
         config.setting["move_files_to"] = os.path.normpath(self.ui.move_files_to.text())
@@ -243,74 +264,6 @@ class RenamingOptionsPage(OptionsPage):
         # Ignore scripting errors, those are handled inline
         if not isinstance(error, ScriptCheckError):
             super().display_error(error)
-
-    def set_file_naming_format_default(self):
-        self.ui.file_naming_format.setText(self.options[3].default)
-#        self.ui.file_naming_format.setCursorPosition(0)
-
-    def example_1(self):
-        file = File("ticket_to_ride.mp3")
-        file.state = File.NORMAL
-        file.metadata['album'] = 'Help!'
-        file.metadata['title'] = 'Ticket to Ride'
-        file.metadata['~releasecomment'] = '2014 mono remaster'
-        file.metadata['artist'] = 'The Beatles'
-        file.metadata['artistsort'] = 'Beatles, The'
-        file.metadata['albumartist'] = 'The Beatles'
-        file.metadata['albumartistsort'] = 'Beatles, The'
-        file.metadata['tracknumber'] = '7'
-        file.metadata['totaltracks'] = '14'
-        file.metadata['discnumber'] = '1'
-        file.metadata['totaldiscs'] = '1'
-        file.metadata['originaldate'] = '1965-08-06'
-        file.metadata['originalyear'] = '1965'
-        file.metadata['date'] = '2014-09-08'
-        file.metadata['releasetype'] = ['album', 'soundtrack']
-        file.metadata['~primaryreleasetype'] = ['album']
-        file.metadata['~secondaryreleasetype'] = ['soundtrack']
-        file.metadata['releasestatus'] = 'official'
-        file.metadata['releasecountry'] = 'US'
-        file.metadata['~extension'] = 'mp3'
-        file.metadata['musicbrainz_albumid'] = 'd7fbbb0a-1348-40ad-8eef-cd438d4cd203'
-        file.metadata['musicbrainz_albumartistid'] = 'b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d'
-        file.metadata['musicbrainz_artistid'] = 'b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d'
-        file.metadata['musicbrainz_recordingid'] = 'ed052ae1-c950-47f2-8d2b-46e1b58ab76c'
-        file.metadata['musicbrainz_releasetrackid'] = '392639f5-5629-477e-b04b-93bffa703405'
-        return file
-
-    def example_2(self):
-        config = get_config()
-        file = File("track05.mp3")
-        file.state = File.NORMAL
-        file.metadata['album'] = "Coup d'État, Volume 1: Ku De Ta / Prologue"
-        file.metadata['title'] = "I've Got to Learn the Mambo"
-        file.metadata['artist'] = "Snowboy feat. James Hunter"
-        file.metadata['artistsort'] = "Snowboy feat. Hunter, James"
-        file.metadata['albumartist'] = config.setting['va_name']
-        file.metadata['albumartistsort'] = config.setting['va_name']
-        file.metadata['tracknumber'] = '5'
-        file.metadata['totaltracks'] = '13'
-        file.metadata['discnumber'] = '2'
-        file.metadata['totaldiscs'] = '2'
-        file.metadata['discsubtitle'] = "Beat Up"
-        file.metadata['originaldate'] = '2005-07-04'
-        file.metadata['originalyear'] = '2005'
-        file.metadata['date'] = '2005-07-04'
-        file.metadata['releasetype'] = ['album', 'compilation']
-        file.metadata['~primaryreleasetype'] = 'album'
-        file.metadata['~secondaryreleasetype'] = 'compilation'
-        file.metadata['releasestatus'] = 'official'
-        file.metadata['releasecountry'] = 'AU'
-        file.metadata['compilation'] = '1'
-        file.metadata['~multiartist'] = '1'
-        file.metadata['~extension'] = 'mp3'
-        file.metadata['musicbrainz_albumid'] = '4b50c71e-0a07-46ac-82e4-cb85dc0c9bdd'
-        file.metadata['musicbrainz_recordingid'] = 'b3c487cb-0e55-477d-8df3-01ec6590f099'
-        file.metadata['musicbrainz_releasetrackid'] = 'f8649a05-da39-39ba-957c-7abf8f9012be'
-        file.metadata['musicbrainz_albumartistid'] = '89ad4ac3-39f7-470e-963a-56509c546377'
-        file.metadata['musicbrainz_artistid'] = ['7b593455-d207-482c-8c6f-19ce22c94679',
-                                                 '9e082466-2390-40d1-891e-4803531f43fd']
-        return file
 
     def move_files_to_browse(self):
         path = QtWidgets.QFileDialog.getExistingDirectory(self, "", self.ui.move_files_to.text())

@@ -529,6 +529,23 @@ class ScriptParserTest(PicardTestCase):
     def test_cmd_replace(self):
         self.assertScriptResultEquals("$replace(abc ab abd a,ab,test)", "testc test testd a")
 
+    def test_cmd_replacemulti(self):
+        context = Metadata()
+        context["genre"] = ["Electronic", "Idm", "Techno"]
+        self.assertScriptResultEquals("$replacemulti(%genre%,Idm,IDM)", "Electronic; IDM; Techno", context)
+
+        context["genre"] = ["Electronic", "Jungle", "Bardcore"]
+        self.assertScriptResultEquals("$replacemulti(%genre%,Bardcore,Hardcore)", "Electronic; Jungle; Hardcore", context)
+
+        context["test"] = ["One", "Two", "Three"]
+        self.assertScriptResultEquals("$replacemulti(%test%,Four,Five)", "One; Two; Three", context)
+
+        context["test"] = ["Four", "Five", "Six"]
+        self.assertScriptResultEquals("$replacemulti(%test%,Five,)", "Four; Six", context)
+
+        self.assertScriptResultEquals("$replacemulti(a; b,,,)", "a; b")
+        self.assertScriptResultEquals("$setmulti(foo,a; b)$replacemulti(%foo%,,,)", "a; b")
+
     def test_cmd_strip(self):
         self.assertScriptResultEquals("$strip(  \t abc  de \n f  )", "abc de f")
 
@@ -1187,19 +1204,28 @@ class ScriptParserTest(PicardTestCase):
 
     def test_cmd_map(self):
         context = Metadata()
-        context["foo"] = "First:A; Second:B; Third:C"
-        context["bar"] = ["First:A", "Second:B", "Third:C"]
         foo_output = "1=FIRST:A; SECOND:B; THIRD:C"
         loop_output = "1=FIRST:A; 2=SECOND:B; 3=THIRD:C"
         alternate_output = "1=FIRST:2=A; SECOND:3=B; THIRD:4=C"
         # Tests with context
+        context["foo"] = "First:A; Second:B; Third:C"
         self.assertScriptResultEquals("$map(%foo%,$upper(%_loop_count%=%_loop_value%))", foo_output, context)
+        context["bar"] = ["First:A", "Second:B", "Third:C"]
         self.assertScriptResultEquals("$map(%bar%,$upper(%_loop_count%=%_loop_value%))", loop_output, context)
         # Tests with static inputs
         self.assertScriptResultEquals("$map(First:A; Second:B; Third:C,$upper(%_loop_count%=%_loop_value%))", loop_output, context)
+        # Tests for removing empty elements
+        context["baz"] = ["First:A", "Second:B", "Remove", "Third:C"]
+        test_output = "1=FIRST:A; 2=SECOND:B; 4=THIRD:C"
+        self.assertScriptResultEquals("$lenmulti(%baz%)", "4", context)
+        self.assertScriptResultEquals("$map(%baz%,$if($eq(%_loop_count%,3),,$upper(%_loop_count%=%_loop_value%)))", test_output, context)
+        context["baz"] = ["First:A", "Second:B", "Remove", "Third:C"]
+        self.assertScriptResultEquals("$setmulti(baz,$map(%baz%,$if($eq(%_loop_count%,3),,$upper(%_loop_count%=%_loop_value%))))%baz%", test_output, context)
+        self.assertScriptResultEquals("$lenmulti(%baz%)", "3", context)
+        self.assertScriptResultEquals("%baz%", test_output, context)
         # Tests with missing inputs
         self.assertScriptResultEquals("$map(,$upper(%_loop_count%=%_loop_value%))", "", context)
-        self.assertScriptResultEquals("$map(First:A; Second:B; Third:C,)", "; ; ", context)
+        self.assertScriptResultEquals("$map(First:A; Second:B; Third:C,)", "", context)
         # Tests with separator override
         self.assertScriptResultEquals("$map(First:A; Second:B; Third:C,$upper(%_loop_count%=%_loop_value%),:)", alternate_output, context)
         # Tests with invalid number of arguments
@@ -1494,3 +1520,27 @@ class ScriptParserTest(PicardTestCase):
             self.parser.eval("$reversemulti()")
         with self.assertRaisesRegex(ScriptError, areg):
             self.parser.eval("$reversemulti(B:AB; D:C; E:D; A:A; C:X,:,extra)")
+
+    def test_cmd_unique(self):
+        context = Metadata()
+        context["foo"] = ['a', 'A', 'B', 'b', 'cd', 'Cd', 'cD', 'CD', 'a', 'A', 'b']
+        context["bar"] = "a; A; B; b; cd; Cd; cD; CD; a; A; b"
+        # Tests with context
+        self.assertScriptResultEquals("$unique(%foo%)", "A; CD; b", context)
+        self.assertScriptResultEquals("$unique(%bar%)", "a; A; B; b; cd; Cd; cD; CD; a; A; b", context)
+        # Tests with static inputs
+        self.assertScriptResultEquals("$unique(a; A; B; b; cd; Cd; cD; CD; a; A; b)", "A; CD; b", context)
+        # Tests with separator override
+        self.assertScriptResultEquals("$unique(a: A: B: b: cd: Cd: cD: CD: a: A: b,,: )", "A: CD: b", context)
+        # Tests with case-sensitive comparison
+        self.assertScriptResultEquals("$unique(%foo%,1)", "A; B; CD; Cd; a; b; cD; cd", context)
+        # Tests with missing inputs
+        self.assertScriptResultEquals("$unique(,)", "", context)
+        self.assertScriptResultEquals("$unique(,,)", "", context)
+        self.assertScriptResultEquals("$unique(,:)", "", context)
+        # Tests with invalid number of arguments
+        areg = r"^\d+:\d+:\$unique: Wrong number of arguments for \$unique: Expected between 1 and 3, "
+        with self.assertRaisesRegex(ScriptError, areg):
+            self.parser.eval("$unique()")
+        with self.assertRaisesRegex(ScriptError, areg):
+            self.parser.eval("$unique(B:AB; D:C; E:D; A:A; C:X,1,:,extra)")

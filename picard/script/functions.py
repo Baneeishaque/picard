@@ -286,6 +286,31 @@ def func_replace(parser, text, old, new):
     return text.replace(old, new)
 
 
+@script_function(eval_args=False, documentation=N_(
+    """`$replacemulti(name,search,replace,separator="; ")`
+
+Replaces occurrences of `search` with `replace` in the multi-value variable `name`.
+Empty elements are automatically removed.
+
+Example:
+
+    $replacemulti(%genre%,Idm,IDM)
+"""
+))
+def func_replacemulti(parser, multi, search, replace, separator=MULTI_VALUED_JOINER):
+    if not multi or not search or replace is None or not separator:
+        return multi.eval(parser)
+
+    search = search.eval(parser)
+    replace = replace.eval(parser)
+    multi_value = MultiValue(parser, multi, separator)
+    for n, value in enumerate(multi_value):
+        if value == search:
+            multi_value[n] = replace
+
+    return str(multi_value)
+
+
 @script_function(documentation=N_(
     """`$in(x,y)`
 
@@ -492,7 +517,7 @@ def func_trim(parser, text, char=None):
 
 
 @script_function(documentation=N_(
-    """`$add(x,y,*args)`
+    """`$add(x,y,...)`
 
 Add `y` to `x`.
 Can be used with an arbitrary number of arguments.
@@ -510,7 +535,7 @@ def func_add(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$sub(x,y,*args)`
+    """`$sub(x,y,...)`
 
 Subtracts `y` from `x`.
 Can be used with an arbitrary number of arguments.
@@ -528,7 +553,7 @@ def func_sub(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$div(x,y,*args)`
+    """`$div(x,y,...)`
 
 Divides `x` by `y`.
 Can be used with an arbitrary number of arguments.
@@ -548,7 +573,7 @@ def func_div(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$mod(x,y,*args)`
+    """`$mod(x,y,...)`
 
 Returns the remainder of `x` divided by `y`.
 Can be used with an arbitrary number of arguments.
@@ -566,7 +591,7 @@ def func_mod(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$mul(x,y,*args)`
+    """`$mul(x,y,...)`
 
 Multiplies `x` by `y`.
 Can be used with an arbitrary number of arguments.
@@ -584,7 +609,7 @@ def func_mul(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$or(x,y,*args)`
+    """`$or(x,y,...)`
 
 Returns true if either `x` or `y` not empty.
     Can be used with an arbitrary number of arguments.
@@ -598,7 +623,7 @@ def func_or(parser, x, y, *args):
 
 
 @script_function(documentation=N_(
-    """`$and(x,y,*args)`
+    """`$and(x,y,...)`
 
 Returns true if both `x` and `y` are not empty.
     Can be used with an arbitrary number of arguments.
@@ -870,14 +895,15 @@ def func_truncate(parser, text, length):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$swapprefix(text,*prefixes="a","the")`
+    """`$swapprefix(text,prefix1,prefix2,...)`
 
-Moves the specified `prefixes` from the beginning to the end of `text`.
-If no prefix is specified 'A' and 'The' are used by default.
+Moves the specified prefixes from the beginning to the end of `text`. Multiple
+prefixes can be specified as separate parameters. If no prefix is specified 'A'
+and 'The' are used by default.
 
 Example:
 
-    $swapprefix(%albumartist%,A,An,The,Le)
+    $swapprefix(%albumartist%,A,An,The,La,Le,Les,Un,Une)
 
 _Since Picard 1.3, previously as a plugin since Picard 0.13_"""
 ))
@@ -891,10 +917,15 @@ def func_swapprefix(parser, text, *prefixes):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$delprefix(text,*prefixes="a","the")`
+    """`$delprefix(text,prefix1,prefix2,...)`
 
-Deletes the specified `prefixes` from the beginning of `text`.
-If no prefix is specified 'A' and 'The' are used by default.
+Deletes the specified prefixes from the beginning of `text`. Multiple
+prefixes can be specified as separate parameters.  If no prefix is specified 'A'
+and 'The' are used by default.
+
+Example:
+
+    $delprefix(%albumartist%,A,An,The,La,Le,Les,Un,Une)
 
 _Since Picard 1.3_"""
 ))
@@ -924,10 +955,10 @@ def _delete_prefix(parser, text, *prefixes):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$eq_any(x,a1,a2...)`
+    """`$eq_any(x,a1,a2,...)`
 
 Returns true if `x` equals `a1` or `a2` or ...
-Functionally equivalent to `$or($eq(x,a1),$eq(x,a2) ...)`.
+Functionally equivalent to `$or($eq(x,a1),$eq(x,a2),...)`.
 Functionally equivalent to the eq2 plugin."""
 ))
 def func_eq_any(parser, x, *args):
@@ -936,10 +967,10 @@ def func_eq_any(parser, x, *args):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$ne_all(x,a1,a2...)`
+    """`$ne_all(x,a1,a2,...)`
 
 Returns true if `x` does not equal `a1` and `a2` and ...
-Functionally equivalent to `$and($ne(x,a1),$ne(x,a2) ...)`.
+Functionally equivalent to `$and($ne(x,a1),$ne(x,a2),...)`.
 Functionally equivalent to the ne2 plugin."""
 ))
 def func_ne_all(parser, x, *args):
@@ -948,10 +979,10 @@ def func_ne_all(parser, x, *args):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$eq_all(x,a1,a2...)`
+    """`$eq_all(x,a1,a2,...)`
 
 Returns true if `x` equals `a1` and `a2` and ...
-Functionally equivalent to `$and($eq(x,a1),$eq(x,a2) ...)`.
+Functionally equivalent to `$and($eq(x,a1),$eq(x,a2),...)`.
 
 Example:
 
@@ -966,10 +997,10 @@ def func_eq_all(parser, x, *args):
 
 
 @script_function(check_argcount=False, documentation=N_(
-    """`$ne_any(x,a1,a2...)`
+    """`$ne_any(x,a1,a2,...)`
 
 Returns true if `x` does not equal `a1` or `a2` or ...
-Functionally equivalent to `$or($ne(x,a1),$ne(x,a2) ...)`.
+Functionally equivalent to `$or($ne(x,a1),$ne(x,a2),...)`.
 
 Example:
 
@@ -1164,13 +1195,23 @@ Iterates over each element found in the multi-value tag `name` and updates the
     value of the element to the value returned by `code`, returning the updated
     multi-value tag. For each loop, the element value is first stored in the tag
     `_loop_value` and the count is stored in the tag `_loop_count`. This allows
-    the element or count value to be accessed within the `code` script."""
+    the element or count value to be accessed within the `code` script.
+
+Empty elements are automatically removed.
+
+Example:
+
+    $map(First:A; Second:B,$upper(%_loop_count%=%_loop_value%))
+
+Result: 1=FIRST:A; 2=SECOND:B
+"""
 ))
 def func_map(parser, multi, loop_code, separator=MULTI_VALUED_JOINER):
     multi_value = MultiValue(parser, multi, separator)
     for loop_count, value in enumerate(multi_value, 1):
         func_set(parser, '_loop_count', str(loop_count))
         func_set(parser, '_loop_value', str(value))
+        # Make changes in-place
         multi_value[loop_count - 1] = str(loop_code.eval(parser))
     func_unset(parser, '_loop_count')
     func_unset(parser, '_loop_value')
@@ -1252,7 +1293,14 @@ def func_datetime(parser, format=None):
 @script_function(eval_args=False, documentation=N_(
     """`$sortmulti(name,separator="; ")`
 
-Returns a copy of the multi-value tag `name` with the elements sorted in ascending order."""
+Returns a copy of the multi-value tag `name` with the elements sorted in ascending order.
+
+Example:
+
+    $sortmulti(B; A; C)
+
+Result: A; B; C
+"""
 ))
 def func_sortmulti(parser, multi, separator=MULTI_VALUED_JOINER):
     multi_value = MultiValue(parser, multi, separator)
@@ -1264,8 +1312,43 @@ def func_sortmulti(parser, multi, separator=MULTI_VALUED_JOINER):
 
 Returns a copy of the multi-value tag `name` with the elements in reverse order.
     This can be used in conjunction with the `$sortmulti` function to sort in
-    descending order."""
+    descending order.
+
+Example:
+
+    $reversemulti($sortmulti(B; A; C))
+
+Result: C; B; A
+"""
 ))
 def func_reversemulti(parser, multi, separator=MULTI_VALUED_JOINER):
     multi_value = MultiValue(parser, multi, separator)
     return multi_value.separator.join(reversed(multi_value))
+
+
+@script_function(eval_args=False, documentation=N_(
+    """`$unique(name,case_sensitive="",separator="; ")`
+
+Returns a copy of the multi-value tag `name` with no duplicate elements.
+    By default, a case-insensitive comparison of the elements is performed.
+
+Example 1:
+
+    $setmulti(foo,a; A; B; b; cd; Cd; cD; CD; a; A; b)
+    $unique(%foo%)
+
+Result: A; CD; b
+
+Example 2:
+
+    $setmulti(foo,a; A; B; b; a; b; A; B, cd)
+    $unique(%foo%,True)
+
+Result: A; B; a; b; cd
+"""
+))
+def func_unique(parser, multi, case_sensitive="", separator=MULTI_VALUED_JOINER):
+    multi_value = MultiValue(parser, multi, separator)
+    if not case_sensitive:
+        multi_value._multi = list({v.lower(): v for v in multi_value}.values())
+    return multi_value.separator.join(sorted(set(multi_value)))

@@ -173,6 +173,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         Option("persist", "window_state", QtCore.QByteArray()),
         Option("persist", "bottom_splitter_state", QtCore.QByteArray()),
         BoolOption("persist", "window_maximized", False),
+        BoolOption("persist", "view_metadata_view", True),
         BoolOption("persist", "view_cover_art", True),
         BoolOption("persist", "view_toolbar", True),
         BoolOption("persist", "view_file_browser", False),
@@ -216,39 +217,37 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
 
         if IS_MACOS:
             self.setUnifiedTitleAndToolBarOnMac(True)
-            self.toolbar.setMovable(False)
-            self.search_toolbar.setMovable(False)
 
-        mainLayout = QtWidgets.QSplitter(QtCore.Qt.Vertical)
-        mainLayout.setChildrenCollapsible(False)
-        mainLayout.setContentsMargins(0, 0, 0, 0)
+        main_layout = QtWidgets.QSplitter(QtCore.Qt.Vertical)
+        main_layout.setChildrenCollapsible(False)
+        main_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.panel = MainPanel(self, mainLayout)
+        self.panel = MainPanel(self, main_layout)
         self.file_browser = FileBrowser(self.panel)
         if not self.show_file_browser_action.isChecked():
             self.file_browser.hide()
         self.panel.insertWidget(0, self.file_browser)
         self.panel.restore_state()
 
-        self.metadata_box = MetadataBox(self)
-        self.cover_art_box = CoverArtBox(self)
-        if not self.show_cover_art_action.isChecked():
-            self.cover_art_box.hide()
-
         self.log_dialog = LogView(self)
         self.history_dialog = HistoryView(self)
 
-        bottomLayout = QtWidgets.QHBoxLayout()
-        bottomLayout.setContentsMargins(0, 0, 0, 0)
-        bottomLayout.setSpacing(0)
-        bottomLayout.addWidget(self.metadata_box, 1)
-        bottomLayout.addWidget(self.cover_art_box, 0)
-        bottom = QtWidgets.QWidget()
-        bottom.setLayout(bottomLayout)
+        self.metadata_box = MetadataBox(self)
+        self.cover_art_box = CoverArtBox(self)
+        metadata_view_layout = QtWidgets.QHBoxLayout()
+        metadata_view_layout.setContentsMargins(0, 0, 0, 0)
+        metadata_view_layout.setSpacing(0)
+        metadata_view_layout.addWidget(self.metadata_box, 1)
+        metadata_view_layout.addWidget(self.cover_art_box, 0)
+        self.metadata_view = QtWidgets.QWidget()
+        self.metadata_view.setLayout(metadata_view_layout)
 
-        mainLayout.addWidget(self.panel)
-        mainLayout.addWidget(bottom)
-        self.setCentralWidget(mainLayout)
+        self.show_metadata_view()
+        self.show_cover_art()
+
+        main_layout.addWidget(self.panel)
+        main_layout.addWidget(self.metadata_view)
+        self.setCentralWidget(main_layout)
 
         # accessibility
         self.set_tab_order()
@@ -338,6 +337,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.log_dialog.save_geometry()
         self.history_dialog.save_geometry()
         config.persist["window_maximized"] = isMaximized
+        config.persist["view_metadata_view"] = self.show_metadata_view_action.isChecked()
         config.persist["view_cover_art"] = self.show_cover_art_action.isChecked()
         config.persist["view_toolbar"] = self.show_toolbar_action.isChecked()
         config.persist["view_file_browser"] = self.show_file_browser_action.isChecked()
@@ -551,6 +551,8 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
 
         self.track_search_action = QtWidgets.QAction(icontheme.lookup('system-search'), _("Search for similar tracks..."), self)
         self.track_search_action.setStatusTip(_("View similar tracks and optionally choose a different release"))
+        self.track_search_action.setEnabled(False)
+        self.track_search_action.setShortcut(QtGui.QKeySequence(_("Ctrl+T")))
         self.track_search_action.triggered.connect(self.show_more_tracks)
 
         self.show_file_browser_action = QtWidgets.QAction(_("File &Browser"), self)
@@ -560,10 +562,18 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.show_file_browser_action.setShortcut(QtGui.QKeySequence(_("Ctrl+B")))
         self.show_file_browser_action.triggered.connect(self.show_file_browser)
 
+        self.show_metadata_view_action = QtWidgets.QAction(_("&Metadata"), self)
+        self.show_metadata_view_action.setCheckable(True)
+        if config.persist["view_metadata_view"]:
+            self.show_metadata_view_action.setChecked(True)
+        self.show_metadata_view_action.setShortcut(QtGui.QKeySequence(_("Ctrl+Shift+M")))
+        self.show_metadata_view_action.triggered.connect(self.show_metadata_view)
+
         self.show_cover_art_action = QtWidgets.QAction(_("&Cover Art"), self)
         self.show_cover_art_action.setCheckable(True)
         if config.persist["view_cover_art"]:
             self.show_cover_art_action.setChecked(True)
+        self.show_cover_art_action.setEnabled(self.show_metadata_view_action.isChecked())
         self.show_cover_art_action.triggered.connect(self.show_cover_art)
 
         self.show_toolbar_action = QtWidgets.QAction(_("&Actions"), self)
@@ -666,7 +676,8 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.view_history_action = QtWidgets.QAction(_("View Activity &History"), self)
         self.view_history_action.triggered.connect(self.show_history)
         # TR: Keyboard shortcut for "View Activity History"
-        self.view_history_action.setShortcut(QtGui.QKeySequence(_("Ctrl+H")))
+        # On macOS ⌘+H is a system shortcut to hide the window. Use ⌘+Shift+H instead.
+        self.view_history_action.setShortcut(QtGui.QKeySequence(_("Ctrl+Shift+H") if IS_MACOS else _("Ctrl+H")))
 
         webservice_manager = self.tagger.webservice.manager
         webservice_manager.authenticationRequired.connect(self.show_password_dialog)
@@ -768,6 +779,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         menu.addAction(self.remove_action)
         menu = self.menuBar().addMenu(_("&View"))
         menu.addAction(self.show_file_browser_action)
+        menu.addAction(self.show_metadata_view_action)
         menu.addAction(self.show_cover_art_action)
         menu.addSeparator()
         menu.addAction(self.show_toolbar_action)
@@ -787,6 +799,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         menu.addAction(self.analyze_action)
         menu.addAction(self.cluster_action)
         menu.addAction(self.browser_lookup_action)
+        menu.addAction(self.track_search_action)
         menu.addSeparator()
         menu.addAction(self.generate_fingerprints_action)
         menu.addAction(self.tags_from_filenames_action)
@@ -832,6 +845,8 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.insertToolBar(self.search_toolbar, self.toolbar)
         self.update_toolbar_style()
         toolbar.setObjectName("main_toolbar")
+        if IS_MACOS:
+            self.toolbar.setMovable(False)
 
         def add_toolbar_action(action):
             toolbar.addAction(action)
@@ -865,6 +880,9 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.search_toolbar = toolbar = self.addToolBar(_("Search"))
         self.search_toolbar_toggle_action = self.search_toolbar.toggleViewAction()
         toolbar.setObjectName("search_toolbar")
+        if IS_MACOS:
+            self.search_toolbar.setMovable(False)
+
         search_panel = QtWidgets.QWidget(toolbar)
         hbox = QtWidgets.QHBoxLayout(search_panel)
         self.search_combo = QtWidgets.QComboBox(search_panel)
@@ -1114,22 +1132,38 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
             QtWidgets.QMessageBox.Yes)
         return ret == QtWidgets.QMessageBox.Yes
 
+    def get_first_obj_with_type(self, type):
+        for obj in self.selected_objects:
+            if isinstance(obj, type):
+                return obj
+        return None
+
     def show_more_tracks(self):
+        if not self.selected_objects:
+            return
         obj = self.selected_objects[0]
-        if isinstance(obj, Track):
+        if isinstance(obj, Track) and obj.files:
             obj = obj.files[0]
+        if not isinstance(obj, File):
+            log.debug('show_more_tracks expected a File, got %r' % obj)
+            return
         dialog = TrackSearchDialog(self)
         dialog.load_similar_tracks(obj)
         dialog.exec_()
 
     def show_more_albums(self):
-        obj = self.selected_objects[0]
+        obj = self.get_first_obj_with_type(Cluster)
+        if not obj:
+            log.debug('show_more_albums expected a Cluster, got %r' % obj)
+            return
         dialog = AlbumSearchDialog(self)
         dialog.show_similar_albums(obj)
         dialog.exec_()
 
     def view_info(self, default_tab=0):
-        if isinstance(self.selected_objects[0], Album):
+        if not self.selected_objects:
+            return
+        elif isinstance(self.selected_objects[0], Album):
             album = self.selected_objects[0]
             dialog = AlbumInfoDialog(album, self)
         elif isinstance(self.selected_objects[0], Cluster):
@@ -1158,6 +1192,8 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.tagger.refresh(self.selected_objects)
 
     def browser_lookup(self):
+        if not self.selected_objects:
+            return
         self.tagger.browser_lookup(self.selected_objects[0])
 
     @throttle(100)
@@ -1170,6 +1206,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         single = self.selected_objects[0] if len(self.selected_objects) == 1 else None
         can_view_info = bool(single and single.can_view_info())
         can_browser_lookup = bool(single and single.can_browser_lookup())
+        is_file = bool(single and isinstance(single, (File, Track)))
         have_files = bool(self.tagger.get_files_from_objects(self.selected_objects))
         have_objects = bool(self.selected_objects)
         for obj in self.selected_objects:
@@ -1201,7 +1238,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.cut_action.setEnabled(have_objects)
         files = self.get_selected_or_unmatched_files()
         self.tags_from_filenames_action.setEnabled(bool(files))
-        self.track_search_action.setEnabled(have_objects)
+        self.track_search_action.setEnabled(is_file)
 
     def update_selection(self, objects=None, new_selection=True, drop_album_caches=False):
         if self.ignore_selection_changes:
@@ -1221,6 +1258,9 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
 
         if self.player:
             self.player.set_objects(self.selected_objects)
+
+        metadata_visible = self.metadata_view.isVisible()
+        coverart_visible = metadata_visible and self.cover_art_box.isVisible()
 
         if len(objects) == 1:
             obj = list(objects)[0]
@@ -1255,27 +1295,38 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
                         }
                     self.set_statusbar_message(msg, mparms, echo=None,
                                                history=None)
-        elif new_selection:
+        elif coverart_visible and new_selection:
             # Create a temporary file list which allows changing cover art for all selected files
             files = self.tagger.get_files_from_objects(objects)
             obj = FileList(files)
 
-        if new_selection:
-            self.metadata_box.selection_dirty = True
+        if coverart_visible and new_selection:
             self.cover_art_box.set_item(obj)
-        self.metadata_box.update(drop_album_caches=drop_album_caches)
+
+        if metadata_visible:
+            if new_selection:
+                self.metadata_box.selection_dirty = True
+            self.metadata_box.update(drop_album_caches=drop_album_caches)
         self.selection_updated.emit(objects)
 
     def refresh_metadatabox(self):
         self.tagger.window.metadata_box.selection_dirty = True
         self.tagger.window.metadata_box.update()
 
+    def show_metadata_view(self):
+        """Show/hide the metadata view (including the cover art box)."""
+        show = self.show_metadata_view_action.isChecked()
+        self.metadata_view.setVisible(show)
+        self.show_cover_art_action.setEnabled(show)
+        if show:
+            self.update_selection()
+
     def show_cover_art(self):
         """Show/hide the cover art box."""
-        if self.show_cover_art_action.isChecked():
-            self.cover_art_box.show()
-        else:
-            self.cover_art_box.hide()
+        show = self.show_cover_art_action.isChecked()
+        self.cover_art_box.setVisible(show)
+        if show:
+            self.update_selection()
 
     def show_toolbar(self):
         """Show/hide the Action toolbar."""

@@ -21,16 +21,20 @@
 # Maureen <mry_33@163.com>, 2014
 # Naiwei Zheng <i@rix.li>, 2018
 # Niklas Berglund <niklas.berglund@gmail.com>, 2016
+# Ray Tong <q8352017@foxmail.com>, 2021
+# S B <koalaleaves@protonmail.com>, 2021
 #   Tobias Toedter <t.toedter@gmx.net>, 2007
 #   - Wang Jian <lark@linux.net.cn>, 2000
+# York Young, 2021
 # YunQiang Su <wzssyqa@gmail.com>, 2011
+# Zhenzhong Yin <cnrocke@gmail.com>, 2021
 # Maureen <mry_33@163.com>, 2014,2019
 # 刘岩 <xuanqidongjim@gmail.com>, 2020
 msgid ""
 msgstr ""
 "Project-Id-Version: MusicBrainz\n"
-"PO-Revision-Date: 2020-12-24 15:14+0000\n"
-"Last-Translator: 刘岩 <xuanqidongjim@gmail.com>\n"
+"PO-Revision-Date: 2021-04-27 20:20+0000\n"
+"Last-Translator: Nicolás Tamargo <reosarevok@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/musicbrainz/musicbrainz/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,14 +48,14 @@ msgid ""
 "\"Motet\" is a term that applies to different types of (usually "
 "unaccompanied) choral works. What exactly is a motet depends quite a bit on "
 "the period."
-msgstr "\"经文歌\"指多种不同种类的唱诗班作品（通常无伴奏）。何为经文歌与时代颇有关联。"
+msgstr "“经文歌”指不同种类、通常无伴奏的唱诗班作品，在不同年代有不同的定义。"
 
 #: DB:work_type/description:5
 msgctxt "work_type"
 msgid ""
 "\"Sonata\" is a general term used to describe small scale (very often solo "
 "or solo + keyboard) instrumental works, initially in baroque music."
-msgstr "“奏鸣曲”是用于描述小型（常常是独奏或独奏+键盘）器乐作品的总称，最初出现在巴洛克音乐中。"
+msgstr "“奏鸣曲”是小型器乐作品的总称，通常是独奏或独奏加键盘的作品，最早在巴洛克音乐中出现。"
 
 #: DB:medium_format/name:54
 msgctxt "medium_format"
@@ -82,6 +86,11 @@ msgstr "12\" 黑胶唱片"
 msgctxt "medium_format"
 msgid "3.5\" Floppy Disk"
 msgstr "3.5\" 软盘"
+
+#: DB:medium_format/name:91
+msgctxt "medium_format"
+msgid "5.25\" Floppy Disk"
+msgstr ""
 
 #: DB:medium_format/name:52
 msgctxt "medium_format"
@@ -336,6 +345,11 @@ msgctxt "series_type"
 msgid "A series of related concerts by an artist in different locations."
 msgstr "同一位艺术家在不同地点的一系列相关的音乐会。"
 
+#: DB:series_type/description:12
+msgctxt "series_type"
+msgid "A series of related concerts by an artist in the same location."
+msgstr "同一位艺术家在不同地点的一系列相关的音乐会。"
+
 #: DB:series_type/description:1
 msgctxt "series_type"
 msgid "A series of release groups."
@@ -443,6 +457,11 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "A-sharp minor"
 msgstr "升A小调"
 
+#: DB:work_attribute_type/name:57
+msgctxt "work_attribute_type"
+msgid "AACIMH ID"
+msgstr "AACIMH ID"
+
 #: DB:work_attribute_type/name:44
 msgctxt "work_attribute_type"
 msgid "ACAM ID"
@@ -453,10 +472,20 @@ msgctxt "work_attribute_type"
 msgid "ACDAM ID"
 msgstr "ACDAM ID"
 
+#: DB:work_attribute_type/name:58
+msgctxt "work_attribute_type"
+msgid "AEI ID"
+msgstr "AEI ID"
+
 #: DB:work_attribute_type/name:43
 msgctxt "work_attribute_type"
 msgid "AGADU ID"
 msgstr "AGADU ID"
+
+#: DB:work_attribute_type/name:63
+msgctxt "work_attribute_type"
+msgid "AKKA/LAA ID"
+msgstr "AKKA/LAA ID"
 
 #: DB:work_attribute_type/name:23
 msgctxt "work_attribute_type"
@@ -1456,6 +1485,11 @@ msgstr "CED"
 msgctxt "work_attribute_type"
 msgid "COMPASS ID"
 msgstr "COMPASS ID"
+
+#: DB:work_attribute_type/name:65
+msgctxt "work_attribute_type"
+msgid "COTT ID"
+msgstr "COTT ID"
 
 #: DB:work_attribute_type_allowed_value/value:63
 msgctxt "work_attribute_type_allowed_value"
@@ -2674,6 +2708,12 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Gerdaniyekürdi"
 msgstr "Gerdaniyekürdi"
 
+#: DB:medium_format/description:90
+msgctxt "medium_format"
+msgid ""
+"German tape cartridge format, using grooved tape rather than magnetic tape."
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:380
 msgctxt "work_attribute_type_allowed_value"
 msgid "Geveşt"
@@ -2793,6 +2833,11 @@ msgstr "HD-DVD"
 msgctxt "medium_format"
 msgid "HDCD"
 msgstr "HDCD"
+
+#: DB:work_attribute_type/name:64
+msgctxt "work_attribute_type"
+msgid "HFA ID"
+msgstr "HFA ID"
 
 #: DB:medium_format/name:37
 msgctxt "medium_format"
@@ -3179,6 +3224,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Belgian rights society SABAM"
 msgstr "比利时著作权协会SABAM ID"
 
+#: DB:work_attribute_type/description:61
+msgctxt "work_attribute_type"
+msgid "ID for the Bolivian rights society SOBODAYCOM"
+msgstr "玻利维亚著作权协会 SOBODAYCOM ID"
+
 #: DB:work_attribute_type/description:37
 msgctxt "work_attribute_type"
 msgid "ID for the Brazilian rights society ECAD"
@@ -3224,6 +3274,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Danish rights society KODA"
 msgstr "丹麦著作权协会KODA ID"
 
+#: DB:work_attribute_type/description:60
+msgctxt "work_attribute_type"
+msgid "ID for the Dominican rights society SGACEDOM"
+msgstr "多米尼加共和国著作权协会SGACEDOM ID"
+
 #: DB:work_attribute_type/description:26
 msgctxt "work_attribute_type"
 msgid "ID for the Dutch rights society BUMA/STEMRA"
@@ -3233,6 +3288,11 @@ msgstr "荷兰著作权协会BUMA/STEMRA ID"
 msgctxt "work_attribute_type"
 msgid "ID for the Ecuadorian rights society SAYCE"
 msgstr "厄瓜多尔著作权协会SAYCE ID"
+
+#: DB:work_attribute_type/description:66
+msgctxt "work_attribute_type"
+msgid "ID for the Finnish rights society TEOSTO"
+msgstr "芬兰著作权协会TEOSTO ID"
 
 #: DB:work_attribute_type/description:21
 msgctxt "work_attribute_type"
@@ -3244,6 +3304,16 @@ msgctxt "work_attribute_type"
 msgid "ID for the German rights society GEMA"
 msgstr "德国著作权协会GEMA ID"
 
+#: DB:work_attribute_type/description:58
+msgctxt "work_attribute_type"
+msgid "ID for the Guatemalan rights society AEI"
+msgstr "危地马拉著作权协会AEI ID"
+
+#: DB:work_attribute_type/description:57
+msgctxt "work_attribute_type"
+msgid "ID for the Honduran rights society AACIMH"
+msgstr "洪都拉斯著作权协会AACIMH ID"
+
 #: DB:work_attribute_type/description:19
 msgctxt "work_attribute_type"
 msgid "ID for the Hong Kong rights society CASH"
@@ -3253,6 +3323,11 @@ msgstr "香港著作权协会CASH(香港作曲家及作词家协会) ID"
 msgctxt "work_attribute_type"
 msgid "ID for the Hungarian rights society ARTISJUS"
 msgstr "匈牙利著作权协会ARTISJUS ID"
+
+#: DB:work_attribute_type/description:54
+msgctxt "work_attribute_type"
+msgid "ID for the Icelandic rights society STEF"
+msgstr "冰岛权利协会 STEF 的 ID"
 
 #: DB:work_attribute_type/description:29
 msgctxt "work_attribute_type"
@@ -3284,6 +3359,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Korean rights society KOMCA"
 msgstr "韩国著作权协会KOMCA(韩国音乐著作权协会) ID"
 
+#: DB:work_attribute_type/description:63
+msgctxt "work_attribute_type"
+msgid "ID for the Latvian rights society AKKA/LAA"
+msgstr "拉脱维亚著作权协会AKKA/LAA ID"
+
 #: DB:work_attribute_type/description:49
 msgctxt "work_attribute_type"
 msgid "ID for the Malaysian rights society MACP"
@@ -3293,6 +3373,21 @@ msgstr "马来西亚著作权协会MACP ID"
 msgctxt "work_attribute_type"
 msgid "ID for the Mexican rights society SACM"
 msgstr "墨西哥著作权协会SACM ID"
+
+#: DB:work_attribute_type/description:59
+msgctxt "work_attribute_type"
+msgid "ID for the Nicaraguan rights society NICAUTOR"
+msgstr "尼加拉瓜著作权协会NICAUTOR ID"
+
+#: DB:work_attribute_type/description:67
+msgctxt "work_attribute_type"
+msgid "ID for the Norwegian rights society TONO"
+msgstr ""
+
+#: DB:work_attribute_type/description:62
+msgctxt "work_attribute_type"
+msgid "ID for the Panamanian rights society SPAC"
+msgstr "巴拿马著作权协会SPAC ID"
 
 #: DB:work_attribute_type/description:46
 msgctxt "work_attribute_type"
@@ -3313,6 +3408,11 @@ msgstr "波兰著作权协会ZAiKS ID"
 msgctxt "work_attribute_type"
 msgid "ID for the Portuguese rights society SPA"
 msgstr "葡萄牙著作权协会SPA ID"
+
+#: DB:work_attribute_type/description:56
+msgctxt "work_attribute_type"
+msgid "ID for the Salvadoran rights society SACIM"
+msgstr "萨尔瓦多著作权协会SACIM ID"
 
 #: DB:work_attribute_type/description:45
 msgctxt "work_attribute_type"
@@ -3338,6 +3438,11 @@ msgstr "瑞士著作权协会SUISA ID"
 msgctxt "work_attribute_type"
 msgid "ID for the Taiwanese rights society MÜST"
 msgstr "台湾著作权协会MÜST(社团法人中华音乐著作权协会) ID"
+
+#: DB:work_attribute_type/description:65
+msgctxt "work_attribute_type"
+msgid "ID for the Trinidadian and Tobagonian rights society COTT"
+msgstr "特立尼达和多巴哥岛著作权协会COTT ID"
 
 #: DB:work_attribute_type/description:6
 msgctxt "work_attribute_type"
@@ -3369,10 +3474,20 @@ msgctxt "work_attribute_type"
 msgid "ID for the international (formerly US) rights society AMRA"
 msgstr "国际（以前为美国）版权协会AMRA的ID"
 
+#: DB:work_attribute_type/description:55
+msgctxt "work_attribute_type"
+msgid "ID for the international rights society consortium LatinNet"
+msgstr "国际权利社会联合会 LatinNet 的 ID"
+
 #: DB:work_attribute_type/description:22
 msgctxt "work_attribute_type"
 msgid "ID for the private licensing company CCLI"
 msgstr "私人许可公司CCLI的ID"
+
+#: DB:work_attribute_type/description:64
+msgctxt "work_attribute_type"
+msgid "ID for the private licensing company HFA (Harry Fox Agency)"
+msgstr "私人许可公司HFA (Harry Fox Agency) ID"
 
 #: DB:work_attribute_type/name:52
 msgctxt "work_attribute_type"
@@ -3405,6 +3520,11 @@ msgid ""
 "Incidental music is music written as background for (usually) a theatre "
 "play."
 msgstr "配乐指（通常）为戏剧演出伴奏创作的音乐。"
+
+#: DB:area_type/name:9
+msgctxt "area_type"
+msgid "Indigenous territory / reserve"
+msgstr "土著领地/保护区"
 
 #: DB:place_type/name:5
 msgctxt "place_type"
@@ -4088,6 +4208,11 @@ msgctxt "medium_format"
 msgid "LaserDisc"
 msgstr "LaserDisc"
 
+#: DB:work_attribute_type/name:55
+msgctxt "work_attribute_type"
+msgid "LatinNet ID"
+msgstr "LatinNet ID"
+
 #: DB:work_attribute_type_allowed_value/value:159
 msgctxt "work_attribute_type_allowed_value"
 msgid "Latāngi"
@@ -4357,6 +4482,11 @@ msgstr "Mevlidişerif"
 msgctxt "medium_format"
 msgid "Microcassette"
 msgstr "微型卡式录音带"
+
+#: DB:area_type/name:8
+msgctxt "area_type"
+msgid "Military base"
+msgstr "军事基地"
 
 #: DB:medium_format/name:6
 msgctxt "medium_format"
@@ -4702,6 +4832,11 @@ msgstr "Mōhan kaḷyāṇi"
 msgctxt "work_attribute_type_allowed_value"
 msgid "Mōhanaṁ"
 msgstr "Mōhanaṁ"
+
+#: DB:work_attribute_type/name:59
+msgctxt "work_attribute_type"
+msgid "NICAUTOR ID"
+msgstr "NICAUTOR ID"
 
 #: DB:work_attribute_type_allowed_value/value:647
 msgctxt "work_attribute_type_allowed_value"
@@ -5605,6 +5740,11 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Reng-i Dil"
 msgstr "Reng-i Dil"
 
+#: DB:series_type/name:12
+msgctxt "series_type"
+msgid "Residency"
+msgstr "居住地"
+
 #: DB:work_attribute_type_allowed_value/value:517
 msgctxt "work_attribute_type_allowed_value"
 msgid "Revnaknüma"
@@ -5761,6 +5901,11 @@ msgctxt "work_attribute_type"
 msgid "SACEM ID"
 msgstr "SACEM ID"
 
+#: DB:work_attribute_type/name:56
+msgctxt "work_attribute_type"
+msgid "SACIM ID"
+msgstr "SACIM ID"
+
 #: DB:work_attribute_type/name:27
 msgctxt "work_attribute_type"
 msgid "SACM ID"
@@ -5796,6 +5941,11 @@ msgctxt "work_attribute_type"
 msgid "SESAC ID"
 msgstr "SESAC ID"
 
+#: DB:work_attribute_type/name:60
+msgctxt "work_attribute_type"
+msgid "SGACEDOM ID"
+msgstr "SGACEDOM ID"
+
 #: DB:work_attribute_type/name:20
 msgctxt "work_attribute_type"
 msgid "SGAE ID"
@@ -5826,6 +5976,11 @@ msgctxt "work_attribute_type"
 msgid "SIAE ID"
 msgstr "SIAE ID"
 
+#: DB:work_attribute_type/name:61
+msgctxt "work_attribute_type"
+msgid "SOBODAYCOM ID"
+msgstr "SOBODAYCOM ID"
+
 #: DB:work_attribute_type/name:10
 msgctxt "work_attribute_type"
 msgid "SOCAN ID"
@@ -5840,6 +5995,16 @@ msgstr "SODRAC ID"
 msgctxt "work_attribute_type"
 msgid "SPA ID"
 msgstr "SPA ID"
+
+#: DB:work_attribute_type/name:62
+msgctxt "work_attribute_type"
+msgid "SPAC ID"
+msgstr "SPAC ID"
+
+#: DB:work_attribute_type/name:54
+msgctxt "work_attribute_type"
+msgid "STEF ID"
+msgstr "STEF ID"
 
 #: DB:work_attribute_type/name:50
 msgctxt "work_attribute_type"
@@ -6420,6 +6585,16 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Sūltāl"
 msgstr "Sūltāl"
 
+#: DB:work_attribute_type/name:66
+msgctxt "work_attribute_type"
+msgid "TEOSTO ID"
+msgstr "TEOSTO ID"
+
+#: DB:work_attribute_type/name:67
+msgctxt "work_attribute_type"
+msgid "TONO ID"
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:573
 msgctxt "work_attribute_type_allowed_value"
 msgid "Tahir"
@@ -6474,6 +6649,11 @@ msgstr "Tavşanca"
 msgctxt "work_attribute_type_allowed_value"
 msgid "Tebriz"
 msgstr "Tebriz"
+
+#: DB:medium_format/name:90
+msgctxt "medium_format"
+msgid "Tefifon"
+msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:774
 msgctxt "work_attribute_type_allowed_value"
@@ -6830,6 +7010,21 @@ msgid ""
 "Use for images that need work to be used for tagging (but can possibly "
 "already be used for reference)"
 msgstr "用于不适合直接供标签使用的图像 （但可能已经足以参考）"
+
+#: DB:area_type/description:8
+msgctxt "area_type"
+msgid ""
+"Used for any military bases that are large enough to be considered an area, "
+"not just a place."
+msgstr "用于任何足够大的军事基地，可以被视为一个地区，而不仅仅是一个地方。"
+
+#: DB:area_type/description:9
+msgctxt "area_type"
+msgid ""
+"Used for semi-autonomous territories governed by indigenous peoples, such as"
+" Indian reserves/reservations in North America and indigenous territories in"
+" Central and South America."
+msgstr "用于原住民统治的半自治领土，如北美洲的印第安人保留地/保护区以及中美洲和南美洲的土著领地。"
 
 #: DB:work_attribute_type/name:17
 msgctxt "work_attribute_type"

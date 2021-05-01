@@ -27,10 +27,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
+from collections import defaultdict
 from operator import itemgetter
 import os
 import shutil
 import threading
+
+import fasteners
 
 from PyQt5 import QtCore
 
@@ -41,6 +44,12 @@ from picard import (
     log,
 )
 from picard.version import Version
+
+
+class Memovar:
+    def __init__(self):
+        self.dirty = True
+        self.value = None
 
 
 class ConfigUpgradeError(Exception):
@@ -57,14 +66,10 @@ class ConfigSection(QtCore.QObject):
         self.__name = name
         self.__prefix = self.__name + '/'
         self.__prefix_len = len(self.__prefix)
+        self._memoization = defaultdict(Memovar)
 
     def key(self, name):
         return self.__prefix + name
-
-    def _subkeys(self):
-        for key in self.__qt_config.allKeys():
-            if key[:self.__prefix_len] == self.__prefix:
-                yield key[self.__prefix_len:]
 
     def __getitem__(self, name):
         opt = Option.get(self.__name, name)
@@ -75,15 +80,23 @@ class ConfigSection(QtCore.QObject):
     def __setitem__(self, name, value):
         key = self.key(name)
         self.__qt_config.setValue(key, value)
+        self._memoization[key].dirty = True
 
     def __contains__(self, name):
         return self.__qt_config.contains(self.key(name))
+
+    def as_dict(self):
+        return {key: self[key] for section, key in Option.registry if section == self.__name}
 
     def remove(self, name):
         key = self.key(name)
         config = self.__qt_config
         if config.contains(key):
             config.remove(key)
+        try:
+            del self._memoization[key]
+        except KeyError:
+            pass
 
     def raw_value(self, name, qtype=None):
         """Return an option value without any type conversion."""
@@ -97,13 +110,21 @@ class ConfigSection(QtCore.QObject):
     def value(self, name, option_type, default=None):
         """Return an option value converted to the given Option type."""
         if name in self:
-            try:
-                value = self.raw_value(name, qtype=option_type.qtype)
-                value = option_type.convert(value)
-            except Exception as why:
-                log.error('Cannot read %s value: %s', self.key(name), why, exc_info=True)
-                value = default
-            return value
+            key = self.key(name)
+            memovar = self._memoization[key]
+
+            if memovar.dirty:
+                try:
+                    value = self.raw_value(name, qtype=option_type.qtype)
+                    value = option_type.convert(value)
+                    memovar.dirty = False
+                    memovar.value = value
+                except Exception as why:
+                    log.error('Cannot read %s value: %s', self.key(name), why, exc_info=True)
+                    value = default
+                return value
+            else:
+                return memovar.value
         return default
 
 
@@ -129,6 +150,7 @@ class Config(QtCore.QSettings):
         """Common initializer method for :meth:`from_app` and
         :meth:`from_file`."""
 
+        self.setAtomicSyncRequired(False)  # See comment in event()
         self.application = ConfigSection(self, "application")
         self.setting = ConfigSection(self, "setting")
         self.persist = ConfigSection(self, "persist")
@@ -138,6 +160,30 @@ class Config(QtCore.QSettings):
         TextOption("application", "version", '0.0.0dev0')
         self._version = Version.from_string(self.application["version"])
         self._upgrade_hooks = dict()
+
+    def event(self, event):
+        if event.type() == QtCore.QEvent.UpdateRequest:
+            # Syncing the config file can trigger a deadlock between QSettings internal mutex and
+            # the Python GIL in PyQt up to 5.15.2. Workaround this by handling this ourselves
+            # with custom file locking.
+            # See also https: // tickets.metabrainz.org/browse/PICARD-2088
+            log.debug('Config file update requested on thread %r', threading.get_ident())
+            self.sync()
+            return True
+        else:
+            return super().event(event)
+
+    def sync(self):
+        # Custom file locking for save multi process syncing of the config file. This is needed
+        # as we have atomicSyncRequired disabled.
+        with fasteners.InterProcessLock(self.get_lockfile_name()):
+            super().sync()
+
+    def get_lockfile_name(self):
+        filename = self.fileName()
+        directory = os.path.dirname(filename)
+        filename = '.' + os.path.basename(filename) + '.synclock'
+        return os.path.join(directory, filename)
 
     @classmethod
     def from_app(cls, parent):
