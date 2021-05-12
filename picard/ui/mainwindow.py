@@ -14,7 +14,7 @@
 # Copyright (C) 2011-2013, 2015-2017 Wieland Hoffmann
 # Copyright (C) 2011-2014 Michael Wiencek
 # Copyright (C) 2013-2014, 2017 Sophist-UK
-# Copyright (C) 2013-2020 Laurent Monin
+# Copyright (C) 2013-2021 Laurent Monin
 # Copyright (C) 2015 Ohm Patel
 # Copyright (C) 2015 samithaj
 # Copyright (C) 2016 Rahul Raturi
@@ -22,12 +22,13 @@
 # Copyright (C) 2016-2017 Sambhav Kothari
 # Copyright (C) 2017 Antonio Larrosa
 # Copyright (C) 2017 Frederik “Freso” S. Olesen
-# Copyright (C) 2018 Bob Swift
 # Copyright (C) 2018 Kartik Ohri
 # Copyright (C) 2018 Vishal Choudhary
 # Copyright (C) 2018 virusMac
+# Copyright (C) 2018, 2021 Bob Swift
 # Copyright (C) 2019 Timur Enikeev
 # Copyright (C) 2020 Gabriel Ferreira
+# Copyright (C) 2021 Petit Minion
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -260,7 +261,6 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
 
     def set_sorting(self, sorting=True):
         self.panel.set_sorting(sorting)
-        # self.panel.collapse_clusters(not sorting)
 
     def keyPressEvent(self, event):
         # On macOS Command+Backspace triggers the so called "Forward Delete".
@@ -1054,7 +1054,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         return OptionsDialog.show_instance(page, self)
 
     def show_help(self):
-        webbrowser2.goto('documentation')
+        webbrowser2.open('documentation')
 
     def show_log(self):
         self.log_dialog.show()
@@ -1067,13 +1067,13 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.history_dialog.activateWindow()
 
     def open_bug_report(self):
-        webbrowser2.goto('troubleshooting')
+        webbrowser2.open('troubleshooting')
 
     def open_support_forum(self):
-        webbrowser2.goto('forum')
+        webbrowser2.open('forum')
 
     def open_donation_page(self):
-        webbrowser2.goto('donate')
+        webbrowser2.open('donate')
 
     def save(self):
         """Tell the tagger to save the selected objects."""

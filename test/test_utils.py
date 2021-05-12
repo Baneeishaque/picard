@@ -437,24 +437,65 @@ class TracknumFromFilenameTest(PicardTestCase):
 
     def test_returns_expected_tracknumber(self):
         tests = (
+            (2, '2.mp3'),
+            (2, '02.mp3'),
+            (2, '002.mp3'),
             (None, 'Foo.mp3'),
             (1, 'Foo 0001.mp3'),
+            (1, '1 song.mp3'),
             (99, '99 Foo.mp3'),
             (42, '42. Foo.mp3'),
             (None, '20000 Feet.mp3'),
             (242, 'track no 242.mp3'),
+            (77, 'Track no. 77 .mp3'),
             (242, 'track-242.mp3'),
             (242, 'track nr 242.mp3'),
             (242, 'track_242.mp3'),
-            # (None, '30,000 Pounds of Bananas.mp3'),
-            # (None, 'Dalas 1 PM.mp3'),
-            # (None, "Don't Stop the 80's.mp3"),
+            (1, 'artist song 2004 track01 xxxx.ogg'),
+            (1, 'artist song 2004 track-no-01 xxxx.ogg'),
+            (1, 'artist song 2004 track-no_01 xxxx.ogg'),
+            (1, '01_foo.mp3'),
+            (1, '01ābc.mp3'),
+            (1, '01abc.mp3'),
+            (11, "11 Linda Jones - Things I've Been Through 08.flac"),
+            (1, "01 artist song [2004] (02).mp3"),
+            (1, "01 artist song [04].mp3"),
+            (7, "artist song [2004] [7].mp3"),
+            # (7, "artist song [2004] (7).mp3"),
+            (7, 'artist song [2004] [07].mp3'),
+            (7, 'artist song [2004] (07).mp3'),
+            (4, 'xx 01 artist song [04].mp3'),
+            (None, 'artist song-(666) (01) xxx.ogg'),
+            (None, 'song-70s 69 comment.mp3'),
+            (13, "2_13 foo.mp3"),
+            (13, "02-13 foo.mp3"),
+            (None, '1971.mp3'),
+            (42, '1971 Track 42.mp3'),
+            (None, "artist song [2004].mp3"),
+            (None, '0.mp3'),
+            (None, 'track00.mp3'),
+            (None, 'song [2004] [1000].mp3'),
+            (None, 'song 2015.mp3'),
+            (None, '2015 song.mp3'),
+            (None, '30,000 Pounds of Bananas.mp3'),
+            (None, 'Dalas 1 PM.mp3'),
+            (None, "Don't Stop the 80's.mp3"),
+            (None, 'Symphony no. 5 in D minor.mp3'),
+            (None, 'Song 2.mp3'),
+            (None, '80s best of.mp3'),
+            (None, 'best of 80s.mp3'),
             # (None, '99 Luftballons.mp3'),
-            # (None, 'Symphony no. 5 in D minor.mp3'),
+            (7, '99 Luftballons Track 7.mp3'),
+            (None, 'Margin 0.001.mp3'),
+            (None, 'All the Small Things - blink‐182.mp3'),
+            (None, '99.99 Foo.mp3'),
+            (5, '٠٥ فاصله میان دو پرده.mp3'),
+            (23, '23 foo.mp3'),
+            (None, '²³ foo.mp3'),
         )
         for expected, filename in tests:
             tracknumber = tracknum_from_filename(filename)
-            self.assertEqual(expected, tracknumber)
+            self.assertEqual(expected, tracknumber, filename)
 
 
 class TracknumAndTitleFromFilenameTest(PicardTestCase):
@@ -465,8 +506,9 @@ class TracknumAndTitleFromFilenameTest(PicardTestCase):
             (('1', 'Track 0001'), 'Track 0001.mp3'),
             (('99', 'Foo'), '99 Foo.mp3'),
             (('42', 'Foo'), '0000042 Foo.mp3'),
+            (('2', 'Foo'), '0000002 Foo.mp3'),
             ((None, '20000 Feet'), '20000 Feet.mp3'),
-            # ((None, '20,000 Feet'), '20,000 Feet.mp3'),
+            ((None, '20,000 Feet'), '20,000 Feet.mp3'),
         )
         for expected, filename in tests:
             result = tracknum_and_title_from_filename(filename)

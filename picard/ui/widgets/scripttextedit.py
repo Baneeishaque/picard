@@ -21,24 +21,35 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+
 import re
+import unicodedata
 
 from PyQt5 import (
     QtCore,
     QtGui,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import (
+    QCursor,
+    QTextCursor,
+)
 from PyQt5.QtWidgets import (
     QCompleter,
     QTextEdit,
+    QToolTip,
 )
 
 from picard.const.sys import IS_MACOS
-from picard.script import script_function_names
+from picard.script import (
+    ScriptFunctionDocError,
+    script_function_documentation,
+    script_function_names,
+)
 from picard.util.tags import (
     PRESERVED_TAGS,
     TAG_NAMES,
+    display_tag_name,
 )
 
 from picard.ui import FONT_FAMILY_MONOSPACE
@@ -79,14 +90,17 @@ class TaggerScriptSyntaxHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, document):
         super().__init__(document)
         syntax_theme = theme.syntax_theme
-        self.func_re = QtCore.QRegExp(r"\$(?!noop)[a-zA-Z][_a-zA-Z0-9]*\(")
+        self.func_re = QtCore.QRegExp(r"\$(?!noop)[_a-zA-Z0-9]*\(")
         self.func_fmt = QtGui.QTextCharFormat()
         self.func_fmt.setFontWeight(QtGui.QFont.Bold)
         self.func_fmt.setForeground(syntax_theme.func)
         self.var_re = QtCore.QRegExp(r"%[_a-zA-Z0-9:]*%")
         self.var_fmt = QtGui.QTextCharFormat()
         self.var_fmt.setForeground(syntax_theme.var)
-        self.escape_re = QtCore.QRegExp(r"\\.")
+        self.unicode_re = QtCore.QRegExp(r"\\u[a-fA-F0-9]{4}")
+        self.unicode_fmt = QtGui.QTextCharFormat()
+        self.unicode_fmt.setForeground(syntax_theme.escape)
+        self.escape_re = QtCore.QRegExp(r"\\[^u]")
         self.escape_fmt = QtGui.QTextCharFormat()
         self.escape_fmt.setForeground(syntax_theme.escape)
         self.special_re = QtCore.QRegExp(r"[^\\][(),]")
@@ -101,6 +115,7 @@ class TaggerScriptSyntaxHighlighter(QtGui.QSyntaxHighlighter):
         self.rules = [
             (self.func_re, self.func_fmt, 0, -1),
             (self.var_re, self.var_fmt, 0, 0),
+            (self.unicode_re, self.unicode_fmt, 0, 0),
             (self.escape_re, self.escape_fmt, 0, 0),
             (self.special_re, self.special_fmt, 1, -1),
         ]
@@ -175,6 +190,111 @@ class ScriptCompleter(QCompleter):
         return self.last_selected
 
 
+class DocumentedScriptToken:
+
+    allowed_chars = re.compile('[A-Za-z0-9_]')
+
+    def __init__(self, doc, cursor_position):
+        self._doc = doc
+        self._cursor_position = cursor_position
+
+    def is_start_char(self, char):
+        return False
+
+    def is_allowed_char(self, char, position):
+        return self.allowed_chars.match(char)
+
+    def get_tooltip(self, position):
+        return None
+
+    def _read_text(self, position, count):
+        text = ''
+        while count:
+            char = self._doc.characterAt(position)
+            if not char:
+                break
+            text += char
+            count -= 1
+            position += 1
+        return text
+
+    def _read_allowed_chars(self, position):
+        doc = self._doc
+        text = ''
+        while True:
+            char = doc.characterAt(position)
+            if not self.allowed_chars.match(char):
+                break
+            text += char
+            position += 1
+        return text
+
+
+class FunctionScriptToken(DocumentedScriptToken):
+
+    def is_start_char(self, char):
+        return char == '$'
+
+    def get_tooltip(self, position):
+        if self._doc.characterAt(position) != '$':
+            return None
+        function = self._read_allowed_chars(position + 1)
+        try:
+            return script_function_documentation(function, 'html')
+        except ScriptFunctionDocError:
+            return None
+
+
+class VariableScriptToken(DocumentedScriptToken):
+
+    allowed_chars = re.compile('[A-Za-z0-9_:]')
+
+    def is_start_char(self, char):
+        return char == '%'
+
+    def get_tooltip(self, position):
+        if self._doc.characterAt(position) != '%':
+            return None
+        tag = self._read_allowed_chars(position + 1)
+        return display_tag_name(tag)
+
+
+class UnicodeEscapeScriptToken(DocumentedScriptToken):
+
+    allowed_chars = re.compile('[uA-Fa-f0-9]')
+    unicode_escape_sequence = re.compile('^\\\\u[a-fA-F0-9]{4}$')
+
+    def is_start_char(self, char):
+        return char == '\\'
+
+    def is_allowed_char(self, char, position):
+        return self.allowed_chars.match(char) and self._cursor_position - position < 6
+
+    def get_tooltip(self, position):
+        text = self._read_text(position, 6)
+        if self.unicode_escape_sequence.match(text):
+            codepoint = int(text[2:], 16)
+            char = chr(codepoint)
+            tooltip = unicodedata.name(char)
+            if unicodedata.category(char)[0] != "C":
+                tooltip += ': "%s"' % char
+            return tooltip
+        return None
+
+
+def _clean_text(text):
+    return "".join(_replace_control_chars(text))
+
+
+def _replace_control_chars(text):
+    simple_ctrl_chars = {'\n', '\r', '\t'}
+    for ch in text:
+        if ch not in simple_ctrl_chars and unicodedata.category(ch)[0] == "C":
+            yield '\\u' + hex(ord(ch))[2:]
+        else:
+            yield ch
+
+
 class ScriptTextEdit(QTextEdit):
     autocomplete_trigger_chars = re.compile('[$%A-Za-z0-9_]')
 
@@ -183,6 +303,51 @@ class ScriptTextEdit(QTextEdit):
         self.highlighter = TaggerScriptSyntaxHighlighter(self.document())
         self.enable_completer()
         self.setFontFamily(FONT_FAMILY_MONOSPACE)
+        self.setMouseTracking(True)
+        self.textChanged.connect(self.update_tooltip)
+
+    def mouseMoveEvent(self, e):
+        tooltip = self.get_tooltip_at_mouse_position(e.pos())
+        if not tooltip:
+            QToolTip.hideText()
+        self.setToolTip(tooltip)
+        return super().mouseMoveEvent(e)
+
+    def update_tooltip(self):
+        if self.underMouse() and self.toolTip():
+            position = self.mapFromGlobal(QCursor.pos())
+            tooltip = self.get_tooltip_at_mouse_position(position)
+            if tooltip != self.toolTip():
+                # Hide tooltip if the entity causing this tooltip
+                # was moved away from the mouse position
+                QToolTip.hideText()
+                self.setToolTip(tooltip)
+
+    def get_tooltip_at_mouse_position(self, position):
+        cursor = self.cursorForPosition(position)
+        return self.get_tooltip_at_cursor(cursor)
+
+    def get_tooltip_at_cursor(self, cursor):
+        position = cursor.position()
+        doc = self.document()
+        documented_tokens = {
+            FunctionScriptToken(doc, position),
+            VariableScriptToken(doc, position),
+            UnicodeEscapeScriptToken(doc, position)
+        }
+        while position and documented_tokens:
+            char = doc.characterAt(position)
+            for token in list(documented_tokens):
+                if token.is_start_char(char):
+                    return token.get_tooltip(position)
+                elif not token.is_allowed_char(char, position):
+                    documented_tokens.remove(token)
+            position -= 1
+        return None
+
+    def insertFromMimeData(self, source):
+        source.setText(_clean_text(source.text()))
+        return super().insertFromMimeData(source)
 
     def enable_completer(self):
         self.completer = ScriptCompleter()

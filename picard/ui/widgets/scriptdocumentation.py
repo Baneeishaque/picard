@@ -18,6 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+
 from PyQt5 import (
     QtCore,
     QtWidgets,
@@ -58,11 +59,12 @@ code {
 class ScriptingDocumentationWidget(QtWidgets.QWidget):
     """Custom widget to display the scripting documentation.
     """
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, include_link=True, *args, **kwargs):
         """Custom widget to display the scripting documentation.
 
         Args:
-            parent (QWidget): Parent screen to check layoutDirection().
+            parent (QWidget): Parent screen to check layoutDirection()
+            include_link (bool): Indicates whether the web link should be included
         """
         super().__init__(*args, **kwargs)
 
@@ -99,9 +101,10 @@ class ScriptingDocumentationWidget(QtWidgets.QWidget):
         }
         # Scripting code is always left-to-right. Qt does not support the dir
         # attribute on inline tags, insert explicit left-right-marks instead.
-        html = html.replace('<code>', '<code>&#8206;')
+        if text_direction == 'rtl':
+            html = html.replace('<code>', '<code>&#8206;')
 
-        link = '<a href="' + PICARD_URLS['doc_scripting'] + '">' + N_('Open Scripting Documentation in your browser') + '</a>'
+        link = '<a href="' + PICARD_URLS['doc_scripting'] + '">' + _('Open Scripting Documentation in your browser') + '</a>'
 
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -121,13 +124,14 @@ class ScriptingDocumentationWidget(QtWidgets.QWidget):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scripting_doc_link.sizePolicy().hasHeightForWidth())
-        self.scripting_doc_link.setSizePolicy(sizePolicy)
-        self.scripting_doc_link.setMinimumSize(QtCore.QSize(0, 20))
-        self.scripting_doc_link.setAlignment(QtCore.Qt.AlignCenter)
-        self.scripting_doc_link.setWordWrap(True)
-        self.scripting_doc_link.setOpenExternalLinks(True)
-        self.scripting_doc_link.setObjectName("docs_scripting_doc_link")
-        self.scripting_doc_link.setText(link)
-        self.scripting_doc_link.show()
-        self.horizontalLayout.addWidget(self.scripting_doc_link)
+        if include_link:
+            self.scripting_doc_link.setSizePolicy(sizePolicy)
+            self.scripting_doc_link.setMinimumSize(QtCore.QSize(0, 20))
+            self.scripting_doc_link.setAlignment(QtCore.Qt.AlignCenter)
+            self.scripting_doc_link.setWordWrap(True)
+            self.scripting_doc_link.setOpenExternalLinks(True)
+            self.scripting_doc_link.setObjectName("docs_scripting_doc_link")
+            self.scripting_doc_link.setText(link)
+            self.scripting_doc_link.show()
+            self.horizontalLayout.addWidget(self.scripting_doc_link)
         self.verticalLayout.addLayout(self.horizontalLayout)
