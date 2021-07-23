@@ -12,6 +12,7 @@
 # Copyright (C) 2017 Sophist-UK
 # Copyright (C) 2018 Vishal Choudhary
 # Copyright (C) 2020-2021 Gabriel Ferreira
+# Copyright (C) 2021 Bob Swift
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,6 +30,7 @@
 
 
 from collections import defaultdict
+import inspect
 from operator import itemgetter
 import os
 import shutil
@@ -44,6 +46,7 @@ from picard import (
     PICARD_VERSION,
     log,
 )
+from picard.profile import UserProfileGroups
 from picard.version import Version
 
 
@@ -128,6 +131,85 @@ class ConfigSection(QtCore.QObject):
         return default
 
 
+class SettingConfigSection(ConfigSection):
+    """Custom subclass to automatically accommodate saving and retrieving values based on user profile settings.
+    """
+    PROFILES_KEY = 'user_profiles'
+    SETTINGS_KEY = 'user_profile_settings'
+
+    @classmethod
+    def init_profile_options(cls):
+        ListOption.add_if_missing("profiles", cls.PROFILES_KEY, [])
+        Option.add_if_missing("profiles", cls.SETTINGS_KEY, {})
+
+    def __init__(self, config, name):
+        super().__init__(config, name)
+        self.__qt_config = config
+        self.__name = name
+        self.__prefix = self.__name + '/'
+        self._memoization = defaultdict(Memovar)
+        self.init_profile_options()
+        self._selected_profile = None
+
+    def _get_active_profile_ids(self):
+        if self._selected_profile is not None:
+            if self._selected_profile == "user_settings":
+                return
+            # Act as if the selected profile is the only active profile.
+            yield self._selected_profile
+        else:
+            profiles = self.__qt_config.profiles[self.PROFILES_KEY]
+            if profiles is None:
+                return
+            for profile in profiles:
+                if profile['enabled']:
+                    yield profile["id"]
+
+    def _get_active_profile_settings(self):
+        for id in self._get_active_profile_ids():
+            yield id, self._get_profile_settings(id)
+
+    def _get_profile_settings(self, id):
+        profile_settings = self.__qt_config.profiles[self.SETTINGS_KEY][id]
+        if profile_settings is None:
+            log.error("Unable to find settings for user profile '%s'", id)
+            return {}
+        return profile_settings
+
+    def __getitem__(self, name):
+        # Don't process settings that are not profile-specific
+        if name in UserProfileGroups.get_all_settings_list():
+            for id, settings in self._get_active_profile_settings():
+                if name in settings and settings[name] is not None:
+                    return settings[name]
+        opt = Option.get(self.__name, name)
+        if opt is None:
+            return None
+        return self.value(name, opt, opt.default)
+
+    def __setitem__(self, name, value):
+        # Don't process settings that are not profile-specific
+        if name in UserProfileGroups.get_all_settings_list():
+            for id, settings in self._get_active_profile_settings():
+                if name in settings:
+                    self._save_profile_setting(id, name, value)
+                    return
+        if self._selected_profile is None or self._selected_profile == "user_settings":
+            key = self.key(name)
+            self.__qt_config.setValue(key, value)
+            self._memoization[key].dirty = True
+
+    def _save_profile_setting(self, profile_id, name, value):
+        profile_settings = self.__qt_config.profiles[self.SETTINGS_KEY]
+        profile_settings[profile_id][name] = value
+        key = self.__qt_config.profiles.key(self.SETTINGS_KEY)
+        self.__qt_config.setValue(key, profile_settings)
+        self._memoization[key].dirty = True
+
+    def set_profile(self, profile_id=None):
+        self._selected_profile = profile_id
+
+
 class Config(QtCore.QSettings):
 
     """Configuration.
@@ -152,10 +234,9 @@ class Config(QtCore.QSettings):
 
         self.setAtomicSyncRequired(False)  # See comment in event()
         self.application = ConfigSection(self, "application")
-        self.setting = ConfigSection(self, "setting")
+        self.profiles = ConfigSection(self, "profiles")
+        self.setting = SettingConfigSection(self, "setting")
         self.persist = ConfigSection(self, "persist")
-        self.profile = ConfigSection(self, "profile/default")
-        self.current_preset = "default"
 
         TextOption("application", "version", '0.0.0dev0')
         self._version = Version.from_string(self.application["version"])
@@ -220,14 +301,6 @@ class Config(QtCore.QSettings):
                                   parent)
         this.__initialize()
         return this
-
-    def switchProfile(self, profilename):
-        """Sets the current profile."""
-        key = "profile/%s" % (profilename,)
-        if self.contains(key):
-            self.profile.name = key
-        else:
-            raise KeyError("Unknown profile '%s'" % (profilename,))
 
     def register_upgrade_hook(self, func, *args):
         """Register a function to upgrade from one config version to another"""
@@ -317,17 +390,39 @@ class Option(QtCore.QObject):
     qtype = None
 
     def __init__(self, section, name, default):
+        key = (section, name)
+        if key in self.registry:
+            stack = inspect.stack()
+            fmt = "Option %s/%s already declared"
+            args = [section, name]
+            if len(stack) > 1:
+                f = stack[1]
+                fmt += "\nat %s:%d: in %s"
+                args.extend((f.filename, f.lineno, f.function))
+                if f.code_context:
+                    fmt += "\n%s"
+                    args.append("\n".join(f.code_context).rstrip())
+            log.error(fmt, *args)
         super().__init__()
         self.section = section
         self.name = name
         self.default = default
         if not hasattr(self, "convert"):
             self.convert = type(default)
-        self.registry[(self.section, self.name)] = self
+        self.registry[key] = self
 
     @classmethod
     def get(cls, section, name):
         return cls.registry.get((section, name))
+
+    @classmethod
+    def add_if_missing(cls, section, name, default):
+        if not cls.exists(section, name):
+            cls(section, name, default)
+
+    @classmethod
+    def exists(cls, section, name):
+        return (section, name) in cls.registry
 
 
 class TextOption(Option):
@@ -361,21 +456,18 @@ class ListOption(Option):
 config = None
 setting = None
 persist = None
-
-_thread_configs = {}
-_thread_config_lock = threading.RLock()
+profiles = None
 
 
 def setup_config(app, filename=None):
-    global config, setting, persist
+    global config, setting, persist, profiles
     if filename is None:
         config = Config.from_app(app)
     else:
         config = Config.from_file(app, filename)
-    _thread_configs[threading.get_ident()] = config
     setting = config.setting
     persist = config.persist
-    _init_purge_config_timer()
+    profiles = config.profiles
 
 
 def get_config():
@@ -383,41 +475,4 @@ def get_config():
 
     Config objects for threads are created on demand and cached for later use.
     """
-    thread_id = threading.get_ident()
-    thread_config = _thread_configs.get(thread_id)
-    if not thread_config:
-        if not config:
-            return None  # Not yet initialized
-        _thread_config_lock.acquire()
-        try:
-            config_file = config.fileName()
-            log.debug('Instantiating Config for thread %s using %s.', thread_id, config_file)
-            thread_config = Config.from_file(None, config_file)
-            _thread_configs[thread_id] = thread_config
-        finally:
-            _thread_config_lock.release()
-    return thread_config
-
-
-def _init_purge_config_timer(purge_interval_milliseconds=60000):
-    def run_purge_config_timer():
-        purge_config_instances()
-        start_purge_config_timer()
-
-    def start_purge_config_timer():
-        QtCore.QTimer.singleShot(purge_interval_milliseconds, run_purge_config_timer)
-
-    start_purge_config_timer()
-
-
-def purge_config_instances():
-    """Removes cached config instances for no longer active threads."""
-    _thread_config_lock.acquire()
-    try:
-        all_threads = set([thread.ident for thread in threading.enumerate()])
-        threads_config = set(_thread_configs)
-        for thread_id in threads_config.difference(all_threads):
-            log.debug('Purging config instance for thread %s.', thread_id)
-            del _thread_configs[thread_id]
-    finally:
-        _thread_config_lock.release()
+    return config

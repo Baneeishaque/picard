@@ -3,6 +3,7 @@
 #  <>, 2002, 2001, Inc, 2003, 2007, 2008, 2009, 2010, 2011, 2000,�s�, 2012
 #   Alastair McKinstry <mckinstry@computer.org>, 2002
 # Alastair McKinstry <mckinstry@computer.org>, 2001
+# Clay Cheng <569735195@qq.com>, 2021
 # Clay Cheng <569735195@qq.com>, 2016-2017
 # Dian Li <xslidian@gmail.com>, 2009-2019
 #   Free Software Foundation, Inc., 2002, 2003, 2007, 2008
@@ -19,8 +20,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: MusicBrainz\n"
-"PO-Revision-Date: 2020-12-20 14:29+0000\n"
-"Last-Translator: 刘岩 <xuanqidongjim@gmail.com>\n"
+"PO-Revision-Date: 2021-05-26 05:58+0000\n"
+"Last-Translator: Clay Cheng <569735195@qq.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/musicbrainz/musicbrainz/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -691,7 +692,7 @@ msgstr "卢森堡"
 #. iso.code:MO
 #: DBarea JOIN iso_3166_1 iso on iso.area = area.id/area.name:125
 msgid "Macao"
-msgstr "澳门特区"
+msgstr "中国澳门"
 
 #. iso.code:MK
 #: DBarea JOIN iso_3166_1 iso on iso.area = area.id/area.name:126

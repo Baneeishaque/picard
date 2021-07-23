@@ -389,14 +389,19 @@ class Tagger(QtWidgets.QApplication):
             del self._cmdline_files
 
     def run(self):
-        config = get_config()
-        if config.setting["browser_integration"]:
-            self.browser_integration.start()
+        self.update_browser_integration()
         self.window.show()
         QtCore.QTimer.singleShot(0, self._run_init)
         res = self.exec_()
         self.exit()
         return res
+
+    def update_browser_integration(self):
+        config = get_config()
+        if config.setting["browser_integration"]:
+            self.browser_integration.start()
+        else:
+            self.browser_integration.stop()
 
     def event(self, event):
         if isinstance(event, thread.ProxyToMainEvent):
@@ -949,6 +954,8 @@ def process_picard_args():
                         help="do not restore positions and/or sizes")
     parser.add_argument("-P", "--no-plugins", action='store_true',
                         help="do not load any plugins")
+    parser.add_argument("--no-crash-dialog", action='store_true',
+                        help="disable the crash dialog")
     parser.add_argument('-v', '--version', action='store_true',
                         help="display version information and exit")
     parser.add_argument("-V", "--long-version", action='store_true',

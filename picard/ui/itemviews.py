@@ -23,6 +23,7 @@
 # Copyright (C) 2018 Vishal Choudhary
 # Copyright (C) 2020 Gabriel Ferreira
 # Copyright (C) 2021 Petit Minion
+# Copyright (C) 2021 Bob Swift
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -147,9 +148,7 @@ def get_match_color(similarity, basecolor):
 
 class MainPanel(QtWidgets.QSplitter):
 
-    options = [
-        Option("persist", "splitter_state", QtCore.QByteArray()),
-    ]
+    options = []
 
     columns = [
         (N_('Title'), 'title'),
@@ -235,15 +234,8 @@ class MainPanel(QtWidgets.QSplitter):
         tab_order(prev, after)
 
     def save_state(self):
-        config = get_config()
-        config.persist["splitter_state"] = self.saveState()
         for view in self._views:
             view.save_state()
-
-    @restore_method
-    def restore_state(self):
-        config = get_config()
-        self.restoreState(config.persist["splitter_state"])
 
     def create_icons(self):
         if hasattr(QtWidgets.QStyle, 'SP_DirIcon'):
@@ -490,6 +482,8 @@ class BaseTreeView(QtWidgets.QTreeWidget):
             if can_view_info:
                 menu.addAction(self.window.view_info_action)
             menu.addAction(self.window.browser_lookup_action)
+            if self.window.submit_cluster_action:
+                menu.addAction(self.window.submit_cluster_action)
             menu.addSeparator()
             menu.addAction(self.window.autotag_action)
             menu.addAction(self.window.analyze_action)
@@ -510,6 +504,10 @@ class BaseTreeView(QtWidgets.QTreeWidget):
             menu.addAction(self.window.play_file_action)
             menu.addAction(self.window.open_folder_action)
             menu.addAction(self.window.browser_lookup_action)
+            if self.window.submit_file_as_recording_action:
+                menu.addAction(self.window.submit_file_as_recording_action)
+            if self.window.submit_file_as_release_action:
+                menu.addAction(self.window.submit_file_as_release_action)
             menu.addSeparator()
             menu.addAction(self.window.autotag_action)
             menu.addAction(self.window.analyze_action)

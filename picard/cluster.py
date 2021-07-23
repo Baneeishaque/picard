@@ -127,7 +127,7 @@ class Cluster(FileList):
         if self.related_album:
             return '<Cluster %s %r>' % (
                 self.related_album.id,
-                self.related_album.metadata[u"album"] + '/' + self.metadata['album']
+                self.related_album.metadata["album"] + '/' + self.metadata['album']
             )
         return '<Cluster %r>' % self.metadata['album']
 
@@ -223,6 +223,9 @@ class Cluster(FileList):
             return True
         else:
             return False
+
+    def can_submit(self):
+        return not self.special and self.files
 
     def is_album_like(self):
         return True

@@ -13,7 +13,7 @@
 # Copyright (C) 2016-2017 Wieland Hoffmann
 # Copyright (C) 2016-2018 Sambhav Kothari
 # Copyright (C) 2017 Ville Skyttä
-# Copyright (C) 2018 Bob Swift
+# Copyright (C) 2018, 2021 Bob Swift
 # Copyright (C) 2021 Gabriel Ferreira
 #
 # This program is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ PICARD_APP_NAME = "Picard"
 PICARD_DISPLAY_NAME = "MusicBrainz Picard"
 PICARD_APP_ID = "org.musicbrainz.Picard"
 PICARD_DESKTOP_NAME = PICARD_APP_ID + ".desktop"
-PICARD_VERSION = Version(2, 7, 0, 'dev', 1)
+PICARD_VERSION = Version(2, 7, 0, 'dev', 3)
 
 
 # optional build version
@@ -96,9 +96,14 @@ def crash_handler():
     a minimal crash dialog to the user.
     This function is supposed to be called from inside an except blog.
     """
+    import sys
+
+    # Allow disabling the graphical crash handler for debugging and CI purposes.
+    if set(sys.argv) & {'--no-crash-dialog', '-v', '--version', '-V', '--long-version', '-h', '--help'}:
+        return
+
     # First try to get traceback information and write it to a log file
     # with minimum chance to fail.
-    import sys
     from tempfile import NamedTemporaryFile
     import traceback
     trace = traceback.format_exc()

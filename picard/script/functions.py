@@ -44,6 +44,7 @@ import operator
 import re
 import unicodedata
 
+from picard.const.countries import RELEASE_COUNTRIES
 from picard.metadata import MULTI_VALUED_JOINER
 from picard.script.parser import (
     MultiValue,
@@ -51,7 +52,10 @@ from picard.script.parser import (
     ScriptRuntimeError,
     normalize_tagname,
 )
-from picard.util import uniqify
+from picard.util import (
+    pattern_as_regex,
+    uniqify,
+)
 
 
 try:
@@ -760,14 +764,23 @@ def func_lenmulti(parser, multi, separator=MULTI_VALUED_JOINER):
     """`$performer(pattern="",join=", ")`
 
 Returns the performers where the performance type (e.g. "vocal") matches `pattern`, joined by `join`.
+You can specify a regular expression in the format `/pattern/flags`. `flags` are optional. Currently
+the only supported flag is "i" (ignore case). For example `$performer(/^guitars?$/i)` matches the
+performance type "guitar" or "Guitars", but not e.g. "bass guitar".
 
 _Since Picard 0.10_"""
 ))
 def func_performer(parser, pattern="", join=", "):
     values = []
+    try:
+        regex = pattern_as_regex(pattern, allow_wildcards=False)
+    except re.error:
+        return ''
     for name, value in parser.context.items():
-        if name.startswith("performer:") and pattern in name:
-            values.append(value)
+        if name.startswith("performer:"):
+            name, performance = name.split(':', 2)
+            if regex.search(performance):
+                values.append(value)
     return join.join(values)
 
 
@@ -1175,7 +1188,7 @@ def func_foreach(parser, multi, loop_code, separator=MULTI_VALUED_JOINER):
 Standard 'while' loop. Executes `code` repeatedly until `condition` no longer
     evaluates to `True`. For each loop, the count is stored in the tag
     `_loop_count`. This allows the count value to be accessed within the `code`
-    script. The function limites the maximum number of iterations to 1000 as a
+    script. The function limits the maximum number of iterations to 1000 as a
     safeguard against accidentally creating an infinite loop."""
 ))
 def func_while(parser, condition, loop_code):
@@ -1354,3 +1367,17 @@ def func_unique(parser, multi, case_sensitive="", separator=MULTI_VALUED_JOINER)
     if not case_sensitive:
         multi_value._multi = list({v.lower(): v for v in multi_value}.values())
     return multi_value.separator.join(sorted(set(multi_value)))
+
+
+@script_function(documentation=N_(
+    """`$countryname(country_code,translate="")`
+
+Returns the name of the country for the specified country code.  If the country code is invalid an empty string will be returned.
+If translate is not blank, the output will be translated into the current locale language.
+"""
+))
+def func_countryname(parser, country_code, translate=""):
+    name = RELEASE_COUNTRIES.get(country_code.strip().upper(), "")
+    if translate:
+        return gettext_countries(name)
+    return name

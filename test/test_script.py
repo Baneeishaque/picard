@@ -3,7 +3,7 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2007 Lukáš Lalinský
-# Copyright (C) 2010, 2014, 2018-2020 Philipp Wolfer
+# Copyright (C) 2010, 2014, 2018-2021 Philipp Wolfer
 # Copyright (C) 2012 Chad Wilson
 # Copyright (C) 2013 Michael Wiencek
 # Copyright (C) 2013, 2017-2020 Laurent Monin
@@ -12,7 +12,7 @@
 # Copyright (C) 2017 Antonio Larrosa
 # Copyright (C) 2017-2018 Wieland Hoffmann
 # Copyright (C) 2018 virusMac
-# Copyright (C) 2020 Bob Swift
+# Copyright (C) 2020-2021 Bob Swift
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,10 +29,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
+import builtins
 import copy
 import datetime
 import re
 import unittest
+from unittest import mock
 from unittest.mock import MagicMock
 
 from test.picardtestcase import PicardTestCase
@@ -930,13 +932,40 @@ class ScriptParserTest(PicardTestCase):
     def test_cmd_performer(self):
         context = Metadata()
         context['performer:guitar'] = 'Foo1'
-        context['performer:rhythm-guitar'] = 'Foo2'
+        context['performer:rhythm-guitar'] = ['Foo2', 'Foo3']
         context['performer:drums'] = 'Drummer'
+        # Matches pattern
         result = self.parser.eval("$performer(guitar)", context=context)
-        performers = result.split(', ')
-        self.assertIn('Foo1', performers)
-        self.assertIn('Foo2', performers)
-        self.assertEqual(2, len(performers))
+        self.assertEqual({'Foo1', 'Foo2', 'Foo3'}, set(result.split(', ')))
+        # Empty pattern returns all performers
+        result = self.parser.eval("$performer()", context=context)
+        self.assertEqual({'Foo1', 'Foo2', 'Foo3', 'Drummer'}, set(result.split(', ')))
+        self.assertScriptResultEquals("$performer(perf)", "", context)
+
+    def test_cmd_performer_regex(self):
+        context = Metadata()
+        context['performer:guitar'] = 'Foo1'
+        context['performer:guitars'] = 'Foo2'
+        context['performer:rhythm-guitar'] = 'Foo3'
+        context['performer:drums (drum kit)'] = 'Drummer'
+        result = self.parser.eval(r"$performer(/^guitar/)", context=context)
+        self.assertEqual({'Foo1', 'Foo2'}, set(result.split(', ')))
+        result = self.parser.eval(r"$performer(/^guitar\$/)", context=context)
+        self.assertEqual({'Foo1'}, set(result.split(', ')))
+
+    def test_cmd_performer_regex_invalid(self):
+        context = Metadata()
+        context['performer:drums (drum kit)'] = 'Drummer'
+        self.assertScriptResultEquals(r"$performer(/drums \(/)", "", context)
+        self.assertScriptResultEquals(r"$performer(drums \()", "Drummer", context)
+
+    def test_cmd_performer_regex_ignore_case(self):
+        context = Metadata()
+        context['performer:guitar'] = 'Foo1'
+        context['performer:GUITARS'] = 'Foo2'
+        context['performer:rhythm-guitar'] = 'Foo3'
+        result = self.parser.eval(r"$performer(/^guitars?/i)", context=context)
+        self.assertEqual({'Foo1', 'Foo2'}, set(result.split(', ')))
 
     def test_cmd_performer_custom_join(self):
         context = Metadata()
@@ -944,10 +973,7 @@ class ScriptParserTest(PicardTestCase):
         context['performer:rhythm-guitar'] = 'Foo2'
         context['performer:drums'] = 'Drummer'
         result = self.parser.eval("$performer(guitar, / )", context=context)
-        performers = result.split(' / ')
-        self.assertIn('Foo1', performers)
-        self.assertIn('Foo2', performers)
-        self.assertEqual(2, len(performers))
+        self.assertEqual({'Foo1', 'Foo2'}, set(result.split(' / ')))
 
     def test_cmd_matchedtracks(self):
         file = MagicMock()
@@ -1009,6 +1035,12 @@ class ScriptParserTest(PicardTestCase):
 
     def test_char_escape(self):
         self.assertScriptResultEquals(r"\n\t\$\%\(\)\,\\", "\n\t$%(),\\")
+
+    def test_char_escape_unexpected_char(self):
+        self.assertRaises(ScriptSyntaxError, self.parser.eval, r'\x')
+
+    def test_char_escape_end_of_file(self):
+        self.assertRaises(ScriptEndOfFile, self.parser.eval, 'foo\\')
 
     def test_raise_unknown_function(self):
         self.assertRaises(ScriptUnknownFunction, self.parser.eval, '$unknownfn()')
@@ -1562,3 +1594,51 @@ class ScriptParserTest(PicardTestCase):
             self.parser.eval("$unique()")
         with self.assertRaisesRegex(ScriptError, areg):
             self.parser.eval("$unique(B:AB; D:C; E:D; A:A; C:X,1,:,extra)")
+
+    def test_cmd_countryname(self):
+        context = Metadata()
+        context["foo"] = "ca"
+        context["bar"] = ""
+        context["baz"] = "INVALID"
+
+        # Ensure that `builtins` contains a `gettext_countries` attribute to avoid an `AttributeError`
+        # exception when mocking the function, in case the `picard.i18n` module has not been loaded.
+        # This is required by the $countryname() function in order to translate the country names.
+        if not hasattr(builtins, 'gettext_countries'):
+            builtins.__dict__['gettext_countries'] = None
+
+        # Mock function to simulate English locale.
+        def mock_gettext_countries_en(arg):
+            return arg
+
+        # Mock function to simulate Russian locale.
+        def mock_gettext_countries_ru(arg):
+            return "Канада" if arg == 'Canada' else arg
+
+        # Test with Russian locale
+        with mock.patch('builtins.gettext_countries', mock_gettext_countries_ru):
+            self.assertScriptResultEquals("$countryname(ca)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(ca,)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(ca, )", "Канада", context)
+            self.assertScriptResultEquals("$countryname(ca,yes)", "Канада", context)
+            self.assertScriptResultEquals("$countryname(INVALID,yes)", "", context)
+            # Test for unknown translation of correct code
+            self.assertScriptResultEquals("$countryname(fr,yes)", "France", context)
+
+        # Reset locale to English for remaining tests
+        with mock.patch('builtins.gettext_countries', mock_gettext_countries_en):
+            self.assertScriptResultEquals("$countryname(ca,)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(ca,yes)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(ca)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(CA)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(%foo%)", "Canada", context)
+            self.assertScriptResultEquals("$countryname(%bar%)", "", context)
+            self.assertScriptResultEquals("$countryname(%baz%)", "", context)
+            self.assertScriptResultEquals("$countryname(INVALID)", "", context)
+
+        # Tests with invalid number of arguments
+        areg = r"^\d+:\d+:\$countryname: Wrong number of arguments for \$countryname: Expected between 1 and 2, "
+        with self.assertRaisesRegex(ScriptError, areg):
+            self.parser.eval("$countryname()")
+        with self.assertRaisesRegex(ScriptError, areg):
+            self.parser.eval("$countryname(CA,,Extra)")
