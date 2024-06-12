@@ -25,6 +25,7 @@ from test.picardtestcase import PicardTestCase
 from picard.util.tags import (
     display_tag_name,
     parse_comment_tag,
+    parse_subtag,
 )
 
 
@@ -37,4 +38,11 @@ class UtilTagsTest(PicardTestCase):
     def test_parse_comment_tag(self):
         self.assertEqual(('XXX', 'foo'), parse_comment_tag('comment:XXX:foo'))
         self.assertEqual(('eng', 'foo'), parse_comment_tag('comment:foo'))
+        self.assertEqual(('XXX', ''), parse_comment_tag('comment:XXX'))
         self.assertEqual(('eng', ''), parse_comment_tag('comment'))
+
+    def test_parse_lyrics_tag(self):
+        self.assertEqual(('eng', ''), parse_subtag('lyrics'))
+        self.assertEqual(('XXX', 'foo'), parse_subtag('lyrics:XXX:foo'))
+        self.assertEqual(('XXX', ''), parse_subtag('lyrics:XXX'))
+        self.assertEqual(('eng', 'foo'), parse_subtag('lyrics::foo'))

@@ -3,10 +3,10 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2006-2007 Lukáš Lalinský
-# Copyright (C) 2009, 2018-2022 Philipp Wolfer
+# Copyright (C) 2009, 2018-2023 Philipp Wolfer
 # Copyright (C) 2011-2013 Michael Wiencek
 # Copyright (C) 2012 Chad Wilson
-# Copyright (C) 2013-2014, 2018, 2020-2021 Laurent Monin
+# Copyright (C) 2013-2014, 2018, 2020-2021, 2023-2024 Laurent Monin
 # Copyright (C) 2014 Sophist-UK
 # Copyright (C) 2016-2017 Sambhav Kothari
 # Copyright (C) 2018 Vishal Choudhary
@@ -26,17 +26,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtWidgets,
 )
 
 from picard import log
-from picard.config import (
-    Option,
-    get_config,
-)
+from picard.config import get_config
+from picard.i18n import gettext as _
 from picard.mbjson import (
     artist_credit_from_node,
     label_info_from_node,
@@ -48,22 +46,18 @@ from picard.util import (
 )
 
 from picard.ui import PicardDialog
-from picard.ui.ui_cdlookup import Ui_Dialog
+from picard.ui.forms.ui_cdlookup import Ui_CDLookupDialog
 
 
 class CDLookupDialog(PicardDialog):
 
-    dialog_header_state = "cdlookupdialog_header_state"
-
-    options = [
-        Option("persist", dialog_header_state, QtCore.QByteArray())
-    ]
+    dialog_header_state = 'cdlookupdialog_header_state'
 
     def __init__(self, releases, disc, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.releases = releases
         self.disc = disc
-        self.ui = Ui_Dialog()
+        self.ui = Ui_CDLookupDialog()
         self.ui.setupUi(self)
         release_list = self.ui.release_list
         release_list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
@@ -126,7 +120,7 @@ class CDLookupDialog(PicardDialog):
             lookup = self.tagger.get_file_lookup()
             lookup.discid_submission(submission_url)
         else:
-            log.error('No submission URL for disc ID "%s"', self.disc.id)
+            log.error("No submission URL for disc ID %s", self.disc.id)
         super().accept()
 
     @restore_method
@@ -137,11 +131,11 @@ class CDLookupDialog(PicardDialog):
             state = config.persist[self.dialog_header_state]
             if state:
                 header.restoreState(state)
-                log.debug("restore_state: %s" % self.dialog_header_state)
+                log.debug("restore_state: %s", self.dialog_header_state)
 
     def save_header_state(self):
         if self.ui.release_list:
             state = self.ui.release_list.header().saveState()
             config = get_config()
             config.persist[self.dialog_header_state] = state
-            log.debug("save_state: %s" % self.dialog_header_state)
+            log.debug("save_state: %s", self.dialog_header_state)

@@ -20,8 +20,9 @@ def _picard_get_locale_files():
     locales = []
     path_domain = {
         'po': 'picard',
-        os.path.join('po', 'countries'): 'picard-countries',
         os.path.join('po', 'attributes'): 'picard-attributes',
+        os.path.join('po', 'constants'): 'picard-constants',
+        os.path.join('po', 'countries'): 'picard-countries',
     }
     for path, domain in path_domain.items():
         for filepath in glob.glob(os.path.join(path, '*.po')):
@@ -129,9 +130,9 @@ else:
             'CFBundleDisplayName': PICARD_DISPLAY_NAME,
             'CFBundleIdentifier': PICARD_APP_ID,
             'CFBundleVersion': '%d.%d.%d' % PICARD_VERSION[:3],
-            'CFBundleShortVersionString': PICARD_VERSION.to_string(short=True),
+            'CFBundleShortVersionString': PICARD_VERSION.short_str(),
             'LSApplicationCategoryType': 'public.app-category.music',
-            'LSMinimumSystemVersion': os.environ.get('MACOSX_DEPLOYMENT_TARGET', '10.12'),
+            'LSMinimumSystemVersion': os.environ.get('MACOSX_DEPLOYMENT_TARGET', '10.14'),
             'NSHighResolutionCapable': True,
             'NSPrincipalClass': 'NSApplication',
             'NSRequiresAquaSystemAppearance': False,

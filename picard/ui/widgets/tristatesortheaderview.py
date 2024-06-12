@@ -3,7 +3,7 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2019-2020, 2022 Philipp Wolfer
-# Copyright (C) 2020-2021 Laurent Monin
+# Copyright (C) 2020-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,10 +20,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtWidgets,
 )
+
+from picard.i18n import gettext as _
 
 
 class TristateSortHeaderView(QtWidgets.QHeaderView):
@@ -37,7 +39,8 @@ class TristateSortHeaderView(QtWidgets.QHeaderView):
     STATE_SECTION_MOVED_OR_RESIZED = 1
 
     def __init__(self, orientation, parent=None):
-        super().__init__(orientation, parent)
+        super().__init__(orientation, parent=parent)
+        self.prelock_state = None
 
         # Remember if resize / move event just happened
         self._section_moved_or_resized = False
@@ -54,7 +57,7 @@ class TristateSortHeaderView(QtWidgets.QHeaderView):
             tooltip = _(
                 "The table is locked. To enable sorting and column resizing\n"
                 "unlock the table in the table header's context menu.")
-            QtWidgets.QToolTip.showText(event.globalPos(), tooltip, self)
+            QtWidgets.QToolTip.showText(event.globalPosition().toPoint(), tooltip, self)
             return
 
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
@@ -81,10 +84,12 @@ class TristateSortHeaderView(QtWidgets.QHeaderView):
 
     def lock(self, is_locked):
         self.is_locked = is_locked
+        if is_locked:
+            self.prelock_state = self.saveState()
+            self.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
+        else:
+            if self.prelock_state is not None:
+                self.restoreState(self.prelock_state)
+                self.prelock_state = None
         self.setSectionsClickable(not is_locked)
         self.setSectionsMovable(not is_locked)
-        if is_locked:
-            resize_mode = QtWidgets.QHeaderView.ResizeMode.Fixed
-        else:
-            resize_mode = QtWidgets.QHeaderView.ResizeMode.Interactive
-        self.setSectionResizeMode(resize_mode)

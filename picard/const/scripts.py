@@ -3,8 +3,8 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2021 Bob Swift
-# Copyright (C) 2021 Laurent Monin
 # Copyright (C) 2021 Vladislav Karbovskii
+# Copyright (C) 2021-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,6 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+from picard.i18n import (
+    N_,
+    gettext as _,
+)
 
 
 # List of available scripts (character sets)

@@ -49,7 +49,7 @@ class CommonAsfTests:
     class AsfTestCase(CommonTests.TagFormatsTestCase):
 
         def test_supports_tag(self):
-            fmt = ext_to_format(self.testfile_ext[1:])
+            fmt = ext_to_format(self.testfile_ext)
             self.assertTrue(fmt.supports_tag('copyright'))
             self.assertTrue(fmt.supports_tag('compilation'))
             self.assertTrue(fmt.supports_tag('bpm'))
@@ -105,6 +105,7 @@ class ASFTest(CommonAsfTests.AsfTestCase):
         '~channels': '2',
         '~sample_rate': '44100',
         '~bitrate': '128.0',
+        '~filesize': '3744',
     }
 
 
@@ -116,6 +117,7 @@ class WMATest(CommonAsfTests.AsfTestCase):
         '~channels': '2',
         '~sample_rate': '44100',
         '~bitrate': '64.0',
+        '~filesize': '8164',
     }
     unexpected_info = ['~video']
 
@@ -129,6 +131,7 @@ class WMVTest(CommonAsfTests.AsfTestCase):
         '~sample_rate': '44100',
         '~bitrate': '128.0',
         '~video': '1',
+        '~filesize': '7373',
     }
 
 

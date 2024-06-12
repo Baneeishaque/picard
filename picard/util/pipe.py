@@ -2,9 +2,11 @@
 #
 # Picard, the next-generation MusicBrainz tagger
 #
-# Copyright (C) 2022 skelly37
-# Copyright (C) 2022 Philipp Wolfer
 # Copyright (C) 2022 Bob Swift
+# Copyright (C) 2022 Kamil
+# Copyright (C) 2022 skelly37
+# Copyright (C) 2022-2023 Philipp Wolfer
+# Copyright (C) 2022-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 
 from abc import (
     ABCMeta,
@@ -104,7 +107,7 @@ class PipeErrorNoDestination(PipeError):
 class AbstractPipe(metaclass=ABCMeta):
     NO_RESPONSE_MESSAGE: str = "No response from FIFO"
     MESSAGE_TO_IGNORE: str = '\0'
-    TIMEOUT_SECS: float = 1.5
+    TIMEOUT_SECS_WRITE: float = 1.5
 
     @classmethod
     @property
@@ -135,16 +138,16 @@ class AbstractPipe(metaclass=ABCMeta):
                 raise PipeErrorInvalidArgs(exc) from None
 
         if not self._args:
-            self._args = (self.MESSAGE_TO_IGNORE,)
+            self._args = ('SHOW',)
 
         if not isinstance(app_name, str) or not isinstance(app_version, str):
             raise PipeErrorInvalidAppData
 
-        self._identifier = identifier or "main"
+        self._identifier = identifier or 'main'
 
         if forced_path:
             self._paths = (forced_path,)
-        elif IS_WIN or os.getenv("HOME"):
+        elif IS_WIN or os.getenv('HOME'):
             self._paths = self.__generate_filenames(app_name, app_version)
             self.path_was_forced = False
         else:
@@ -153,14 +156,11 @@ class AbstractPipe(metaclass=ABCMeta):
             log.debug("Pipe path had to be mocked by a temporary file")
         self.is_pipe_owner: bool = False
 
-        # 2 workers for reader
-        # 2 workers for sender (they both need a worker to *hacky kill the job*)
-        # 2 workers just in case
-        self.__thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-
         self.pipe_running = False
 
         self.unexpected_removal = False
+
+        self.__thread_pool = concurrent.futures.ThreadPoolExecutor()
 
         for path in self._paths:
             self.path = path
@@ -225,28 +225,23 @@ class AbstractPipe(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def read_from_pipe(self, timeout_secs: Optional[float] = None) -> List[str]:
+    def read_from_pipe(self) -> List[str]:
         """
         Common interface for the custom _reader implementations
 
-        :param timeout_secs: (Optional[float]) Timeout for the function, by default it fallbacks to self.TIMEOUT_SECS
         :return: List of messages or {self.NO_RESPONSE_MESSAGE} (if no messages received)
         :rtype: List[str]
         """
-        if timeout_secs is None:
-            timeout_secs = self.TIMEOUT_SECS
-
-        reader = self.__thread_pool.submit(self._reader)
-
         try:
-            res = reader.result(timeout=timeout_secs)
+            res = self._reader()
             if res:
                 out = [r for r in res.split(self.MESSAGE_TO_IGNORE) if r]
                 if out:
                     return out
-        except concurrent.futures._base.TimeoutError:
-            # hacky way to kill the file-opening loop
-            self.send_to_pipe(self.MESSAGE_TO_IGNORE)
+        except Exception as e:
+            # https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.result
+            # If the call raised an exception, this method will raise the same exception.
+            log.error("pipe reader exception: %s", e)
 
         return [self.NO_RESPONSE_MESSAGE]
 
@@ -260,21 +255,34 @@ class AbstractPipe(metaclass=ABCMeta):
         :rtype: bool
         """
         if timeout_secs is None:
-            timeout_secs = self.TIMEOUT_SECS
+            timeout_secs = self.TIMEOUT_SECS_WRITE
 
         # we're sending only filepaths, so we have to create some kind of separator
         # to avoid any potential conflicts and mixing the data
-        sender = self.__thread_pool.submit(self._sender, message + self.MESSAGE_TO_IGNORE)
-
         try:
+            sender = self.__thread_pool.submit(self._sender, message + self.MESSAGE_TO_IGNORE)
             if sender.result(timeout=timeout_secs):
                 return True
         except concurrent.futures._base.TimeoutError:
-            log.warning("Couldn't send: %r", message)
+            if self.pipe_running:
+                log.warning("Couldn't send: %r", message)
             # hacky way to kill the sender
             self.read_from_pipe()
+        except Exception as e:
+            # https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.result
+            # If the call raised an exception, this method will raise the same exception.
+            log.error("pipe sender exception: %s", e)
 
         return False
+
+    def stop(self):
+        log.debug("Stopping pipe")
+        self.pipe_running = False
+        self.send_to_pipe(self.MESSAGE_TO_IGNORE)
+        try:
+            self.__thread_pool.shutdown(wait=True, cancel_futures=True)
+        except TypeError:  # cancel_futures is not supported on Python < 3.9
+            self.__thread_pool.shutdown(wait=True)
 
 
 class UnixPipe(AbstractPipe):
@@ -286,7 +294,7 @@ class UnixPipe(AbstractPipe):
 
     def __init__(self, app_name: str, app_version: str, args: Optional[Iterable[str]] = None,
                  forced_path: Optional[str] = None, identifier: Optional[str] = None):
-        super().__init__(app_name, app_version, args, forced_path)
+        super().__init__(app_name, app_version, args, forced_path, identifier)
 
         if not self.path:
             raise PipeErrorNoPermission
@@ -383,31 +391,36 @@ class WinPipe(AbstractPipe):
             app_version = app_version.replace(".", "-")
         except AttributeError:
             pass
-        super().__init__(app_name, app_version, args, forced_path)
-
+        super().__init__(app_name, app_version, args, forced_path, identifier)
+        self.__create_pipe()
         self._remove_temp_attributes()
 
-    def _sender(self, message: str) -> bool:
-        pipe = win32pipe.CreateNamedPipe(
-            self.path,
-            win32pipe.PIPE_ACCESS_DUPLEX,
-            win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_WAIT,
-            self.__MAX_INSTANCES,
-            self.__BUFFER_SIZE,
-            self.__BUFFER_SIZE,
-            self.__DEFAULT_TIMEOUT,
-            None)
+    def __create_pipe(self):
         try:
-            win32pipe.ConnectNamedPipe(pipe, None)
-            win32file.WriteFile(pipe, str.encode(message))
-        finally:
-            win32file.CloseHandle(pipe)
+            self.__pipe = win32pipe.CreateNamedPipe(
+                self.path,
+                win32pipe.PIPE_ACCESS_DUPLEX,
+                win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_WAIT,
+                self.__MAX_INSTANCES,
+                self.__BUFFER_SIZE,
+                self.__BUFFER_SIZE,
+                self.__DEFAULT_TIMEOUT,
+                None)
+            self.is_pipe_owner = True
+        except WinApiError:
+            self.__pipe = None
+            self.is_pipe_owner = False
 
-        return True
+    def __close_pipe(self):
+        if self.__pipe:
+            handle = self.__pipe
+            self.__pipe = None
+            try:
+                win32file.CloseHandle(handle)
+            except WinApiError:
+                log.error('Error closing pipe', exc_info=True)
 
-    def _reader(self) -> str:
-        response = ""  # type: ignore
-
+    def _sender(self, message: str) -> bool:
         try:
             pipe = win32file.CreateFile(
                 self.path,
@@ -418,9 +431,27 @@ class WinPipe(AbstractPipe):
                 self.__FLAGS_AND_ATTRIBUTES,
                 None
             )
-            while not response:
-                response = win32file.ReadFile(pipe, self.__BUFFER_SIZE)
+        except WinApiError as err:
+            # File did not exist, no existing pipe to write to
+            if err.winerror == self.__FILE_NOT_FOUND_ERROR_CODE:
+                return False
+            else:
+                raise
 
+        try:
+            win32file.WriteFile(pipe, str.encode(message))
+        finally:
+            win32file.CloseHandle(pipe)
+
+        return True
+
+    def _reader(self) -> str:
+        exit_code = 0
+        message = None
+
+        try:
+            win32pipe.ConnectNamedPipe(self.__pipe, None)
+            (exit_code, message) = win32file.ReadFile(self.__pipe, self.__BUFFER_SIZE)
         except WinApiError as err:
             if err.winerror == self.__FILE_NOT_FOUND_ERROR_CODE:
                 # we just keep reopening the pipe, nothing wrong is happening
@@ -430,14 +461,25 @@ class WinPipe(AbstractPipe):
             else:
                 raise PipeErrorWin(f"{err.winerror}; {err.funcname}; {err.strerror}") from None
 
-        # response[0] stores an exit code while response[1] an actual response
-        if response:
-            if response[0] == 0:
-                return str(response[1].decode("utf-8"))  # type: ignore
+        finally:
+            # Pipe was closed when client disconnected, recreate
+            self.__close_pipe()
+            if self.pipe_running:
+                self.__create_pipe()
+
+        if message is not None:
+            message = message.decode('utf-8')
+            if exit_code == 0:
+                return message  # type: ignore
             else:
-                raise PipeErrorInvalidResponse(response[1].decode('utf-8'))  # type: ignore
+                raise PipeErrorInvalidResponse(message)  # type: ignore
         else:
             return self.NO_RESPONSE_MESSAGE
+
+    def stop(self):
+        super().stop()
+        if self.is_pipe_owner:
+            self.__close_pipe()
 
 
 if IS_WIN:

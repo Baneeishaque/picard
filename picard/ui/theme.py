@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2019-2022 Philipp Wolfer
 # Copyright (C) 2020-2021 Gabriel Ferreira
-# Copyright (C) 2021 Laurent Monin
+# Copyright (C) 2021-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,10 +21,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-from collections import namedtuple
 from enum import Enum
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtWidgets,
@@ -73,24 +72,6 @@ if IS_WIN or IS_MACOS:
 elif not IS_HAIKU:
     AVAILABLE_UI_THEMES.extend([UiTheme.SYSTEM])
 
-SyntaxTheme = namedtuple('SyntaxTheme', 'func var escape special noop')
-
-light_syntax_theme = SyntaxTheme(
-    func=QtGui.QColor(QtCore.Qt.GlobalColor.blue),
-    var=QtGui.QColor(QtCore.Qt.GlobalColor.darkCyan),
-    escape=QtGui.QColor(QtCore.Qt.GlobalColor.darkRed),
-    special=QtGui.QColor(QtCore.Qt.GlobalColor.blue),
-    noop=QtGui.QColor(QtCore.Qt.GlobalColor.darkGray),
-)
-
-dark_syntax_theme = SyntaxTheme(
-    func=QtGui.QColor(255, 87, 160, 255),  # magenta
-    var=QtGui.QColor(252, 187, 81, 255),  # orange
-    escape=QtGui.QColor(75, 239, 31, 255),  # green
-    special=QtGui.QColor(255, 87, 160, 255),  # blue
-    noop=QtGui.QColor(4, 231, 213, 255),  # cyan
-)
-
 
 class MacOverrideStyle(QtWidgets.QProxyStyle):
     """Override the default style to fix some platform specific issues"""
@@ -114,7 +95,7 @@ class BaseTheme:
         config = get_config()
         self._loaded_config_theme = UiTheme(config.setting['ui_theme'])
 
-        # Use the new fusion style from PyQt5 for a modern and consistent look
+        # Use the new fusion style from PyQt6 for a modern and consistent look
         # across all OSes.
         if not IS_MACOS and not IS_HAIKU and self._loaded_config_theme != UiTheme.SYSTEM:
             app.setStyle('Fusion')
@@ -143,10 +124,6 @@ class BaseTheme:
     @property
     def accent_color(self):  # pylint: disable=no-self-use
         return None
-
-    @property
-    def syntax_theme(self):
-        return dark_syntax_theme if self.is_dark_theme else light_syntax_theme
 
     # pylint: disable=no-self-use
     def update_palette(self, palette, dark_theme, accent_color):
@@ -178,7 +155,7 @@ if IS_WIN:
                                     r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize") as key:
                     dark_theme = winreg.QueryValueEx(key, "AppsUseLightTheme")[0] == 0
             except OSError:
-                log.warning('Failed reading AppsUseLightTheme from registry')
+                log.warning("Failed reading AppsUseLightTheme from registry")
             return dark_theme
 
         @property
@@ -190,7 +167,7 @@ if IS_WIN:
                     accent_color_hex = '#{:06x}'.format(accent_color_dword & 0xffffff)
                     accent_color = QtGui.QColor(accent_color_hex)
             except OSError:
-                log.warning('Failed reading ColorizationColor from registry')
+                log.warning("Failed reading ColorizationColor from registry")
             return accent_color
 
         def update_palette(self, palette, dark_theme, accent_color):

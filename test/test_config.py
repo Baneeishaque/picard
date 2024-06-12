@@ -33,6 +33,7 @@ from picard.config import (
     IntOption,
     ListOption,
     Option,
+    OptionError,
     TextOption,
 )
 
@@ -72,6 +73,63 @@ class TestPicardConfig(TestPicardConfigCommon):
 
         self.config.setting.remove("text_option")
         self.assertEqual(self.config.setting["text_option"], "abc")
+
+
+class TestPicardConfigOption(TestPicardConfigCommon):
+
+    def test_basic_option(self):
+        Option("setting", "option", "abc")
+        self.assertEqual(self.config.setting["option"], "abc")
+        self.config.setting["option"] = "def"
+        self.assertEqual(self.config.setting["option"], "def")
+
+    def test_option_get(self):
+        Option("setting", "option", "abc")
+        opt = Option.get("setting", "option")
+        self.assertIsInstance(opt, Option)
+        self.assertEqual(opt.default, "abc")
+        self.assertIsNone(Option.get("setting", "not_existing_option"))
+
+    def test_option_without_title(self):
+        Option("setting", "option", "abc")
+        opt = Option.get("setting", "option")
+        self.assertIsNone(opt.title)
+
+    def test_option_with_title(self):
+        Option("setting", "option", "abc", title="Title")
+        opt = Option.get("setting", "option")
+        self.assertEqual(opt.title, "Title")
+
+    def test_option_exists(self):
+        Option("setting", "option", "abc")
+        self.assertTrue(Option.exists("setting", "option"))
+        self.assertFalse(Option.exists("setting", "not_option"))
+
+    def test_option_add_if_missing(self):
+        Option("setting", "option", "abc")
+        Option.add_if_missing("setting", "option", "def")
+        self.assertEqual(self.config.setting["option"], "abc")
+
+        Option.add_if_missing("setting", "missing_option", "def", title="TITLE")
+        self.assertEqual(self.config.setting["missing_option"], "def")
+        self.assertEqual(Option.get_title('setting', 'missing_option'), 'TITLE')
+
+    def test_double_declaration(self):
+        Option("setting", "option", "abc")
+        with self.assertRaisesRegex(OptionError, r"^Option setting/option: Already declared"):
+            Option("setting", "option", "def")
+
+    def test_get_default(self):
+        Option("setting", "option", "abc")
+        self.assertEqual(Option.get_default("setting", "option"), "abc")
+        with self.assertRaisesRegex(OptionError, "^Option setting/unknown_option: No such option"):
+            Option.get_default("setting", "unknown_option")
+
+    def test_get_title(self):
+        Option("setting", "option", "abc", title="Title")
+        self.assertEqual(Option.get_title("setting", "option"), "Title")
+        with self.assertRaisesRegex(OptionError, "^Option setting/unknown_option: No such option"):
+            Option.get_title("setting", "unknown_option")
 
 
 class TestPicardConfigSection(TestPicardConfigCommon):
@@ -298,10 +356,9 @@ class TestPicardConfigFloatOption(TestPicardConfigCommon):
 
 class TestPicardConfigListOption(TestPicardConfigCommon):
 
-    # ListOption
     def test_list_opt_convert(self):
         opt = ListOption("setting", "list_option", [])
-        self.assertEqual(opt.convert("123"), ['1', '2', '3'])
+        self.assertEqual(opt.convert(('1', '2', '3')), ['1', '2', '3'])
 
     def test_list_opt_no_config(self):
         ListOption("setting", "list_option", ["a", "b"])

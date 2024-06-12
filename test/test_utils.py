@@ -30,7 +30,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-import builtins
 from collections import namedtuple
 from collections.abc import Iterator
 from locale import strxfrm as system_strxfrm
@@ -44,7 +43,10 @@ from unittest.mock import (
     patch,
 )
 
-from test.picardtestcase import PicardTestCase
+from test.picardtestcase import (
+    PicardTestCase,
+    get_test_data_path,
+)
 
 from picard import util
 from picard.const import MUSICBRAINZ_SERVERS
@@ -52,12 +54,15 @@ from picard.const.sys import (
     IS_MACOS,
     IS_WIN,
 )
+from picard.i18n import gettext as _
 from picard.util import (
     IgnoreUpdatesContext,
     album_artist_from_path,
     any_exception_isinstance,
     build_qurl,
-    detect_unicode_encoding,
+    detect as charset_detect,
+    detect_file_encoding,
+    encoded_queryargs,
     extract_year_from_date,
     find_best_match,
     is_absolute_path,
@@ -79,36 +84,66 @@ from picard.util import (
 )
 
 
-# ensure _() is defined
-if '_' not in builtins.__dict__:
-    builtins.__dict__['_'] = lambda a: a
-
-
 class ReplaceWin32IncompatTest(PicardTestCase):
 
     @unittest.skipUnless(IS_WIN, "windows test")
     def test_correct_absolute_win32(self):
-        self.assertEqual(util.replace_win32_incompat("c:\\test\\te\"st/2"),
-                             "c:\\test\\te_st/2")
-        self.assertEqual(util.replace_win32_incompat("c:\\test\\d:/2"),
-                             "c:\\test\\d_/2")
+        self.assertEqual(util.replace_win32_incompat('c:\\test\\te"st/2'),
+                             'c:\\test\\te_st/2')
+        self.assertEqual(util.replace_win32_incompat('c:\\test\\d:/2'),
+                             'c:\\test\\d_/2')
 
-    @unittest.skipUnless(not IS_WIN, "non-windows test")
+    @unittest.skipUnless(not IS_WIN, 'non-windows test')
     def test_correct_absolute_non_win32(self):
-        self.assertEqual(util.replace_win32_incompat("/test/te\"st/2"),
-                             "/test/te_st/2")
-        self.assertEqual(util.replace_win32_incompat("/test/d:/2"),
-                             "/test/d_/2")
+        self.assertEqual(util.replace_win32_incompat('/test/te"st/2'),
+                             '/test/te_st/2')
+        self.assertEqual(util.replace_win32_incompat('/test/d:/2'),
+                             '/test/d_/2')
 
     def test_correct_relative(self):
-        self.assertEqual(util.replace_win32_incompat("A\"*:<>?|b"),
-                             "A_______b")
-        self.assertEqual(util.replace_win32_incompat("d:tes<t"),
-                             "d_tes_t")
+        self.assertEqual(util.replace_win32_incompat('A"*:<>?|b'),
+                             'A_______b')
+        self.assertEqual(util.replace_win32_incompat('d:tes<t'),
+                             'd_tes_t')
 
     def test_incorrect(self):
-        self.assertNotEqual(util.replace_win32_incompat("c:\\test\\te\"st2"),
-                             "c:\\test\\te\"st2")
+        self.assertNotEqual(util.replace_win32_incompat('c:\\test\\te"st2'),
+                             'c:\\test\\te"st2')
+
+    def test_custom_replacement_char(self):
+        self.assertEqual(util.replace_win32_incompat('A"*:<>?|b', repl='+'),
+                             "A+++++++b")
+
+    def test_custom_replacement_map(self):
+        input = 'foo*:<>?|"'
+        replacments = {
+            '*': 'A',
+            ':': 'B',
+            '<': 'C',
+            '>': 'D',
+            '?': 'E',
+            '|': 'F',
+            '"': 'G',
+        }
+        replaced = util.replace_win32_incompat(input, replacements=replacments)
+        self.assertEqual('fooABCDEFG', replaced)
+
+    def test_partial_replacement_map(self):
+        input = 'foo*:<>?|"'
+        replacments = {
+            '*': 'A',
+            '<': 'C',
+        }
+        replaced = util.replace_win32_incompat(input, repl='-', replacements=replacments)
+        self.assertEqual('fooA-C----', replaced)
+
+    def test_empty_string_replacement_map(self):
+        input = 'foo:bar'
+        replacments = {
+            ':': '',
+        }
+        replaced = util.replace_win32_incompat(input, replacements=replacments)
+        self.assertEqual('foobar', replaced)
 
 
 class MakeFilenameTest(PicardTestCase):
@@ -152,15 +187,26 @@ class ExtractYearTest(PicardTestCase):
 class SanitizeDateTest(PicardTestCase):
 
     def test_correct(self):
+        self.assertEqual(util.sanitize_date(""), "")
+        self.assertEqual(util.sanitize_date("0"), "")
+        self.assertEqual(util.sanitize_date("0000"), "")
+        self.assertEqual(util.sanitize_date("2006"), "2006")
         self.assertEqual(util.sanitize_date("2006--"), "2006")
-        self.assertEqual(util.sanitize_date("2006--02"), "2006")
+        self.assertEqual(util.sanitize_date("2006-00-02"), "2006-00-02")
         self.assertEqual(util.sanitize_date("2006   "), "2006")
         self.assertEqual(util.sanitize_date("2006 02"), "")
         self.assertEqual(util.sanitize_date("2006.02"), "")
         self.assertEqual(util.sanitize_date("2006-02"), "2006-02")
+        self.assertEqual(util.sanitize_date("2006-02-00"), "2006-02")
+        self.assertEqual(util.sanitize_date("2006-00-00"), "2006")
+        self.assertEqual(util.sanitize_date("2006-02-23"), "2006-02-23")
+        self.assertEqual(util.sanitize_date("2006-00-23"), "2006-00-23")
+        self.assertEqual(util.sanitize_date("0000-00-23"), "0000-00-23")
+        self.assertEqual(util.sanitize_date("0000-02"), "0000-02")
+        self.assertEqual(util.sanitize_date("--23"), "0000-00-23")
 
     def test_incorrect(self):
-        self.assertNotEqual(util.sanitize_date("2006--02"), "2006-02")
+        self.assertNotEqual(util.sanitize_date("2006--02"), "2006")
         self.assertNotEqual(util.sanitize_date("2006.03.02"), "2006-03-02")
 
 
@@ -441,16 +487,6 @@ class SortBySimilarity(PicardTestCase):
         self.assertEqual(best_match.similarity, -1)
 
 
-class GetQtEnum(PicardTestCase):
-
-    def test_get_qt_enum(self):
-        from PyQt5.QtCore import QStandardPaths
-        values = util.get_qt_enum(QStandardPaths, QStandardPaths.LocateOption)
-        self.assertIn('LocateFile', values)
-        self.assertIn('LocateDirectory', values)
-        self.assertNotIn('DesktopLocation', values)
-
-
 class LimitedJoin(PicardTestCase):
 
     def setUp(self):
@@ -720,6 +756,15 @@ class BuildQUrlTest(PicardTestCase):
             self.assertEqual(expected, build_qurl(host, port=443).toDisplayString())
             self.assertEqual(expected, build_qurl(host, port=8080).toDisplayString())
 
+    def test_encoded_queryargs(self):
+        query = encoded_queryargs({'foo': ' %20&;', 'bar': '=%+?abc'})
+        self.assertEqual('%20%2520%26%3B', query['foo'])
+        self.assertEqual('%3D%25%2B%3Fabc', query['bar'])
+        # spaces are decoded in displayed string
+        expected = 'http://example.com?foo= %2520%26%3B&bar=%3D%25%2B%3Fabc'
+        result = build_qurl('example.com', queryargs=query).toDisplayString()
+        self.assertEqual(expected, result)
+
 
 class NormpathTest(PicardTestCase):
 
@@ -730,27 +775,39 @@ class NormpathTest(PicardTestCase):
 
     @unittest.skipUnless(IS_WIN, "windows test")
     def test_normpath_windows(self):
-        self.assertEqual('C:\\Foo\\Bar.baz', normpath('C:/Foo/Bar.baz'))
-        self.assertEqual('C:\\Bar.baz', normpath('C:/Foo/../Bar.baz'))
+        self.assertEqual(r'C:\Foo\Bar.baz', normpath('C:/Foo/Bar.baz'))
+        self.assertEqual(r'C:\Bar.baz', normpath('C:/Foo/../Bar.baz'))
 
     @unittest.skipUnless(IS_WIN, "windows test")
     @patch.object(util, 'system_supports_long_paths')
     def test_normpath_windows_longpath(self, mock_system_supports_long_paths):
         mock_system_supports_long_paths.return_value = False
-        path = 'C:\\foo\\' + (252 * 'a')
+        path = rf'C:\foo\{252 * "a"}'
         self.assertEqual(path, normpath(path))
         path += 'a'
-        self.assertEqual('\\\\?\\' + path, normpath(path))
+        self.assertEqual(rf'\\?\{path}', normpath(path))
 
 
 class WinPrefixLongpathTest(PicardTestCase):
 
     def test_win_prefix_longpath_is_long(self):
-        path = 'C:\\foo\\' + (253 * 'a')
-        self.assertEqual('\\\\?\\' + path, win_prefix_longpath(path))
+        path = rf'C:\foo\{253 * "a"}'
+        self.assertEqual(rf'\\?\{path}', win_prefix_longpath(path))
 
     def test_win_prefix_longpath_is_short(self):
-        path = 'C:\\foo\\' + (252 * 'a')
+        path = rf'C:\foo\{252 * "a"}'
+        self.assertEqual(path, win_prefix_longpath(path))
+
+    def test_win_prefix_longpath_unc(self):
+        path = rf'\\server\{251 * "a"}'
+        self.assertEqual(rf'\\?\UNC{path[1:]}', win_prefix_longpath(path))
+
+    def test_win_prefix_longpath_already_prefixed(self):
+        path = r'\\?\C:\foo'
+        self.assertEqual(path, win_prefix_longpath(path))
+
+    def test_win_prefix_longpath_already_prefixed_unc(self):
+        path = r'\\?\server\someshare'
         self.assertEqual(path, win_prefix_longpath(path))
 
 
@@ -866,12 +923,67 @@ class IgnoreUpdatesContextTest(PicardTestCase):
             self.assertTrue(context)
         self.assertFalse(context)
 
-    def test_run_onexit(self):
-        onexit = Mock()
-        context = IgnoreUpdatesContext(onexit=onexit)
+    def test_run_on_exit(self):
+        on_exit = Mock()
+        context = IgnoreUpdatesContext(on_exit=on_exit)
         with context:
-            onexit.assert_not_called()
-        onexit.assert_called_once_with()
+            on_exit.assert_not_called()
+        on_exit.assert_called_once_with()
+
+    def test_run_on_exit_nested(self):
+        on_exit = Mock()
+        context = IgnoreUpdatesContext(on_exit=on_exit)
+        with context:
+            with context:
+                on_exit.assert_not_called()
+            self.assertEqual(len(on_exit.mock_calls), 1)
+        self.assertEqual(len(on_exit.mock_calls), 2)
+
+    def test_run_on_last_exit(self):
+        on_last_exit = Mock()
+        context = IgnoreUpdatesContext(on_last_exit=on_last_exit)
+        with context:
+            on_last_exit.assert_not_called()
+        on_last_exit.assert_called_once_with()
+
+    def test_run_on_last_exit_nested(self):
+        on_last_exit = Mock()
+        context = IgnoreUpdatesContext(on_last_exit=on_last_exit)
+        with context:
+            with context:
+                on_last_exit.assert_not_called()
+            on_last_exit.assert_not_called()
+        on_last_exit.assert_called_once_with()
+
+    def test_run_on_enter(self):
+        on_enter = Mock()
+        context = IgnoreUpdatesContext(on_enter=on_enter)
+        with context:
+            on_enter.assert_called()
+        on_enter.assert_called_once_with()
+
+    def test_run_on_enter_nested(self):
+        on_enter = Mock()
+        context = IgnoreUpdatesContext(on_enter=on_enter)
+        with context:
+            self.assertEqual(len(on_enter.mock_calls), 1)
+            with context:
+                self.assertEqual(len(on_enter.mock_calls), 2)
+
+    def test_run_on_first_enter(self):
+        on_first_enter = Mock()
+        context = IgnoreUpdatesContext(on_first_enter=on_first_enter)
+        with context:
+            on_first_enter.assert_called()
+        on_first_enter.assert_called_once_with()
+
+    def test_run_on_first_enter_nested(self):
+        on_first_enter = Mock()
+        context = IgnoreUpdatesContext(on_first_enter=on_first_enter)
+        with context:
+            on_first_enter.assert_called_once_with()
+            with context:
+                on_first_enter.assert_called_once_with()
 
     def test_nested_with(self):
         context = IgnoreUpdatesContext()
@@ -884,22 +996,42 @@ class IgnoreUpdatesContextTest(PicardTestCase):
 
 class DetectUnicodeEncodingTest(PicardTestCase):
 
-    def test_detect_encoding(self):
+    @unittest.skipUnless(charset_detect, "test requires charset_normalizer or chardet package")
+    def test_detect_file_encoding_bom(self):
         boms = {
             b'\xff\xfe': 'utf-16-le',
             b'\xfe\xff': 'utf-16-be',
-            b'\00\00\xff\xfe': 'utf-32-le',
-            b'\00\00\xfe\xff': 'utf-32-be',
-            b'\xef\xbb\xbf': 'utf-8',
+            b'\xff\xfe\x00\x00': 'utf-32-le',
+            b'\x00\x00\xfe\xff': 'utf-32-be',
+            b'\xef\xbb\xbf': 'utf-8-sig',
             b'': 'utf-8',
             b'\00': 'utf-8',
+            b'no BOM, only ASCII': 'utf-8',
         }
         for bom, expected_encoding in boms.items():
             try:
                 f = NamedTemporaryFile(delete=False)
                 f.write(bom)
                 f.close()
-                self.assertEqual(expected_encoding, detect_unicode_encoding(f.name))
+                encoding = detect_file_encoding(f.name)
+                self.assertEqual(expected_encoding, encoding,
+                                 f'BOM {bom!r} detected as {encoding}, expected {expected_encoding}')
             finally:
                 f.close()
                 os.remove(f.name)
+
+    def test_detect_file_encoding_eac_utf_16_le(self):
+        expected_encoding = 'utf-16-le'
+        file_path = get_test_data_path('eac-utf16le.log')
+        self.assertEqual(expected_encoding, detect_file_encoding(file_path))
+
+    def test_detect_file_encoding_eac_utf_32_le(self):
+        expected_encoding = 'utf-32-le'
+        file_path = get_test_data_path('eac-utf32le.log')
+        self.assertEqual(expected_encoding, detect_file_encoding(file_path))
+
+    @unittest.skipUnless(charset_detect, "test requires charset_normalizer or chardet package")
+    def test_detect_file_encoding_eac_windows_1251(self):
+        expected_encoding = 'windows-1251'
+        file_path = get_test_data_path('eac-windows1251.log')
+        self.assertEqual(expected_encoding, detect_file_encoding(file_path))

@@ -5,7 +5,7 @@
 # Copyright (C) 2006 Lukáš Lalinský
 # Copyright (C) 2011-2014 Michael Wiencek
 # Copyright (C) 2012 Frederik “Freso” S. Olesen
-# Copyright (C) 2013-2015, 2018-2021 Laurent Monin
+# Copyright (C) 2013-2015, 2018-2024 Laurent Monin
 # Copyright (C) 2016-2017 Sambhav Kothari
 # Copyright (C) 2017 Suhas
 # Copyright (C) 2018-2022 Philipp Wolfer
@@ -27,34 +27,33 @@
 
 from operator import itemgetter
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtWidgets,
 )
 
-from picard.config import (
-    ListOption,
-    get_config,
-)
+from picard.config import get_config
 from picard.const import (
-    RELEASE_COUNTRIES,
     RELEASE_FORMATS,
     RELEASE_PRIMARY_GROUPS,
     RELEASE_SECONDARY_GROUPS,
 )
+from picard.const.countries import RELEASE_COUNTRIES
+from picard.const.defaults import DEFAULT_RELEASE_SCORE
 from picard.const.sys import IS_WIN
+from picard.extension_points.options_pages import register_options_page
+from picard.i18n import (
+    N_,
+    gettext as _,
+    gettext_countries,
+    pgettext_attributes,
+)
 from picard.util import strxfrm
 
-from picard.ui.options import (
-    OptionsPage,
-    register_options_page,
-)
-from picard.ui.ui_options_releases import Ui_ReleasesOptionsPage
+from picard.ui.forms.ui_options_releases import Ui_ReleasesOptionsPage
+from picard.ui.options import OptionsPage
+from picard.ui.util import qlistwidget_items
 from picard.ui.widgets import ClickableSlider
-
-
-_DEFAULT_SCORE = 0.5
-_release_type_scores = [(g, _DEFAULT_SCORE) for g in list(RELEASE_PRIMARY_GROUPS.keys()) + list(RELEASE_SECONDARY_GROUPS.keys())]
 
 
 class TipSlider(ClickableSlider):
@@ -65,8 +64,8 @@ class TipSlider(ClickableSlider):
     _minimum = 0
     _maximum = 100
 
-    def __init__(self, *args):
-        super().__init__(*args)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.style = QtWidgets.QApplication.style()
         self.opt = QtWidgets.QStyleOptionSlider()
@@ -76,6 +75,7 @@ class TipSlider(ClickableSlider):
         self.setSingleStep(self._step)
         self.setTickInterval(self._step)
         self.setPageStep(self._pagestep)
+        self.tagger = QtCore.QCoreApplication.instance()
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -93,7 +93,9 @@ class TipSlider(ClickableSlider):
     def show_tip(self, value):
         self.round_value(value)
         self.initStyleOption(self.opt)
-        rectHandle = self.style.subControlRect(self.style.CC_Slider, self.opt, self.style.SC_SliderHandle)
+        cc_slider = self.style.ComplexControl.CC_Slider
+        sc_slider_handle = self.style.SubControl.SC_ScrollBarSlider
+        rectHandle = self.style.subControlRect(cc_slider, self.opt, sc_slider_handle)
 
         offset = self._offset * self.tagger.primaryScreen().devicePixelRatio()
         pos_local = rectHandle.topLeft() + offset
@@ -115,7 +117,7 @@ class ReleaseTypeScore:
         self.label = QtWidgets.QLabel(self.group)
         self.label.setText(label)
         self.layout.addWidget(self.label, row, column, 1, 1)
-        self.slider = TipSlider(self.group)
+        self.slider = TipSlider(parent=self.group)
         self.layout.addWidget(self.slider, row, column + 1, 1, 1)
         self.reset()
 
@@ -126,7 +128,7 @@ class ReleaseTypeScore:
         return float(self.slider.value()) / 100.0
 
     def reset(self):
-        self.setValue(_DEFAULT_SCORE)
+        self.setValue(DEFAULT_RELEASE_SCORE)
 
 
 class RowColIter:
@@ -153,21 +155,15 @@ class RowColIter:
 
 class ReleasesOptionsPage(OptionsPage):
 
-    NAME = "releases"
+    NAME = 'releases'
     TITLE = N_("Preferred Releases")
-    PARENT = "metadata"
+    PARENT = 'metadata'
     SORT_ORDER = 10
     ACTIVE = True
-    HELP_URL = '/config/options_releases.html'
-
-    options = [
-        ListOption("setting", "release_type_scores", _release_type_scores),
-        ListOption("setting", "preferred_release_countries", []),
-        ListOption("setting", "preferred_release_formats", []),
-    ]
+    HELP_URL = "/config/options_releases.html"
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.ui = Ui_ReleasesOptionsPage()
         self.ui.setupUi(self)
 
@@ -219,6 +215,10 @@ class ReleasesOptionsPage(OptionsPage):
         self.ui.format_list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.ui.preferred_format_list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
+        self.register_setting('release_type_scores', ['type_group'])
+        self.register_setting('preferred_release_countries', ['country_group'])
+        self.register_setting('preferred_release_formats', ['format_group'])
+
     def restore_defaults(self):
         # Clear lists
         self.ui.preferred_country_list.clear()
@@ -229,14 +229,14 @@ class ReleasesOptionsPage(OptionsPage):
 
     def load(self):
         config = get_config()
-        scores = dict(config.setting["release_type_scores"])
+        scores = dict(config.setting['release_type_scores'])
         for (release_type, release_type_slider) in self._release_type_sliders.items():
             release_type_slider.setValue(scores.get(release_type,
-                                                    _DEFAULT_SCORE))
+                                                    DEFAULT_RELEASE_SCORE))
 
-        self._load_list_items("preferred_release_countries", RELEASE_COUNTRIES,
+        self._load_list_items('preferred_release_countries', RELEASE_COUNTRIES,
                               self.ui.country_list, self.ui.preferred_country_list)
-        self._load_list_items("preferred_release_formats", RELEASE_FORMATS,
+        self._load_list_items('preferred_release_formats', RELEASE_FORMATS,
                               self.ui.format_list, self.ui.preferred_format_list)
 
     def save(self):
@@ -244,10 +244,10 @@ class ReleasesOptionsPage(OptionsPage):
         scores = []
         for (release_type, release_type_slider) in self._release_type_sliders.items():
             scores.append((release_type, release_type_slider.value()))
-        config.setting["release_type_scores"] = scores
+        config.setting['release_type_scores'] = scores
 
-        self._save_list_items("preferred_release_countries", self.ui.preferred_country_list)
-        self._save_list_items("preferred_release_formats", self.ui.preferred_format_list)
+        self._save_list_items('preferred_release_countries', self.ui.preferred_country_list)
+        self._save_list_items('preferred_release_formats', self.ui.preferred_format_list)
 
     def reset_preferred_types(self):
         for release_type_slider in self._release_type_sliders.values():
@@ -274,11 +274,11 @@ class ReleasesOptionsPage(OptionsPage):
             list1.takeItem(list1.row(item))
 
     def _load_list_items(self, setting, source, list1, list2):
-        if setting == "preferred_release_countries":
+        if setting == 'preferred_release_countries':
             source_list = [(c[0], gettext_countries(c[1])) for c in
                            source.items()]
-        elif setting == "preferred_release_formats":
-            source_list = [(c[0], pgettext_attributes("medium_format", c[1])) for c
+        elif setting == 'preferred_release_formats':
+            source_list = [(c[0], pgettext_attributes('medium_format', c[1])) for c
                            in source.items()]
         else:
             source_list = [(c[0], _(c[1])) for c in source.items()]
@@ -302,10 +302,10 @@ class ReleasesOptionsPage(OptionsPage):
             list2.addItem(item)
 
     def _save_list_items(self, setting, list1):
-        data = []
-        for i in range(list1.count()):
-            item = list1.item(i)
-            data.append(item.data(QtCore.Qt.ItemDataRole.UserRole))
+        data = [
+            item.data(QtCore.Qt.ItemDataRole.UserRole)
+            for item in qlistwidget_items(list1)
+        ]
         config = get_config()
         config.setting[setting] = data
 

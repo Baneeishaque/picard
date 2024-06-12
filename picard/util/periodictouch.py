@@ -2,8 +2,8 @@
 #
 # Picard, the next-generation MusicBrainz tagger
 #
-# Copyright (C) 2022 Laurent Monin
 # Copyright (C) 2022 Philipp Wolfer
+# Copyright (C) 2022-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,9 +19,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+
 from pathlib import Path
 
-from PyQt5.QtCore import QTimer
+from PyQt6.QtCore import QTimer
 
 from picard import log
 
@@ -43,19 +44,19 @@ def unregister_file(filepath):
 
 
 def enable_timer():
-    log.debug('Setup timer for touching files every %i seconds', TOUCH_FILES_DELAY_SECONDS)
+    log.debug("Setup timer for touching files every %i seconds", TOUCH_FILES_DELAY_SECONDS)
     _touch_timer.timeout.connect(_touch_files)
     _touch_timer.start(TOUCH_FILES_DELAY_SECONDS * 1000)
 
 
 def _touch_files():
-    log.debug('Touching %i files', len(_files_to_touch))
+    log.debug("Touching %i files", len(_files_to_touch))
     for filepath in _files_to_touch.copy():
         path = Path(filepath)
         if path.exists():
             try:
                 path.touch()
             except OSError:
-                log.error('error touching file "%s"', filepath, exc_info=True)
+                log.error("error touching file `%s`", filepath, exc_info=True)
         else:
             unregister_file(filepath)

@@ -3,8 +3,8 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2006 Lukáš Lalinský
-# Copyright (C) 2019-2020, 2022 Philipp Wolfer
-# Copyright (C) 2020-2021 Laurent Monin
+# Copyright (C) 2019-2020, 2022-2023 Philipp Wolfer
+# Copyright (C) 2020-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtWidgets,
@@ -33,7 +33,7 @@ class ElidedLabel(QtWidgets.QLabel):
 
     def __init__(self, parent=None):
         self._full_label = ""
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
     def setText(self, text):
         self._full_label = text
@@ -62,8 +62,8 @@ class ActiveLabel(QtWidgets.QLabel):
 
     clicked = QtCore.pyqtSignal()
 
-    def __init__(self, active=True, drops=False, *args):
-        super().__init__(*args)
+    def __init__(self, active=True, parent=None):
+        super().__init__(parent=parent)
         self.setActive(active)
 
     def setActive(self, active):
@@ -89,7 +89,7 @@ class ClickableSlider(QtWidgets.QSlider):
 
     def _set_position_from_mouse_event(self, event):
         value = QtWidgets.QStyle.sliderValueFromPosition(
-            self.minimum(), self.maximum(), event.x(), self.width())
+            self.minimum(), self.maximum(), event.pos().x(), self.width())
         self.setValue(value)
 
 
@@ -100,8 +100,8 @@ class Popover(QtWidgets.QFrame):
     Subclass this widget and add child widgets for a custom popover.
     """
 
-    def __init__(self, parent, position='bottom'):
-        super().__init__(parent)
+    def __init__(self, position='bottom', parent=None):
+        super().__init__(parent=parent)
         self.setWindowFlags(QtCore.Qt.WindowType.Popup | QtCore.Qt.WindowType.FramelessWindowHint)
         self.position = position
         app = QtCore.QCoreApplication.instance()
@@ -128,9 +128,8 @@ class Popover(QtWidgets.QFrame):
         if not self._is_wayland:
             # Attempt to keep the popover fully visible on screen.
             min_pos = QtCore.QPoint(0, 0)
-            screen_number = QtWidgets.QApplication.desktop().screenNumber()
-            screen = QtGui.QGuiApplication.screens()[screen_number]
-            screen_size = screen.availableVirtualSize()
+            screen = self._main_window.screen()
+            screen_size = screen.size()
         else:
             # The full screen size is not known on Wayland, but we can ensure
             # the popover stays inside the app window boundary.
@@ -157,13 +156,13 @@ class SliderPopover(Popover):
     value_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent, position, label, value):
-        super().__init__(parent, position)
+        super().__init__(position=position, parent=parent)
         vbox = QtWidgets.QVBoxLayout(self)
         self.label = QtWidgets.QLabel(label, self)
         self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         vbox.addWidget(self.label)
 
-        self.slider = ClickableSlider(self)
+        self.slider = ClickableSlider(parent=self)
         self.slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.slider.setValue(int(value))
         self.slider.valueChanged.connect(self.value_changed)

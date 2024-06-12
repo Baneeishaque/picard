@@ -4,11 +4,11 @@
 #
 # Copyright (C) 2006-2007, 2011 Lukáš Lalinský
 # Copyright (C) 2009 Carlin Mangar
-# Copyright (C) 2009, 2018-2022 Philipp Wolfer
+# Copyright (C) 2009, 2018-2023 Philipp Wolfer
 # Copyright (C) 2011-2013 Michael Wiencek
 # Copyright (C) 2012 Chad Wilson
 # Copyright (C) 2012-2014 Wieland Hoffmann
-# Copyright (C) 2013-2014, 2017-2021 Laurent Monin
+# Copyright (C) 2013-2014, 2017-2024 Laurent Monin
 # Copyright (C) 2014 Francois Ferrand
 # Copyright (C) 2015 Sophist-UK
 # Copyright (C) 2016 Ville Skyttä
@@ -37,7 +37,7 @@ from functools import partial
 import os
 import re
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtNetwork,
@@ -55,6 +55,8 @@ from picard.coverart.image import (
     CoverArtImageIOError,
 )
 from picard.file import File
+from picard.i18n import gettext as _
+from picard.item import FileListItem
 from picard.track import Track
 from picard.util import (
     imageinfo,
@@ -62,7 +64,8 @@ from picard.util import (
 )
 from picard.util.lrucache import LRUCache
 
-from picard.ui.item import FileListItem
+from picard.ui.colors import interface_colors
+from picard.ui.util import FileDialog
 from picard.ui.widgets import ActiveLabel
 
 
@@ -73,11 +76,12 @@ COVERART_WIDTH = THUMBNAIL_WIDTH - 7
 class CoverArtThumbnail(ActiveLabel):
     image_dropped = QtCore.pyqtSignal(QtCore.QUrl, bytes)
 
-    def __init__(self, active=False, drops=False, pixmap_cache=None, *args, **kwargs):
-        super().__init__(active, drops, *args, **kwargs)
+    def __init__(self, active=False, drops=False, pixmap_cache=None, parent=None):
+        super().__init__(active=active, parent=parent)
         self.data = None
         self.has_common_images = None
         self.release = None
+        self.tagger = QtCore.QCoreApplication.instance()
         window_handle = self.window().windowHandle()
         if window_handle:
             self.pixel_ratio = window_handle.screen().devicePixelRatio()
@@ -96,7 +100,7 @@ class CoverArtThumbnail(ActiveLabel):
 
     def screen_changed(self, screen):
         pixel_ratio = screen.devicePixelRatio()
-        log.debug('screen changed, pixel ratio %s', pixel_ratio)
+        log.debug("screen changed, pixel ratio %s", pixel_ratio)
         if pixel_ratio != self.pixel_ratio:
             self.pixel_ratio = pixel_ratio
             self._update_default_pixmaps()
@@ -107,8 +111,8 @@ class CoverArtThumbnail(ActiveLabel):
 
     def _update_default_pixmaps(self):
         w, h = self.scaled(THUMBNAIL_WIDTH, THUMBNAIL_WIDTH)
-        self.shadow = self._load_cached_default_pixmap(':/images/CoverArtShadow.png', w, h)
-        self.file_missing_pixmap = self._load_cached_default_pixmap(':/images/image-missing.png', w, h)
+        self.shadow = self._load_cached_default_pixmap(":/images/CoverArtShadow.png", w, h)
+        self.file_missing_pixmap = self._load_cached_default_pixmap(":/images/image-missing.png", w, h)
 
     def _load_cached_default_pixmap(self, pixmap_path, w, h):
         key = hash((pixmap_path, self.pixel_ratio))
@@ -127,15 +131,15 @@ class CoverArtThumbnail(ActiveLabel):
         else:
             return True
 
-    @staticmethod
-    def dragEnterEvent(event):
-        event.acceptProposedAction()
-
-    @staticmethod
-    def dragMoveEvent(event):
-        event.acceptProposedAction()
+    def dragEnterEvent(self, event):
+        event.setDropAction(QtCore.Qt.DropAction.CopyAction)
+        event.accept()
 
     def dropEvent(self, event):
+        if event.proposedAction() == QtCore.Qt.DropAction.IgnoreAction:
+            event.acceptProposedAction()
+            return
+
         accepted = False
         # Chromium includes the actual data of the dragged image in the drop event. This
         # is useful for Google Images, where the url links to the page that contains the image
@@ -170,7 +174,8 @@ class CoverArtThumbnail(ActiveLabel):
                 self.image_dropped.emit(QtCore.QUrl(''), dropped_data)
 
         if accepted:
-            event.acceptProposedAction()
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
+            event.accept()
 
     def scaled(self, *dimensions):
         return (round(self.pixel_ratio * dimension) for dimension in dimensions)
@@ -203,8 +208,10 @@ class CoverArtThumbnail(ActiveLabel):
             if len(self.data) == 1:
                 pixmap = QtGui.QPixmap()
                 try:
-                    pixmap.loadFromData(self.data[0].data)
-                    pixmap = self.decorate_cover(pixmap)
+                    if pixmap.loadFromData(self.data[0].data):
+                        pixmap = self.decorate_cover(pixmap)
+                    else:
+                        pixmap = self.file_missing_pixmap
                 except CoverArtImageIOError:
                     pixmap = self.file_missing_pixmap
             else:
@@ -279,7 +286,8 @@ class CoverArtThumbnail(ActiveLabel):
             else:
                 thumb = QtGui.QPixmap()
                 try:
-                    thumb.loadFromData(image.data)
+                    if not thumb.loadFromData(image.data):
+                        thumb = self.file_missing_pixmap
                 except CoverArtImageIOError:
                     thumb = self.file_missing_pixmap
             thumb = self.decorate_cover(thumb)
@@ -288,9 +296,9 @@ class CoverArtThumbnail(ActiveLabel):
             cx -= displacements
             cy += displacements
         if not has_common_images:
-            # Draw a golden highlight around the first cover to indicate that
+            # Draw a highlight around the first cover to indicate that
             # images are not common to all selected items
-            color = QtGui.QColor("darkgoldenrod")
+            color = interface_colors.get_qcolor('first_cover_hl')
             border_length = 10
             for k in range(border_length):
                 color.setAlpha(255 - k * 255 // border_length)
@@ -321,7 +329,7 @@ class CoverArtThumbnail(ActiveLabel):
         self.set_data(data, has_common_images=has_common_images)
         release = None
         if metadata:
-            release = metadata.get("musicbrainz_albumid", None)
+            release = metadata.get('musicbrainz_albumid', None)
         if release:
             self.setActive(True)
             text = _("View release on MusicBrainz")
@@ -356,7 +364,7 @@ def set_image_append(obj, coverartimage):
 
 
 def iter_file_parents(file):
-    parent = file.parent
+    parent = file.parent_item
     if parent:
         yield parent
         if isinstance(parent, Track) and parent.album:
@@ -370,11 +378,11 @@ HTML_IMG_SRC_REGEX = re.compile(r'<img .*?src="(.*?)"', re.UNICODE)
 
 class CoverArtBox(QtWidgets.QGroupBox):
 
-    def __init__(self, parent):
-        super().__init__("")
+    def __init__(self, parent=None):
+        super().__init__("", parent=parent)
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setSpacing(6)
-        self.parent = parent
+        self.tagger = QtCore.QCoreApplication.instance()
         # Kills off any borders
         self.setStyleSheet('''QGroupBox{background-color:none;border:1px;}''')
         self.setFlat(True)
@@ -382,13 +390,14 @@ class CoverArtBox(QtWidgets.QGroupBox):
         self.pixmap_cache = LRUCache(40)
         self.cover_art_label = QtWidgets.QLabel('')
         self.cover_art_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignHCenter)
-        self.cover_art = CoverArtThumbnail(False, True, self.pixmap_cache, parent)
+        self.cover_art = CoverArtThumbnail(drops=True, pixmap_cache=self.pixmap_cache, parent=self)
         self.cover_art.image_dropped.connect(self.fetch_remote_image)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.orig_cover_art_label = QtWidgets.QLabel('')
-        self.orig_cover_art = CoverArtThumbnail(False, False, self.pixmap_cache, parent)
+        self.orig_cover_art = CoverArtThumbnail(drops=False, pixmap_cache=self.pixmap_cache, parent=self)
         self.orig_cover_art_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignHCenter)
         self.show_details_button = QtWidgets.QPushButton(_('Show more details'), self)
+        self.show_details_shortcut = QtGui.QShortcut(QtGui.QKeySequence(_("Ctrl+Shift+I")), self, self.show_cover_art_info)
         self.layout.addWidget(self.cover_art_label)
         self.layout.addWidget(self.cover_art)
         self.layout.addWidget(self.orig_cover_art_label)
@@ -401,7 +410,7 @@ class CoverArtBox(QtWidgets.QGroupBox):
         self.show_details_button.clicked.connect(self.show_cover_art_info)
 
     def show_cover_art_info(self):
-        self.parent.view_info(default_tab=1)
+        self.tagger.window.view_info(default_tab=1)
 
     def update_display(self, force=False):
         if self.isHidden():
@@ -418,7 +427,7 @@ class CoverArtBox(QtWidgets.QGroupBox):
         # We want to show the 2 coverarts only if they are different
         # and orig_cover_art data is set and not the default cd shadow
         if self.orig_cover_art.data is None or self.cover_art == self.orig_cover_art:
-            self.show_details_button.setVisible(bool(self.item and self.item.can_view_info()))
+            self.show_details_button.setVisible(bool(self.item and self.item.can_view_info))
             self.orig_cover_art.setVisible(False)
             self.cover_art_label.setText('')
             self.orig_cover_art_label.setText('')
@@ -465,20 +474,12 @@ class CoverArtBox(QtWidgets.QGroupBox):
             self.load_remote_image(url, fallback_data)
 
         if url.scheme() in {'http', 'https'}:
-            path = url.path()
-            if url.hasQuery():
-                query = QtCore.QUrlQuery(url.query())
-                queryargs = dict(query.queryItems())
-            else:
-                queryargs = {}
-            if url.scheme() == 'https':
-                port = 443
-            else:
-                port = 80
-            self.tagger.webservice.get(url.host(), url.port(port), path,
-                                       partial(self.on_remote_image_fetched, url, fallback_data=fallback_data),
-                                       parse_response_type=None, queryargs=queryargs,
-                                       priority=True, important=True)
+            self.tagger.webservice.download_url(
+                url=url,
+                handler=partial(self.on_remote_image_fetched, url, fallback_data=fallback_data),
+                priority=True,
+                important=True,
+            )
         elif url.scheme() == 'file':
             path = normpath(url.toLocalFile().rstrip("\0"))
             if path and os.path.exists(path):
@@ -528,16 +529,16 @@ class CoverArtBox(QtWidgets.QGroupBox):
             self._try_load_remote_image(url, data)
             return
         except CoverArtImageError as e:
-            log.debug("Unable to identify dropped data format: %s" % e)
+            log.debug("Unable to identify dropped data format: %s", e)
 
         # Try getting image out of HTML (e.g. for Google image search detail view)
         try:
             html = data.decode()
-            match = re.search(HTML_IMG_SRC_REGEX, html)
-            if match:
-                url = QtCore.QUrl(match.group(1))
+            match_ = re.search(HTML_IMG_SRC_REGEX, html)
+            if match_:
+                url = QtCore.QUrl(match_.group(1))
         except UnicodeDecodeError as e:
-            log.warning("Unable to decode dropped data format: %s" % e)
+            log.warning("Unable to decode dropped data format: %s", e)
         else:
             log.debug("Trying URL parsed from HTML: %s", url.toString())
             self.fetch_remote_image(url)
@@ -546,7 +547,7 @@ class CoverArtBox(QtWidgets.QGroupBox):
         try:
             self._try_load_remote_image(url, data)
         except CoverArtImageError as e:
-            log.warning("Can't load image: %s" % e)
+            log.warning("Can't load image: %s", e)
             return
 
     def _try_load_remote_image(self, url, data):
@@ -557,7 +558,7 @@ class CoverArtBox(QtWidgets.QGroupBox):
         )
 
         config = get_config()
-        if config.setting["load_image_behavior"] == 'replace':
+        if config.setting['load_image_behavior'] == 'replace':
             set_image = set_image_replace
             debug_info = "Replacing with dropped %r in %r"
         else:
@@ -566,37 +567,35 @@ class CoverArtBox(QtWidgets.QGroupBox):
 
         if isinstance(self.item, Album):
             album = self.item
-            album.enable_update_metadata_images(False)
-            set_image(album, coverartimage)
-            for track in album.tracks:
-                track.enable_update_metadata_images(False)
-                set_image(track, coverartimage)
-            for file in album.iterfiles():
-                set_image(file, coverartimage)
-                file.update(signal=False)
-            for track in album.tracks:
-                track.enable_update_metadata_images(True)
-            album.enable_update_metadata_images(True)
+            with album.suspend_metadata_images_update:
+                set_image(album, coverartimage)
+                for track in album.tracks:
+                    track.suspend_metadata_images_update = True
+                    set_image(track, coverartimage)
+                for file in album.iterfiles():
+                    set_image(file, coverartimage)
+                    file.update(signal=False)
+                for track in album.tracks:
+                    track.suspend_metadata_images_update = False
             album.update(update_tracks=False)
         elif isinstance(self.item, FileListItem):
             parents = set()
             filelist = self.item
-            filelist.enable_update_metadata_images(False)
-            set_image(filelist, coverartimage)
-            for file in filelist.iterfiles():
-                for parent in iter_file_parents(file):
-                    parent.enable_update_metadata_images(False)
-                    parents.add(parent)
-                set_image(file, coverartimage)
-                file.update(signal=False)
-            for parent in parents:
-                set_image(parent, coverartimage)
-                parent.enable_update_metadata_images(True)
-                if isinstance(parent, Album):
-                    parent.update(update_tracks=False)
-                else:
-                    parent.update()
-            filelist.enable_update_metadata_images(True)
+            with filelist.suspend_metadata_images_update:
+                set_image(filelist, coverartimage)
+                for file in filelist.iterfiles():
+                    for parent in iter_file_parents(file):
+                        parent.suspend_metadata_images_update = True
+                        parents.add(parent)
+                    set_image(file, coverartimage)
+                    file.update(signal=False)
+                for parent in parents:
+                    set_image(parent, coverartimage)
+                    parent.suspend_metadata_images_update = False
+                    if isinstance(parent, Album):
+                        parent.update(update_tracks=False)
+                    else:
+                        parent.update()
             filelist.update()
         elif isinstance(self.item, File):
             file = self.item
@@ -609,21 +608,21 @@ class CoverArtBox(QtWidgets.QGroupBox):
         return coverartimage
 
     def choose_local_file(self):
-        file_chooser = QtWidgets.QFileDialog(self)
+        file_chooser = FileDialog(parent=self)
         extensions = ['*' + ext for ext in imageinfo.get_supported_extensions()]
         extensions.sort()
         file_chooser.setNameFilters([
             _("All supported image formats") + " (" + " ".join(extensions) + ")",
             _("All files") + " (*)",
         ])
-        if file_chooser.exec_():
+        if file_chooser.exec():
             file_urls = file_chooser.selectedUrls()
             if file_urls:
                 self.fetch_remote_image(file_urls[0])
 
     def set_load_image_behavior(self, behavior):
         config = get_config()
-        config.setting["load_image_behavior"] = behavior
+        config.setting['load_image_behavior'] = behavior
 
     def keep_original_images(self):
         self.item.keep_original_images()
@@ -633,43 +632,41 @@ class CoverArtBox(QtWidgets.QGroupBox):
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu(self)
         if self.show_details_button.isVisible():
-            name = _('Show more details...')
-            show_more_details_action = QtWidgets.QAction(name, self.parent)
+            name = _("Show more details…")
+            show_more_details_action = QtGui.QAction(name, parent=menu)
             show_more_details_action.triggered.connect(self.show_cover_art_info)
             menu.addAction(show_more_details_action)
 
         if self.orig_cover_art.isVisible():
-            name = _('Keep original cover art')
-            use_orig_value_action = QtWidgets.QAction(name, self.parent)
+            name = _("Keep original cover art")
+            use_orig_value_action = QtGui.QAction(name, parent=menu)
             use_orig_value_action.triggered.connect(self.keep_original_images)
             menu.addAction(use_orig_value_action)
 
         if self.item and self.item.can_show_coverart:
-            name = _('Choose local file...')
-            choose_local_file_action = QtWidgets.QAction(name, self.parent)
+            name = _("Choose local file…")
+            choose_local_file_action = QtGui.QAction(name, parent=menu)
             choose_local_file_action.triggered.connect(self.choose_local_file)
             menu.addAction(choose_local_file_action)
 
         if not menu.isEmpty():
             menu.addSeparator()
 
-        load_image_behavior_group = QtWidgets.QActionGroup(self.parent)
-        action = QtWidgets.QAction(_('Replace front cover art'), self.parent)
+        load_image_behavior_group = QtGui.QActionGroup(menu)
+        action = QtGui.QAction(_("Replace front cover art"), parent=load_image_behavior_group)
         action.setCheckable(True)
         action.triggered.connect(partial(self.set_load_image_behavior, behavior='replace'))
-        load_image_behavior_group.addAction(action)
         config = get_config()
-        if config.setting["load_image_behavior"] == 'replace':
+        if config.setting['load_image_behavior'] == 'replace':
             action.setChecked(True)
         menu.addAction(action)
 
-        action = QtWidgets.QAction(_('Append front cover art'), self.parent)
+        action = QtGui.QAction(_("Append front cover art"), parent=load_image_behavior_group)
         action.setCheckable(True)
         action.triggered.connect(partial(self.set_load_image_behavior, behavior='append'))
-        load_image_behavior_group.addAction(action)
-        if config.setting["load_image_behavior"] == 'append':
+        if config.setting['load_image_behavior'] == 'append':
             action.setChecked(True)
         menu.addAction(action)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
         event.accept()

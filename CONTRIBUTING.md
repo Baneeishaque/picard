@@ -4,7 +4,7 @@
 
 As most of the other projects written in Python, we use the [PEP 8](https://www.python.org/dev/peps/pep-0008/). Though, we ignore some of the recommendations:
 
-* E501 - Maximum line length (79 characters). The general limit we have is somewhere around 120-130.
+- E501 - Maximum line length (79 characters). The general limit we have is somewhere around 120-130.
 
 *Recommended video: "[Beyond PEP 8 -- Best practices for beautiful intelligible code](https://www.youtube.com/watch?v=wf-BqAjZb8M)" by Raymond Hettinger at PyCon 2015, which talks about the famous P versus NP problem.*
 
@@ -16,7 +16,7 @@ Developers may install few extra tools using:
 pip install -r requirements-dev.txt
 ```
 
-To fix or preserve imports style, one can use `isort -rc .` command (requires the [isort](https://github.com/timothycrosley/isort) tool, see `.isort.cfg`).
+To fix or preserve imports style, one can use `isort .` command (requires the [isort](https://github.com/PyCQA/isort) tool, see `.isort.cfg`).
 
 It is recommended to add a pre-commit hook to check whether imports in changed code
 follow the conventions. Add a file `.git/hooks/pre-commit` with the following content
@@ -25,11 +25,10 @@ and make it executable:
 ```bash
 #!/usr/bin/env bash
 
-PYFILES=$(git diff --cached --name-only | grep "\\.py$" | grep --invert-match \
+PYFILES=$(git diff --cached --name-only --diff-filter=ACM| grep "\\.py$" | grep --invert-match \
   -e "^tagger\\.py$" \
   -e "^picard/resources\\.py$" \
-  -e "^picard/\(coverart/providers\|formats\)/__init__\\.py$" \
-  -e "^picard/const/\(__init__\|attributes\|countries\)\\.py$" \
+  -e "^picard/const/\(attributes\|countries\)\\.py$" \
   -e "^picard/ui/ui_.*\\.py$" \
   -e "^scripts/picard\\.in$")
 
@@ -56,6 +55,57 @@ We use snake-case to name all functions and variables except for the pre-generat
 
 `gettext` and `gettext-noop` have been built-in the Picard code as `_` and `N_` respectively to provide support for internationalization/localization. You can use them without imports across all of Picard code. Make sure to mark all displayable strings for translation using `_` or `N_` as applicable. You can read more about python-gettext [here](https://docs.python.org/2/library/gettext.html).
 
+### Strings quoting: single or double quotes?
+
+As a general guideline, we tend to use double quotes for translatable strings and/or English phrases; or anything that may contain one or more single quotes.
+We use single quotes for identifiers and keys (those are unlikely to contain a single quote; and usually no special character or space).
+Of course, it all depends on context and those are just hints, rather than rules.
+
+Examples:
+
+```python
+print("It is red")
+```
+
+Because changing it to `print("It's red")` would not require changing quotes.
+
+```python
+d = dict()
+d['key'] = "It's red"
+
+if 'key' in d:
+    print(_("The value for 'key' is {key}.").format(**d))
+
+```
+
+In above example, 'key' is an identifier, usually using characters from `[a-z0-9_]` set.
+But the printed string is translatable (English phrase).
+
+```python
+l1 = ['big', 'small']
+l2 = ["It's a big city", "Small is the village"]
+l3 = ["The city is big", "That's a small village"]
+
+d = {
+    'big': "The City",
+    'small': "The Village",
+}
+print(d['small'])
+```
+
+In above example, `l1` contains identifiers (keys of dict `d`) while others are English words/phrases.
+In the dict declaration, keys are single-quoted but values are double-quoted.
+
+URIs (and paths used in URIs) should be, in general, enclosed in double quotes,
+mainly because single quotes can appear in URI, unencoded, as sub-delimiters as specified
+by [RFC3986](https://www.rfc-editor.org/rfc/rfc3986#section-2.2).
+
+HTML/XML code often contains attributes that are enclosed by double quotes, so in this case,
+better use single quotes, e.g. `html = '<a href="someurl">text</a>'`.
+
+In doubt, choose whichever limit the number of escaped characters.
+Typically single quote strings that are meant to contain double quotes (e.g. `'The file is "{file}"'`).
+
 
 ## Git Work-flow
 
@@ -71,7 +121,12 @@ We follow the "typical" GitHub workflow when contributing changes:
 
 ## Translations
 
-See po/README.md for information about translations.
+See [po/README.md](./po/README.md) for information about translations.
+
+
+## User Documentation
+
+See the [Picard Documentation](https://github.com/metabrainz/picard-docs/blob/master/.github/CONTRIBUTING.md) project for information about contributing to the documentation for MusicBrainz Picard (aka the [Picard User Guide](https://picard-docs.musicbrainz.org)).
 
 
 ## Audio Metadata Specifications
@@ -82,15 +137,16 @@ be compatible with existing software as good as possible. Below are links to rel
 metadata specifications and to the tag mapping tables used by various audio software.
 
 ### Format specs
-- [ID3](http://id3.org/Developer%20Information)
+- [ID3](https://github.com/id3/ID3v2.4)
 - [VorbisComment](https://wiki.xiph.org/VorbisComment)
 - [OggOpus](https://wiki.xiph.org/OggOpus#Comment_Header) (in addition to Vorbis Comment spec)
 - [RFC 7845 - Ogg Encapsulation for the Opus Audio Codec](https://tools.ietf.org/html/rfc7845#section-5.2.1)
 - [APE-Tags](http://wiki.hydrogenaud.io/index.php?title=APE_key)
 - [Matroska \| Tag Specifications](https://www.matroska.org/technical/specs/tagging/index.html)
 - [ASF / WMA](http://msdn.microsoft.com/en-us/library/ms867702.aspx)
-- MP4: See iTunes Metadata Format Specification (was available at https://developer.apple.com/, but does not seem to be available anymore)
+- MP4: See iTunes Metadata Format Specification (was available at [Apple Developer website](https://developer.apple.com/), but does not seem to be available anymore)
 - [RIFF Tags](https://exiftool.org/TagNames/RIFF.html) / [Resource Interchange File Format: INFO List Chunk](https://www.tactilemedia.com/info/MCI_Control_Info.html) / [Multimedia Programming Interface and Data Specifications 1.0](http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Docs/riffmci.pdf)
+- [Mutagen Spec Collection](https://mutagen-specs.readthedocs.io/en/latest/)
 
 
 ### Tag mapping tables
@@ -110,6 +166,7 @@ metadata specifications and to the tag mapping tables used by various audio soft
 - [SlimServerSupportedTags - SqueezeboxWiki](http://wiki.slimdevices.com/index.php/SlimServerSupportedTags)
 - [Music Player Daemon 0.21.2 documentation](https://mpd.readthedocs.io/en/stable/protocol.html#tags)
 - [Metadata Matrix – Pioneer DJ](https://forums.pioneerdj.com/hc/en-us/articles/360024701851-Metadata-Matrix)
+- [DJ apps metadata matrix](https://docs.google.com/spreadsheets/d/1zhIJPOtYIueV72Gd81aVnbSa6dIA-azq9fnGC2rHUzo/edit?usp=sharing)
 
 Also relevant:
 

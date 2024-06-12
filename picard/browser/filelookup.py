@@ -6,13 +6,13 @@
 # Copyright (C) 2006-2008, 2011-2012 Lukáš Lalinský
 # Copyright (C) 2011 Pavan Chander
 # Copyright (C) 2013 Calvin Walton
-# Copyright (C) 2013, 2018, 2020-2021 Laurent Monin
+# Copyright (C) 2013, 2018, 2020-2021, 2023-2024 Laurent Monin
 # Copyright (C) 2014-2015 Sophist-UK
 # Copyright (C) 2015 Ohm Patel
 # Copyright (C) 2015-2016 Wieland Hoffmann
 # Copyright (C) 2016 Rahul Raturi
 # Copyright (C) 2016-2017 Sambhav Kothari
-# Copyright (C) 2020, 2022 Philipp Wolfer
+# Copyright (C) 2020, 2022-2023 Philipp Wolfer
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 import os.path
 import re
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from picard import log
 from picard.config import get_config
@@ -46,7 +46,7 @@ from picard.util import (
 from picard.ui.searchdialog.album import AlbumSearchDialog
 
 
-class FileLookup(object):
+class FileLookup:
 
     RE_MB_ENTITY = re.compile(r"""
         \b(?P<entity>area|artist|instrument|label|place|recording|release|release-group|series|track|url|work)?
@@ -62,6 +62,7 @@ class FileLookup(object):
         self.server = server
         self.local_port = int(local_port)
         self.port = port
+        self.tagger = QtCore.QCoreApplication.instance()
 
     def _url(self, path, params=None):
         if params is None:
@@ -77,7 +78,7 @@ class FileLookup(object):
         return self.launch(self._url(path, params))
 
     def launch(self, url):
-        log.debug("webbrowser2: %s" % url)
+        log.debug("webbrowser2: %s", url)
         webbrowser2.open(url)
         return True
 
@@ -133,14 +134,14 @@ class FileLookup(object):
         id = m.group('id')
         if entity != 'cdtoc':
             id = id.lower()
-        log.debug('Lookup for %s:%s', entity, id)
+        log.debug("Lookup for %s:%s", entity, id)
         if mbid_matched_callback:
             mbid_matched_callback(entity, id)
         if entity == 'release':
-            QtCore.QObject.tagger.load_album(id)
+            self.tagger.load_album(id)
             return True
         elif entity == 'recording':
-            QtCore.QObject.tagger.load_nat(id)
+            self.tagger.load_nat(id)
             return True
         elif entity == 'release-group':
             AlbumSearchDialog.show_releasegroup_search(id)
@@ -162,10 +163,10 @@ class FileLookup(object):
             'duration': duration,
             'filename': os.path.basename(filename),
         }
-        return self._build_launch('/taglookup', params)
+        return self._build_launch("/taglookup", params)
 
     def collection_lookup(self, userid):
-        return self._build_launch('/user/%s/collections' % userid)
+        return self._build_launch("/user/%s/collections" % userid)
 
     def search_entity(self, type_, query, adv=False, mbid_matched_callback=None, force_browser=False):
         if not force_browser and self.mbid_lookup(query, type_, mbid_matched_callback=mbid_matched_callback):
@@ -178,4 +179,4 @@ class FileLookup(object):
         }
         if adv:
             params['adv'] = 'on'
-        return self._build_launch('/search/textsearch', params)
+        return self._build_launch("/search/textsearch", params)

@@ -7,16 +7,17 @@
 # Dian Li <xslidian@gmail.com>, 2019
 # Lukáš Lalinský <lalinsky@gmail.com>, 2020
 # Lionel <a472714747@gmail.com>, 2020
+# poi, 2023
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 07:49+0100\n"
+"POT-Creation-Date: 2023-09-05 22:58+0200\n"
 "PO-Revision-Date: 2018-11-25 07:37+0000\n"
-"Last-Translator: Lionel <a472714747@gmail.com>, 2020\n"
-"Language-Team: Chinese (China) (https://www.transifex.com/musicbrainz/"
+"Last-Translator: poi, 2023\n"
+"Language-Team: Chinese (China) (https://app.transifex.com/musicbrainz/"
 "teams/13846/zh_CN/)\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: org.musicbrainz.Picard.appdata.xml.in:6
+#: org.musicbrainz.Picard.appdata.xml.in:6 org.musicbrainz.Picard.desktop.in:3
 msgid "MusicBrainz Picard"
 msgstr "MusicBrainz Picard"
 
@@ -110,7 +111,7 @@ msgstr ""
 msgid ""
 "Cover Art: Picard can find and download the correct cover art for your "
 "albums."
-msgstr ""
+msgstr "专辑封面: Picard 可查询、下载专辑的正确封面。"
 
 #: org.musicbrainz.Picard.appdata.xml.in:56
 msgid ""
@@ -121,6 +122,14 @@ msgstr ""
 "开源: Picard 按照 GNU 通用公共许可证 (GPL) 2.0 或更高版本授权，托管于 "
 "GitHub，由许多超赞的开发者共同打造。"
 
-#: org.musicbrainz.Picard.appdata.xml.in:102
+#: org.musicbrainz.Picard.appdata.xml.in:109
 msgid "MetaBrainz Foundation"
 msgstr "MetaBrainz 基金会"
+
+#: org.musicbrainz.Picard.desktop.in:4
+msgid "Tag your music with the next generation MusicBrainz tagger"
+msgstr ""
+
+#: org.musicbrainz.Picard.desktop.in:16
+msgid "New Window"
+msgstr ""

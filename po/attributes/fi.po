@@ -1,28 +1,30 @@
-# 
+#
 # Translators:
 # Jaakko Perttilä <email address hidden>, 2012
-# Jaakko Perttilä <jormangeud@gmail.com>, 2012-2014,2017-2019
-# Jaakko Perttilä <jormangeud@gmail.com>, 2014
-# Kai Kasurinen <kai.kasurinen@iki.fi>, 2014
+# Jaakko Perttilä <email address hidden>, 2012-2014,2017-2019
+# Jaakko Perttilä <email address hidden>, 2014
+# Juhana Uuttu <email address hidden>, 2023
+# Kai Kasurinen <email address hidden>, 2014
 # ListMyCDs.com Martikainen <email address hidden>, 2012
-# Timo Martikainen <musicbrainz@listmycds.com>, 2012
+# Timo Martikainen <email address hidden>, 2012
 # phonebox, 2014
 # phonebox, 2014-2015,2018
 # Sami Korkalainen, 2017
 # Sami Korkalainen, 2017
 # Timo Martikainen <>, 2012
 # Timo Martikainen <email address hidden>, 2012
-# Timo Martikainen <musicbrainz@listmycds.com>, 2012-2014
+# Timo Martikainen <email address hidden>, 2012-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: MusicBrainz\n"
 "PO-Revision-Date: 2012-05-24 18:52+0000\n"
-"Last-Translator: Jaakko Perttilä <jormangeud@gmail.com>, 2012-2014,2017-2019\n"
-"Language-Team: Finnish (http://www.transifex.com/musicbrainz/musicbrainz/language/fi/)\n"
+"Last-Translator: Juhana Uuttu <rexroom@sci.fi>, 2023\n"
+"Language-Team: Finnish (http://app.transifex.com/musicbrainz/musicbrainz/"
+"language/fi/)\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: DB:work_type/description:9
@@ -31,14 +33,24 @@ msgid ""
 "\"Motet\" is a term that applies to different types of (usually "
 "unaccompanied) choral works. What exactly is a motet depends quite a bit on "
 "the period."
-msgstr "”Motetti” on termi, joka koskee erityyppisiä (yleensä säestämättömiä) kuoroteoksia. Tarkka määritelmä riippuu aikakaudesta."
+msgstr ""
+"”Motetti” on termi, joka koskee erityyppisiä (yleensä säestämättömiä) "
+"kuoroteoksia. Tarkka määritelmä riippuu aikakaudesta."
 
 #: DB:work_type/description:5
 msgctxt "work_type"
 msgid ""
 "\"Sonata\" is a general term used to describe small scale (very often solo "
 "or solo + keyboard) instrumental works, initially in baroque music."
-msgstr "”Sonaatti” on yleinen termi, jota käytetään kuvaamaan pienimuotoisia (usein soolo tai soolo + koskettimet) instrumentaalisia teoksia, alunperin barokki-musiikissa."
+msgstr ""
+"”Sonaatti” on yleinen termi, jota käytetään kuvaamaan pienimuotoisia (usein "
+"soolo tai soolo + koskettimet) instrumentaalisia teoksia, alunperin barokki-"
+"musiikissa."
+
+#: DB:medium_format/name:205
+msgctxt "medium_format"
+msgid "10\" Acetate"
+msgstr ""
 
 #: DB:medium_format/name:54
 msgctxt "medium_format"
@@ -49,6 +61,11 @@ msgstr "10″ sellakka"
 msgctxt "medium_format"
 msgid "10\" Vinyl"
 msgstr "10″ vinyyli"
+
+#: DB:medium_format/name:206
+msgctxt "medium_format"
+msgid "12\" Acetate"
+msgstr ""
 
 #: DB:medium_format/name:72
 msgctxt "medium_format"
@@ -73,6 +90,11 @@ msgstr "3,5″ levyke"
 #: DB:medium_format/name:91
 msgctxt "medium_format"
 msgid "5.25\" Floppy Disk"
+msgstr "5,25\" levyke"
+
+#: DB:medium_format/name:204
+msgctxt "medium_format"
+msgid "7\" Acetate"
 msgstr ""
 
 #: DB:medium_format/name:52
@@ -110,55 +132,125 @@ msgctxt "medium_format"
 msgid "8cm CD+G"
 msgstr "8 cm CD+G"
 
+#: DB:medium_format/description:166
+msgctxt "medium_format"
+msgid "8cm DVD, often used for video singles."
+msgstr ""
+
 #: DB:medium_format/description:58
 msgctxt "medium_format"
 msgid ""
-"90 rpm, vertical-cut shellac discs, produced by the Pathé label from 1906 to"
-" 1932."
-msgstr "90 rpm, pystysuuntaisesti leikatut sellakkalevyt, jotka Pathé-levymerkki tuotti vuodesta 1906 vuoteen 1932."
+"90 rpm, vertical-cut shellac discs, produced by the Pathé label from 1906 to "
+"1932."
+msgstr ""
+"90 rpm, pystysuuntaisesti leikatut sellakkalevyt, joita Pathé-levymerkki "
+"tuotti vuosina 1906–1932."
 
 #: DB:release_group_secondary_type/description:1
 msgctxt "release_group_secondary_type"
 msgid ""
-"<p>A compilation, for the purposes of the MusicBrainz database, covers the following types of releases:</p>\n"
+"<p>A compilation, for the purposes of the MusicBrainz database, covers the "
+"following types of releases:</p>\n"
 "\n"
 "<ul>\n"
-"<li>a collection of recordings from various old sources (not necessarily released) combined together. For example a \"best of\", retrospective or rarities type release.</li>\n"
-"<li>a various artists song collection, usually based on a general theme (\"Songs for Lovers\"), a particular time period (\"Hits of 1998\"), or some other kind of grouping (\"Songs From the Movies\", the \"Café del Mar\" series, etc).</li>\n"
+"<li>a collection of recordings from various old sources (not necessarily "
+"released) combined together. For example a \"best of\", retrospective or "
+"rarities type release.</li>\n"
+"<li>a various artists song collection, usually based on a general theme "
+"(\"Songs for Lovers\"), a particular time period (\"Hits of 1998\"), or some "
+"other kind of grouping (\"Songs From the Movies\", the \"Café del Mar\" "
+"series, etc).</li>\n"
 "</ul>\n"
 "\n"
-"<p>The MusicBrainz project does not generally consider the following to be compilations:</p>\n"
+"<p>The MusicBrainz project does not generally consider the following to be "
+"compilations:</p>\n"
 "\n"
 "<ul>\n"
 "<li>a reissue of an album, even if it includes bonus tracks.</li>\n"
 "<li>a tribute release containing covers of music by another artist.</li>\n"
-"<li>a classical release containing new recordings of works by a classical artist.</li>\n"
+"<li>a classical release containing new recordings of works by a classical "
+"artist.</li>\n"
 "<li>a split release containing new music by several artists</li>\n"
 "</ul>\n"
 "\n"
-"<p>Compilation should be used in addition to, not instead of, other types: for example, a various artists soundtrack using pre-released music should be marked as both a soundtrack and a compilation.</p>"
+"<p>Compilation should be used in addition to, not instead of, other types: "
+"for example, a various artists soundtrack using pre-released music should be "
+"marked as both a soundtrack and a compilation.</p>"
 msgstr ""
 
 #: DB:release_group_primary_type/description:2
 msgctxt "release_group_primary_type"
 msgid ""
-"<p>A single has different definitions depending on the market it is released for.</p>\n"
+"<p>A single has different definitions depending on the market it is released "
+"for.</p>\n"
 "\n"
 "<ul>\n"
-"<li>In the US market, a single typically has one main song and possibly a handful of additional tracks or remixes of the main track; the single is usually named after its main song; the single is primarily released to get radio play and to promote release sales.</li>\n"
-"<li>The U.K. market (also Australia and Europe) is similar to the US market, however singles are often released as a two disc set, with each disc sold separately. They also sometimes have a longer version of the single (often combining the tracks from the two disc version) which is very similar to the US style single, and this is referred to as a \"maxi-single\". (In some cases the maxi-single is longer than the release the single comes from!)</li>\n"
-"<li>The Japanese market is much more single driven. The defining factor is typically the length of the single and the price it is sold at. Up until 1995 it was common that these singles would be released using a mini-cd format, which is basically a much smaller CD typically 8 cm in diameter. Around 1995 the 8cm single was phased out, and the standard 12cm CD single is more common now; generally re-releases of singles from pre-1995 will be released on the 12cm format, even if they were originally released on the 8cm format. Japanese singles often come with instrumental versions of the songs and also have maxi-singles like the UK with remixed versions of the songs. Sometimes a maxi-single will have more tracks than an EP but as it's all alternate versions of the same 2-3 songs it is still classified as a single.</li>\n"
+"<li>In the US market, a single typically has one main song and possibly a "
+"handful of additional tracks or remixes of the main track; the single is "
+"usually named after its main song; the single is primarily released to get "
+"radio play and to promote release sales.</li>\n"
+"<li>The U.K. market (also Australia and Europe) is similar to the US market, "
+"however singles are often released as a two disc set, with each disc sold "
+"separately. They also sometimes have a longer version of the single (often "
+"combining the tracks from the two disc version) which is very similar to the "
+"US style single, and this is referred to as a \"maxi-single\". (In some "
+"cases the maxi-single is longer than the release the single comes from!)</"
+"li>\n"
+"<li>The Japanese market is much more single driven. The defining factor is "
+"typically the length of the single and the price it is sold at. Up until "
+"1995 it was common that these singles would be released using a mini-cd "
+"format, which is basically a much smaller CD typically 8 cm in diameter. "
+"Around 1995 the 8cm single was phased out, and the standard 12cm CD single "
+"is more common now; generally re-releases of singles from pre-1995 will be "
+"released on the 12cm format, even if they were originally released on the "
+"8cm format. Japanese singles often come with instrumental versions of the "
+"songs and also have maxi-singles like the UK with remixed versions of the "
+"songs. Sometimes a maxi-single will have more tracks than an EP but as it's "
+"all alternate versions of the same 2-3 songs it is still classified as a "
+"single.</li>\n"
 "</ul>\n"
 "\n"
-"<p>There are other variations of the single called a \"split single\" where songs by two different artists are released on the one disc, typically vinyl.</p>"
+"<p>There are other variations of the single called a \"split single\" where "
+"songs by two different artists are released on the one disc, typically vinyl."
+"</p>"
 msgstr ""
+"<p>Singlen (tai \"sinkun\") määritelmä vaihtelee sen mukaan, mihin markkina-"
+"alueeseen se julkaistaan.</p>\n"
+"\n"
+"<ul>\n"
+"<li>Yhdysvalloissa singlellä on tyypillisesti yksi pääkappale ja "
+"mahdollisesti kourallinen lisäraitoja tai pääkappaleen remix-versioita; "
+"single yleensä nimetään sen pääkappaleen mukaan; single julkaistaan "
+"pääasiallisesti radiosoittoa varten ja tukea julkaisumyyntiä.</li>\n"
+"<li>Yhdistyneessä kuningaskunnassa (myös Euroopassa ja Austaliassa) on "
+"samanlaiset markkinat kuin Yhdysvalloissa, mutta singlet julkaistaan usein "
+"kahden erillään myytävän levyn seteissä. Jotkut singlet ovat kestoiltaan "
+"pidempiä (usein yhdistäen kahden eri levyn raidat) mikä on hyvin samanlainen "
+"yhdysvaltojen single-muotoon, jota kutsutaan \"maxi-singlenä\". (Joissakin "
+"tapauksissa maxi-single on pitempi kuin itse alkuperäinen julkaisu!) </li>\n"
+"<li>Japanilainen markkina-alue on enemmän single-painoitteinen. Määrittävä "
+"tekijä on tyypillisesti singlen pituus ja myyntihinta. Aina vuoteen 1995 "
+"saakka se oli yleistä, että singlejä julkaistiin mini-cd-formaatissa, mikä "
+"on käytännössä halkaisijaltaan 8 cm leveä CD. Vuoden 1995 aikoihin 8 cm "
+"single vaiheittaisesti luovuttiin käytöstä ja standardi 12 cm CD-single on "
+"nykyään yleinen; yleisesti 8 cm alkuperäisjulkaisut julkaistaan nykyään 12 "
+"cm formaatissa. Japanilaiset singlet sisältävät usein kappaleiden "
+"instrumentaaliversioita ja myös sisältävät maxi-singlejä Yhdistyneen "
+"kuningaskuntien tapaan, joissa on remix-versioita kappaleista. Toisinaan "
+"maxi-single sisältää enemmän raitoja kuin EP-levy, mutta koska se sisältää "
+"erilaisia versioita 2–3 kappaleesta, se luokitellaan silti singleksi.</li>\n"
+"</ul>\n"
+"\n"
+"<p>On myös muita muunnelmia singlestä, joita kutsutaan \"split singleksi\", "
+"missä kahden eri artistin kappaleita julkaistaan yhdelle levylle, "
+"tyypillisesti vinyylinä.</p>"
 
 #: DB:medium_format/description:95
 msgctxt "medium_format"
 msgid ""
 "A \"digital collectible\" device, mostly used for k-pop music, that is "
-"connected to a phone via Bluetooth or headphone jack and unlocks the release"
-" for listening in a companion app for a limited period of time."
+"connected to a phone via Bluetooth or headphone jack and unlocks the release "
+"for listening in a companion app for a limited period of time."
 msgstr ""
 
 #: DB:place_type/description:9
@@ -175,6 +267,9 @@ msgid ""
 "often in the first track, that will have to be skipped in many audio "
 "players. Relatively common in old video game CDs."
 msgstr ""
+"CD joka sisältää sekä audion että datan samassa sessiossa. Data on yleensä "
+"ensimmäisellä raidalla, ja jota useimmissa audiosoittimissa pitää skipata. "
+"Suhteellisen yleinen vanhoissa videopelien CD:ssä."
 
 #: DB:medium_format/description:42
 msgctxt "medium_format"
@@ -209,34 +304,51 @@ msgctxt "work_type"
 msgid ""
 "A ballet is music composed to be used, together with a choreography, for a "
 "ballet dance production."
-msgstr "Baletti on musiikkia, jota käytetään yhdessä koreografian kanssa balettitanssituotannossa."
+msgstr ""
+"Baletti on musiikkia, jota käytetään yhdessä koreografian kanssa "
+"balettitanssituotannossa."
 
 #: DB:release_packaging/description:19
 msgctxt "release_packaging"
 msgid "A box usually containing multiple discs as part of a boxed set."
-msgstr ""
+msgstr "Laatikko, yleensä monta levyä sisältävänä laatikoituna settinä."
 
 #: DB:work_type/description:3
 msgctxt "work_type"
 msgid ""
 "A cantata is a vocal (often choral) composition with an instrumental "
 "(usually orchestral) accompaniment, typically in several movements."
-msgstr "Kantaatti on laulullinen sävellys (usein kuorolle) instrumentaalisella (yleensä orkestrisella) säestyksellä, tyypillisesti useissa osissa."
+msgstr ""
+"Kantaatti on laulullinen sävellys (usein kuorolle) instrumentaalisella "
+"(yleensä orkestrisella) säestyksellä, tyypillisesti useissa osissa."
 
 #: DB:medium_format/description:46
 msgctxt "medium_format"
 msgid ""
 "A card (or other similar physical support) that doesn't contain the music "
-"itself directly, but provides a code to download it digitally. Often bundled"
-" with physical releases but sometimes sold as a standalone item (especially "
+"itself directly, but provides a code to download it digitally. Often bundled "
+"with physical releases but sometimes sold as a standalone item (especially "
 "in Asia)."
+msgstr ""
+"Kortti (tai muu vastaava fyysinen alusta), joka ei itsessään pidä sisällään "
+"musiikkia, mutta antaa koodin jolla ladata sitä digitaalisesti. Usein "
+"paketoitu fyysisten julkaisujen kanssa, mutta joskus myydään itsenäisesti "
+"(etenkin Aasiassa)."
+
+#: DB:label_type/description:10
+msgctxt "label_type"
+msgid ""
+"A company that manufactures physical releases (such as pressing CDs or vinyl "
+"records)."
 msgstr ""
 
 #: DB:work_type/description:4
 msgctxt "work_type"
 msgid ""
 "A concerto is a musical work for soloist(s) accompanied by an orchestra."
-msgstr "Konsertto on (yhdelle tai usealle) solistille ja orkesterille tehty musiikillinen teos."
+msgstr ""
+"Konsertto on (yhdelle tai usealle) solistille ja orkesterille tehty "
+"musiikillinen teos."
 
 #: DB:event_type/description:4
 msgctxt "event_type"
@@ -244,7 +356,9 @@ msgid ""
 "A convention, expo or trade fair is an event which is not typically "
 "orientated around music performances, but can include them as side "
 "activities."
-msgstr "Kokous, näyttely tai messu on tapahtuma, joka ei tyypillisesti kohdistu musiikkiesitysten ympärille, vaan voi sisältää niitä sivuaktiviteetteina."
+msgstr ""
+"Kokous, näyttely tai messu on tapahtuma, joka ei tyypillisesti kohdistu "
+"musiikkiesitysten ympärille, vaan voi sisältää niitä sivuaktiviteetteina."
 
 #: DB:release_status/description:2
 msgctxt "release_status"
@@ -252,7 +366,10 @@ msgid ""
 "A give-away release or a release intended to promote an upcoming official "
 "release (e.g. pre-release versions, releases included with a magazine, "
 "versions supplied to radio DJs for air-play)."
-msgstr "Vapaasti jaettava julkaisu, tai tulevan virallisen julkaisun markkinointiin tarkoitettu julkaisu (esim. esijulkaisuversiot, lehtien mukana tulevat julkaisut, radiosoittoa varten jaetut julkaisut)"
+msgstr ""
+"Vapaasti jaettava julkaisu, tai tulevan virallisen julkaisun markkinointiin "
+"tarkoitettu julkaisu (esim. esijulkaisuversiot, lehtien mukana tulevat "
+"julkaisut, radiosoittoa varten jaetut julkaisut)"
 
 #: DB:artist_type/description:2
 msgctxt "artist_type"
@@ -260,19 +377,34 @@ msgid ""
 "A grouping of multiple musicians who perform together (in some cases, some "
 "or all of the members might differ in different performances or recordings)."
 msgstr ""
+"Ryhmittymä erilaisia muusikkoja, jotka esiintyvät yhdessä (joissakin "
+"tapauksissa osa tai kaikki jäsenet voivat olla vaihtuneet eri esityksissä "
+"tai äänitteissä)."
 
 #: DB:instrument_type/description:7
 msgctxt "instrument_type"
 msgid ""
 "A grouping of related but different instruments, like the different violin-"
 "like instruments"
-msgstr "Ryhmä samansukuisia, mutta erilaisia soittimia, kuten erilaiset viulun-kaltaiset soittimet"
+msgstr ""
+"Ryhmä samansukuisia, mutta erilaisia soittimia, kuten erilaiset viulun-"
+"kaltaiset soittimet"
+
+#: DB:label_type/description:5
+msgctxt "label_type"
+msgid "A label that primarily puts out unsanctioned (bootleg) releases."
+msgstr ""
 
 #: DB:release_packaging/description:55
 msgctxt "release_packaging"
 msgid ""
 "A large cardboard box often used until the mid-1990s to sell CDs in North "
 "America, so that they would fit existing vinyl racks in stores."
+msgstr ""
+
+#: DB:place_type/description:43
+msgctxt "place_type"
+msgid "A large, permanent outdoor stage, typically with a fixed seating area."
 msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:28
@@ -284,17 +416,23 @@ msgstr "A-duuri"
 msgctxt "work_type"
 msgid ""
 "A mass is a choral composition that sets the invariable portions of the "
-"Christian Eucharistic liturgy (Kyrie - Gloria - Credo - Sanctus - Benedictus"
-" - Agnus Dei, with other portions sometimes added) to music."
-msgstr "Messu on kristillisen eukaristisen liturgian muuttumattomiin osiin (Kyrie, Gloria, Credo, Sanctus ja Agnus Dei, joskus muitakin osioita) perustuva kuorosävellys."
+"Christian Eucharistic liturgy (Kyrie - Gloria - Credo - Sanctus - Benedictus "
+"- Agnus Dei, with other portions sometimes added) to music."
+msgstr ""
+"Messu on kristillisen eukaristisen liturgian muuttumattomiin osiin (Kyrie, "
+"Gloria, Credo, Sanctus ja Agnus Dei, joskus muitakin osioita) perustuva "
+"kuorosävellys."
 
 #: DB:event_type/description:5
 msgctxt "event_type"
 msgid ""
 "A masterclass or clinic is an event where an artist meets with a small to "
-"medium-sized audience and instructs them individually and/or takes questions"
-" intended to improve the audience members' playing skills."
-msgstr "Mestariluokka tai -klinikka on tapahtuma, jossa artisti tapaa pienestä keskisuureen yleisön kanssa ja ohjeistaa heitä yksilöllisesti ja/tai vastaa kysymyksiin, joilla on tarkoitus parantaa yleisön jäsenten soittotaitoja."
+"medium-sized audience and instructs them individually and/or takes questions "
+"intended to improve the audience members' playing skills."
+msgstr ""
+"Mestariluokka tai -klinikka on tapahtuma, jossa artisti tapaa pienestä "
+"keskisuureen yleisön kanssa ja ohjeistaa heitä yksilöllisesti ja/tai vastaa "
+"kysymyksiin, joilla on tarkoitus parantaa yleisön jäsenten soittotaitoja."
 
 #: DB:release_packaging/description:56
 msgctxt "release_packaging"
@@ -313,14 +451,18 @@ msgctxt "work_type"
 msgid ""
 "A partita is an instrumental piece composed of a series of variations, and "
 "it's by its current definition very similar to a suite."
-msgstr "Sarja on instrumentaalinen kappale, joka koostuu joukosta muunnelmia, ja se on sen nykyisessä määritelmässä hyvin samanlainen kuin sviitti."
+msgstr ""
+"Sarja on instrumentaalinen kappale, joka koostuu joukosta muunnelmia, ja se "
+"on sen nykyisessä määritelmässä hyvin samanlainen kuin sviitti."
 
 #: DB:event_type/description:3
 msgctxt "event_type"
 msgid ""
 "A party, reception or other event held specifically for the launch of a "
 "release."
-msgstr "Juhla, vastaanotto tai muu tapahtuma, joka pidetään erityisesti julkaisun juhlimiseksi."
+msgstr ""
+"Juhla, vastaanotto tai muu tapahtuma, joka pidetään erityisesti julkaisun "
+"juhlimiseksi."
 
 #: DB:release_packaging/description:17
 msgctxt "release_packaging"
@@ -338,8 +480,7 @@ msgstr ""
 
 #: DB:place_type/description:8
 msgctxt "place_type"
-msgid ""
-"A place (generally a factory) at which physical media are manufactured."
+msgid "A place (generally a factory) at which physical media are manufactured."
 msgstr "Paikka (yleensä tehdas), jossa fyysisiä tallenteita valmistetaan."
 
 #: DB:place_type/description:5
@@ -348,21 +489,28 @@ msgid ""
 "A place consisting of a large enclosed area with a central event space "
 "surrounded by tiered seating for spectators, which can be used for indoor "
 "sports, concerts and other entertainment events."
-msgstr "Paikka, joka koostuu suuresta suljetusta alueesta, jolla on keskeinen tapahtuma-alue ja jota ympäröi kerrostettu katsomo. Siellä voidaan järjestää sisäurheilua, konsertteja ja muita viihdetapahtumia."
+msgstr ""
+"Paikka, joka koostuu suuresta suljetusta alueesta, jolla on keskeinen "
+"tapahtuma-alue ja jota ympäröi kerrostettu katsomo. Siellä voidaan järjestää "
+"sisäurheilua, konsertteja ja muita viihdetapahtumia."
 
 #: DB:place_type/description:1
 msgctxt "place_type"
 msgid ""
 "A place designed for non-live production of music, typically a recording "
 "studio."
-msgstr "Paikka, joka on suunniteltu musiikin tuotantoon ei-livenä, tyypillisesti äänitystudio."
+msgstr ""
+"Paikka, joka on suunniteltu musiikin tuotantoon ei-livenä, tyypillisesti "
+"äänitystudio."
 
 #: DB:place_type/description:2
 msgctxt "place_type"
 msgid ""
-"A place that has live artistic performances as one of its primary functions,"
-" such as a concert hall."
-msgstr "Paikka, jonka yhtenä tärkeimmistä tehtävistä on toimia taiteellisten esitysten näyttämönä, esimerkiksi konserttisali."
+"A place that has live artistic performances as one of its primary functions, "
+"such as a concert hall."
+msgstr ""
+"Paikka, jonka yhtenä tärkeimmistä tehtävistä on toimia taiteellisten "
+"esitysten näyttämönä, esimerkiksi konserttisali."
 
 #: DB:place_type/description:6
 msgctxt "place_type"
@@ -370,38 +518,53 @@ msgid ""
 "A place that has worship or religious studies as its main function. "
 "Religious buildings often host concerts and serve as recording locations, "
 "especially for classical music."
-msgstr "Paikka, jota käytetään pääosin palvontaan tai uskonnollisiin opintoihin. Uskonnolliset rakennukset järjestävät usein konsertteja ja toimivat (erityisesti klassisen musiikin) tallennuspaikoina."
+msgstr ""
+"Paikka, jota käytetään pääosin palvontaan tai uskonnollisiin opintoihin. "
+"Uskonnolliset rakennukset järjestävät usein konsertteja ja toimivat "
+"(erityisesti klassisen musiikin) tallennuspaikoina."
 
 #: DB:place_type/description:4
 msgctxt "place_type"
 msgid ""
 "A place whose main purpose is to host outdoor sport events, typically "
-"consisting of a pitch surrounded by a structure for spectators with no roof,"
-" or a roof which can be retracted."
-msgstr "Paikka, jonka päätehtävä on järjestää urheilutapahtumia ulkona. Koostuu tyypillisesti nurmesta, jota ympäröi rakennelma katsojille. Tässä rakennelmassa voi olla sisäänvedettävä katto tai ei kattoa lainkaan."
+"consisting of a pitch surrounded by a structure for spectators with no roof, "
+"or a roof which can be retracted."
+msgstr ""
+"Paikka, jonka päätehtävä on järjestää urheilutapahtumia ulkona. Koostuu "
+"tyypillisesti nurmesta, jota ympäröi rakennelma katsojille. Tässä "
+"rakennelmassa voi olla sisäänvedettävä katto tai ei kattoa lainkaan."
 
 #: DB:release_status/description:6
 msgctxt "release_status"
 msgid ""
-"A planned official release that was cancelled before being released, but for"
-" which enough info is known to still confidently list it (e.g. it was "
+"A planned official release that was cancelled before being released, but for "
+"which enough info is known to still confidently list it (e.g. it was "
 "available for preorder)."
 msgstr ""
+"Suunniteltu virallinen julkaisu, joka peruttiin ennen sen julkaisua, mutta "
+"josta on tarpeeksi varmaa tietoa sen listaukseen (esim. se oli "
+"ennakkotilattavissa)."
 
 #: DB:work_type/description:28
 msgctxt "work_type"
 msgid ""
 "A play is a form of literature usually consisting of scripted dialogue "
-"between characters, and intended for theatrical performance rather than just"
-" reading."
-msgstr "Näytelmä on kirjallisuuden muoto, joka yleensä koostuu käsikirjoitetusta hahmojen välisestä vuoropuhelusta ja joka on tarkoitettu teatteriesitykseen eikä pelkästään lukemiseen."
+"between characters, and intended for theatrical performance rather than just "
+"reading."
+msgstr ""
+"Näytelmä on kirjallisuuden muoto, joka yleensä koostuu käsikirjoitetusta "
+"hahmojen välisestä vuoropuhelusta ja joka on tarkoitettu teatteriesitykseen "
+"eikä pelkästään lukemiseen."
 
 #: DB:work_type/description:21
 msgctxt "work_type"
 msgid ""
 "A poem is a literary piece, generally short and in verse, where words are "
 "usually chosen for their sound and for the images and ideas they suggest."
-msgstr "Runo on kirjallinen teos, joka on yleensä lyhyt ja jakeessa. Runojen sanat sanat valitaan yleensä niiden ääntämisen tai niiden luomien mielikuvien perusteella."
+msgstr ""
+"Runo on kirjallinen teos, joka on yleensä lyhyt ja jakeessa. Runojen sanat "
+"sanat valitaan yleensä niiden ääntämisen tai niiden luomien mielikuvien "
+"perusteella."
 
 #: DB:release_status/description:5
 msgctxt "release_status"
@@ -429,31 +592,43 @@ msgstr "Kvartetto on neljälle äänelle tai soittimelle koostettu sävellys."
 #: DB:series_type/description:8
 msgctxt "series_type"
 msgid "A recurring festival, usually happening annually in the same location."
-msgstr "Toistuva festivaali, joka yleensä järjestetään vuosittain samassa paikassa."
+msgstr ""
+"Toistuva festivaali, joka yleensä järjestetään vuosittain samassa paikassa."
+
+#: DB:release_group_secondary_type/description:12
+msgctxt "release_group_secondary_type"
+msgid ""
+"A release mostly consisting of field recordings (such as nature sounds or "
+"city/industrial noise)."
+msgstr ""
 
 #: DB:release_group_secondary_type/description:7
 msgctxt "release_group_secondary_type"
 msgid "A release that primarily contains remixed material."
-msgstr ""
+msgstr "Julkaisu, joka koostuu pääasiassa uudelleenmiksatusta materiaalista."
 
 #: DB:release_group_secondary_type/description:6
 msgctxt "release_group_secondary_type"
 msgid ""
-"A release that was recorded live. Generally this means \"with an audience\","
-" be it in person, through the radio or in another similar way."
+"A release that was recorded live. Generally this means \"with an audience\", "
+"be it in person, through the radio or in another similar way."
 msgstr ""
+"Julkaisu, joka äänitettiin suorana. Yleensä tämä tarkoittaa \"yleisön "
+"edessä\", oli se sitten paikan päällä, radion kautta tai muulla tavalla."
 
 #: DB:place_type/description:7
 msgctxt "place_type"
 msgid ""
 "A school, university or other similar educational institution (especially, "
 "but not only, one where music is taught)"
-msgstr "Koulu, yliopisto tai muu vastaava koulutuslaitos (erityisesti, mutta ei pelkästään sellainen, jossa musiikkia opetetaan)"
+msgstr ""
+"Koulu, yliopisto tai muu vastaava koulutuslaitos (erityisesti, mutta ei "
+"pelkästään sellainen, jossa musiikkia opetetaan)"
 
 #: DB:series_type/description:14
 msgctxt "series_type"
 msgid "A series of artists honoured by the same award."
-msgstr ""
+msgstr "Sarja saman palkinnon saaneita artisteja."
 
 #: DB:series_type/description:13
 msgctxt "series_type"
@@ -488,11 +663,18 @@ msgstr "Äänitteiden sarja."
 #: DB:series_type/description:7
 msgctxt "series_type"
 msgid "A series of related concerts by an artist in different locations."
-msgstr "Sarja artistin eri paikoissa pidettyjä toisiinsa liittyviä konsertteja."
+msgstr ""
+"Sarja artistin eri paikoissa pidettyjä toisiinsa liittyviä konsertteja."
 
 #: DB:series_type/description:12
 msgctxt "series_type"
 msgid "A series of related concerts by an artist in the same location."
+msgstr ""
+
+#: DB:series_type/description:80
+msgctxt "series_type"
+msgid ""
+"A series of release groups containing episodes of the same podcast series."
 msgstr ""
 
 #: DB:series_type/description:47
@@ -525,36 +707,53 @@ msgctxt "series_type"
 msgid "A series of works."
 msgstr "Teosten sarja."
 
+#: DB:place_type/description:42
+msgctxt "place_type"
+msgid ""
+"A small venue (such as a jazz club, nightclub or pub) that hosts concerts "
+"and social events. May or may not have a dedicated stage or seating."
+msgstr ""
+
 #: DB:work_type/description:15
 msgctxt "work_type"
 msgid ""
-"A song cycle is a group of songs designed to be performed in a sequence as a"
-" single entity. In most cases, all of the songs are by the same composer, "
-"and often use words from the same poet or lyricist."
-msgstr "Laulusarja on sarja kappaleita, jotka on suunniteltu esitettäväksi järjestyksessä yhtenä kokonaisuutena. Useimmissa tapauksissa kaikki kappaleet ovat samalta säveltäjältä ja käyttävät usein saman runoilijan tai sanoittajan sanoja."
+"A song cycle is a group of songs designed to be performed in a sequence as a "
+"single entity. In most cases, all of the songs are by the same composer, and "
+"often use words from the same poet or lyricist."
+msgstr ""
+"Laulusarja on sarja kappaleita, jotka on suunniteltu esitettäväksi "
+"järjestyksessä yhtenä kokonaisuutena. Useimmissa tapauksissa kaikki "
+"kappaleet ovat samalta säveltäjältä ja käyttävät usein saman runoilijan tai "
+"sanoittajan sanoja."
 
 #: DB:work_type/description:17
 msgctxt "work_type"
 msgid ""
 "A song is in its origin (and still in most cases) a composition for voice, "
 "with or without instruments, performed by singing. This is the most common "
-"form by far in folk and popular music, but also fairly common in a classical"
-" context (\"art songs\")."
-msgstr "Laulu on alunperin (ja vieläkin useimmissa tapauksissa) säestetty tai säestämätön sävellys, joka esitetään laulaen. Tämä on tähän mennessä yleisin muoto kansanmusiikissa ja populaarimusiikissa, mutta melko yleinen myös klassisessa yhteydessä (”taidelaulut”)."
+"form by far in folk and popular music, but also fairly common in a classical "
+"context (\"art songs\")."
+msgstr ""
+"Laulu on alunperin (ja vieläkin useimmissa tapauksissa) säestetty tai "
+"säestämätön sävellys, joka esitetään laulaen. Tämä on tähän mennessä yleisin "
+"muoto kansanmusiikissa ja populaarimusiikissa, mutta melko yleinen myös "
+"klassisessa yhteydessä (”taidelaulut”)."
 
 #: DB:work_type/description:22
 msgctxt "work_type"
 msgid ""
-"A soundtrack is the music that accompanies a film, TV program, videogame, or"
-" even book."
-msgstr "Ääniraita on elokuvaan, tv-ohjelmaan, videopeliin tai jopa kirjaan liittyvä musiikki."
+"A soundtrack is the music that accompanies a film, TV program, videogame, or "
+"even book."
+msgstr ""
+"Ääniraita on elokuvaan, tv-ohjelmaan, videopeliin tai jopa kirjaan liittyvä "
+"musiikki."
 
 #: DB:release_group_secondary_type/description:2
 msgctxt "release_group_secondary_type"
 msgid ""
 "A soundtrack is the musical score to a movie, TV series, stage show, video "
-"game, or other medium. Video game CDs with audio tracks should be classified"
-" as soundtracks because the musical properties of the CDs are more "
+"game, or other medium. Video game CDs with audio tracks should be classified "
+"as soundtracks because the musical properties of the CDs are more "
 "interesting to MusicBrainz than their data properties."
 msgstr ""
 
@@ -563,30 +762,60 @@ msgctxt "instrument_type"
 msgid ""
 "A standard grouping of instruments often played together, like a string "
 "quartet"
-msgstr "Vakioryhmä soittimia joita soitetaan usein yhdessä, kuten jousikvartetti"
+msgstr ""
+"Vakioryhmä soittimia joita soitetaan usein yhdessä, kuten jousikvartetti"
+
+#: DB:medium_format/description:165
+msgctxt "medium_format"
+msgid ""
+"A standard size CD with the playing/data area of a 8cm CD; the remaining "
+"area is empty clear/translucent plastic, sometimes printed."
+msgstr ""
+
+#: DB:medium_format/description:167
+msgctxt "medium_format"
+msgid ""
+"A standard size DVD with the playing/data area of a 8cm MiniDVD; the "
+"remaining area is empty clear/translucent plastic, sometimes printed."
+msgstr ""
 
 #: DB:work_type/description:6
 msgctxt "work_type"
 msgid ""
 "A suite is an ordered set of instrumental or orchestral pieces normally "
-"performed in a concert setting. They may be extracts from a ballet or opera,"
-" or entirely original movements."
-msgstr "Sarja on järjestetty kokoelma instrumentaali- tai orkesterikappaleita, jotka tavallisesti esitetään konsertissa. Ne voivat olla otteita baletista tai oopperasta tai täysin alkuperäisistä osista."
+"performed in a concert setting. They may be extracts from a ballet or opera, "
+"or entirely original movements."
+msgstr ""
+"Sarja on järjestetty kokoelma instrumentaali- tai orkesterikappaleita, jotka "
+"tavallisesti esitetään konsertissa. Ne voivat olla otteita baletista tai "
+"oopperasta tai täysin alkuperäisistä osista."
 
 #: DB:work_type/description:18
 msgctxt "work_type"
 msgid ""
 "A symphonic poem is a piece of programmatic orchestral music, usually in a "
-"single movement, that evokes a painting, a landscape, the content of a poem,"
-" a story or novel, or other non-musical source."
-msgstr "Sinfoninen runo on orkestraalista ohjelmamusiikkia, yleensä yhdessä osassa, joka pyrkii kuvaamaan ulkomusiikillisia asioita kuten maalauksia, maisemia, runoja, tarinoita tai romaaneja."
+"single movement, that evokes a painting, a landscape, the content of a poem, "
+"a story or novel, or other non-musical source."
+msgstr ""
+"Sinfoninen runo on orkestraalista ohjelmamusiikkia, yleensä yhdessä osassa, "
+"joka pyrkii kuvaamaan ulkomusiikillisia asioita kuten maalauksia, maisemia, "
+"runoja, tarinoita tai romaaneja."
 
 #: DB:work_type/description:16
 msgctxt "work_type"
 msgid ""
 "A symphony is an extended composition, almost always scored for orchestra "
 "without soloists."
-msgstr "Sinfonia on pidempi sävellys, lähes aina nuotitetu orkesterille ilman sooloja."
+msgstr ""
+"Sinfonia on pidempi sävellys, lähes aina nuotitetu orkesterille ilman "
+"sooloja."
+
+#: DB:place_type/description:45
+msgctxt "place_type"
+msgid ""
+"A temporary outdoor stage erected for a music festival or other similar "
+"event."
+msgstr ""
 
 #: DB:release_packaging/description:2
 msgctxt "release_packaging"
@@ -612,8 +841,8 @@ msgstr ""
 msgctxt "work_type"
 msgid ""
 "A zarzuela is a Spanish lyric-dramatic work that alternates between spoken "
-"and sung scenes, the latter incorporating operatic and popular song, as well"
-" as dance."
+"and sung scenes, the latter incorporating operatic and popular song, as well "
+"as dance."
 msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:26
@@ -629,7 +858,7 @@ msgstr "as-molli"
 #: DB:work_attribute_type_allowed_value/value:817
 msgctxt "work_attribute_type_allowed_value"
 msgid "A-sharp major"
-msgstr ""
+msgstr "Ais-duuri"
 
 #: DB:work_attribute_type_allowed_value/value:30
 msgctxt "work_attribute_type_allowed_value"
@@ -650,6 +879,14 @@ msgstr ""
 msgctxt "work_attribute_type"
 msgid "ACDAM ID"
 msgstr ""
+
+#: DB:work_attribute_type/name:206
+#, fuzzy
+#| msgctxt "work_attribute_type"
+#| msgid "SACM ID"
+msgctxt "work_attribute_type"
+msgid "ACUM ID"
+msgstr "SACM-tunniste"
 
 #: DB:work_attribute_type/name:58
 msgctxt "work_attribute_type"
@@ -746,6 +983,11 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Acemtarab"
 msgstr ""
 
+#: DB:medium_format/name:203
+msgctxt "medium_format"
+msgid "Acetate"
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:848
 msgctxt "work_attribute_type_allowed_value"
 msgid "Adānā"
@@ -816,6 +1058,11 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Ambikā"
 msgstr ""
 
+#: DB:place_type/name:43
+msgctxt "place_type"
+msgid "Amphitheatre"
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:855
 msgctxt "work_attribute_type_allowed_value"
 msgid "Amr̥t varṣiṇi"
@@ -836,8 +1083,8 @@ msgctxt "release_group_primary_type"
 msgid ""
 "An EP is a so-called \"Extended Play\" release and often contains the "
 "letters EP in the title. Generally an EP will be shorter than a full length "
-"release (an LP or \"Long Play\") and the tracks are usually exclusive to the"
-" EP, in other words the tracks don't come from a previously issued release. "
+"release (an LP or \"Long Play\") and the tracks are usually exclusive to the "
+"EP, in other words the tracks don't come from a previously issued release. "
 "EP is fairly difficult to define; usually it should only be assumed that a "
 "release is an EP if the artist defines it as such."
 msgstr ""
@@ -849,6 +1096,9 @@ msgid ""
 "consists of previously unreleased material (unless this type is combined "
 "with secondary types which change that, such as \"Compilation\")."
 msgstr ""
+"Albumi, ehkä paremmin määriteltynä \"pitkäsoitto\"-julkaisu (\"Long Play\" "
+"tai LP), koostuu yleensä ennestään julkaisemattomasta materiaalista (paitsi "
+"jos tämä tyyppi yhdistetään toissijaisella tyypillä, kuten \"kokoelma\")."
 
 #: DB:release_status/description:4
 msgctxt "release_status"
@@ -872,6 +1122,8 @@ msgid ""
 "An audio drama is a dramatized, purely acoustic performance, broadcast on "
 "radio or published on an audio medium (tape, CD, etc.)."
 msgstr ""
+"Kuunnelma on dramatisoitu, puhtaasti akustinen näytelmä, lähetetty radiosta "
+"tai julkaistu äänitallenteena (kasetti, CD, jne.)."
 
 #: DB:release_group_secondary_type/description:11
 msgctxt "release_group_secondary_type"
@@ -880,11 +1132,14 @@ msgid ""
 "always, meant for radio). Unlike audiobooks, it usually has multiple "
 "performers rather than a main narrator."
 msgstr ""
+"Kuunnelma on näytelmän näytelty ääniversio (yleensä radiota varten, mutta ei "
+"aina). Toisin kuin äänikirjoissa, pääkertojan sijaan on yleensä useita "
+"näyttelijöitä esiintymässä."
 
 #: DB:release_group_secondary_type/description:5
 msgctxt "release_group_secondary_type"
 msgid "An audiobook is a book read by a narrator without music."
-msgstr ""
+msgstr "Äänikirja on juontajan lukema kirja, missä ei ole musiikkia."
 
 #: DB:event_type/description:7
 msgctxt "event_type"
@@ -915,10 +1170,17 @@ msgid ""
 "supporting artists who perform before the main act."
 msgstr ""
 
+#: DB:place_type/description:44
+msgctxt "place_type"
+msgid ""
+"An indoor performance facility with fixed seating, whether for music "
+"(usually, but not always, classical music) or theatre."
+msgstr ""
+
 #: DB:release_group_secondary_type/description:4
 msgctxt "release_group_secondary_type"
 msgid "An interview release contains an interview, generally with an artist."
-msgstr ""
+msgstr "Haastattelujulkaisu sisältää haastattelun, yleensä artistin kanssa."
 
 #: DB:release_packaging/description:54
 msgctxt "release_packaging"
@@ -942,6 +1204,11 @@ msgid ""
 "character interaction)."
 msgstr ""
 
+#: DB:label_type/description:8
+msgctxt "label_type"
+msgid "An organization which collects royalties on behalf of artists."
+msgstr ""
+
 #: DB:work_type/description:12
 msgctxt "work_type"
 msgid ""
@@ -953,10 +1220,13 @@ msgstr ""
 #: DB:release_status/description:3
 msgctxt "release_status"
 msgid ""
-"An unofficial/underground release that was not sanctioned by the artist "
-"and/or the record company. This includes unofficial live recordings and "
-"pirated releases."
+"An unofficial/underground release that was not sanctioned by the artist and/"
+"or the record company. This includes unofficial live recordings and pirated "
+"releases."
 msgstr ""
+"Epävirallinen/underground-julkaisu joka ei ole artistin ja/tai levy-yhtiön "
+"hyväksymä. Tähän kuuluu myös epäviralliset live-äänitteet ja "
+"piraattijulkaisut."
 
 #: DB:work_type/description:20
 msgctxt "work_type"
@@ -974,9 +1244,11 @@ msgstr ""
 #: DB:release_status/description:1
 msgctxt "release_status"
 msgid ""
-"Any release officially sanctioned by the artist and/or their record company."
-" Most releases will fit into this category."
+"Any release officially sanctioned by the artist and/or their record company. "
+"Most releases will fit into this category."
 msgstr ""
+"Mikä tahansa artistin ja/tai levy-yhtiön virallisesti hyväksymä julkaisu. "
+"Useimmat julkaisut sopivat tähän kategoriaan."
 
 #: DB:release_group_primary_type/description:11
 msgctxt "release_group_primary_type"
@@ -1038,7 +1310,7 @@ msgstr ""
 #: DB:editor_collection_type/name:7
 msgctxt "collection_type"
 msgid "Area collection"
-msgstr ""
+msgstr "Aluekokoelma"
 
 #: DB:area_alias_type/name:1
 msgctxt "alias_type"
@@ -1053,12 +1325,12 @@ msgstr "Aaria"
 #: DB:series_type/name:14
 msgctxt "series_type"
 msgid "Artist award"
-msgstr ""
+msgstr "Artistipalkinto"
 
 #: DB:editor_collection_type/name:8
 msgctxt "collection_type"
 msgid "Artist collection"
-msgstr ""
+msgstr "Artistikokoelma"
 
 #: DB:artist_alias_type/name:1
 msgctxt "alias_type"
@@ -1093,12 +1365,12 @@ msgstr ""
 #: DB:release_group_secondary_type/name:11
 msgctxt "release_group_secondary_type"
 msgid "Audio drama"
-msgstr "Ääninäytelmä"
+msgstr "Kuunnelma"
 
 #: DB:work_type/name:25
 msgctxt "work_type"
 msgid "Audio drama"
-msgstr "Ääninäytelmä"
+msgstr "Kuunnelma"
 
 #: DB:release_group_secondary_type/name:5
 msgctxt "release_group_secondary_type"
@@ -1113,12 +1385,12 @@ msgstr "Automaattinen"
 #: DB:event_type/name:7
 msgctxt "event_type"
 msgid "Award ceremony"
-msgstr ""
+msgstr "Palkintojenjakotilaisuus"
 
 #: DB:series_type/name:15
 msgctxt "series_type"
 msgid "Award ceremony"
-msgstr ""
+msgstr "Palkintojenjakotilaisuus"
 
 #: DB:work_attribute_type_allowed_value/value:694
 msgctxt "work_attribute_type_allowed_value"
@@ -1248,12 +1520,12 @@ msgstr "b-molli"
 #: DB:work_attribute_type_allowed_value/value:818
 msgctxt "work_attribute_type_allowed_value"
 msgid "B-sharp major"
-msgstr ""
+msgstr "Bis-duuri"
 
 #: DB:work_attribute_type_allowed_value/value:819
 msgctxt "work_attribute_type_allowed_value"
 msgid "B-sharp minor"
-msgstr ""
+msgstr "bis-molli"
 
 #: DB:work_attribute_type/name:7
 msgctxt "work_attribute_type"
@@ -1343,8 +1615,8 @@ msgstr "Pekingin ooppera"
 #: DB:work_type/description:26
 msgctxt "work_type"
 msgid ""
-"Beijing opera is a form of traditional Chinese theatre which combines music,"
-" vocal performance, mime, dance, and acrobatics."
+"Beijing opera is a form of traditional Chinese theatre which combines music, "
+"vocal performance, mime, dance, and acrobatics."
 msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:697
@@ -1410,7 +1682,7 @@ msgstr ""
 #: DB:medium_format/name:131
 msgctxt "medium_format"
 msgid "Betacam SP"
-msgstr ""
+msgstr "Betacam SP"
 
 #: DB:medium_format/name:24
 msgctxt "medium_format"
@@ -1566,7 +1838,7 @@ msgstr "Blu-ray"
 #: DB:medium_format/name:79
 msgctxt "medium_format"
 msgid "Blu-ray-R"
-msgstr ""
+msgstr "Blu-ray-R"
 
 #: DB:medium_format/name:35
 msgctxt "medium_format"
@@ -1596,12 +1868,12 @@ msgstr "Bootleg-tuotanto"
 #: DB:cover_art_archive.art_type/name:49
 msgctxt "cover_art_type"
 msgid "Bottom"
-msgstr ""
+msgstr "Pohja"
 
 #: DB:release_packaging/name:19
 msgctxt "release_packaging"
 msgid "Box"
-msgstr ""
+msgstr "Laatikko"
 
 #: DB:work_attribute_type_allowed_value/value:607
 msgctxt "work_attribute_type_allowed_value"
@@ -1707,7 +1979,7 @@ msgstr "Ces-duuri"
 #: DB:work_attribute_type_allowed_value/value:812
 msgctxt "work_attribute_type_allowed_value"
 msgid "C-flat minor"
-msgstr ""
+msgstr "ces-molli"
 
 #: DB:work_attribute_type_allowed_value/value:4
 msgctxt "work_attribute_type_allowed_value"
@@ -1752,7 +2024,7 @@ msgstr "CD-Video"
 #: DB:medium_format/name:60
 msgctxt "medium_format"
 msgid "CED"
-msgstr ""
+msgstr "CED"
 
 #: DB:work_attribute_type/name:45
 msgctxt "work_attribute_type"
@@ -1787,7 +2059,7 @@ msgstr ""
 #: DB:release_status/name:6
 msgctxt "release_status"
 msgid "Cancelled"
-msgstr ""
+msgstr "Peruutettu"
 
 #: DB:work_attribute_type_allowed_value/value:64
 msgctxt "work_attribute_type_allowed_value"
@@ -1902,13 +2174,17 @@ msgstr "Kaupunki"
 
 #: DB:area_type/description:3
 msgctxt "area_type"
-msgid ""
-"City is used for settlements of any size, including towns and villages."
+msgid "City is used for settlements of any size, including towns and villages."
 msgstr "Kaupunkia käytetään kaikenkokoisille asutuskeskuksille kylistä alkaen."
 
 #: DB:release_packaging/name:56
 msgctxt "release_packaging"
 msgid "Clamshell Case"
+msgstr ""
+
+#: DB:place_type/name:42
+msgctxt "place_type"
+msgid "Club"
 msgstr ""
 
 #: DB:release_group_secondary_type/name:1
@@ -1919,6 +2195,11 @@ msgstr "Kokoelma"
 #: DB:event_type/name:1
 msgctxt "event_type"
 msgid "Concert"
+msgstr "Konsertti"
+
+#: DB:place_type/name:44
+msgctxt "place_type"
+msgid "Concert hall / Theatre"
 msgstr ""
 
 #: DB:work_type/name:4
@@ -1934,14 +2215,14 @@ msgstr ""
 #: DB:medium_format/name:61
 msgctxt "medium_format"
 msgid "Copy Control CD"
-msgstr ""
+msgstr "Copy Control CD"
 
 #: DB:medium_format/description:61
 msgctxt "medium_format"
 msgid ""
 "Copy Control CD (CCCD) is an umbrella term for CDs released circa 2001-2006 "
-"containing software that is ostensibly designed to prevent the CD from being"
-" ripped. There are a number of software variants: the most well-known are "
+"containing software that is ostensibly designed to prevent the CD from being "
+"ripped. There are a number of software variants: the most well-known are "
 "Macrovision's Cactus Data Shield (CDS) and SunnComm's MediaMax."
 msgstr ""
 
@@ -1953,9 +2234,11 @@ msgstr "Maa"
 #: DB:area_type/description:1
 msgctxt "area_type"
 msgid ""
-"Country is used for areas included (or previously included) in ISO 3166-1, "
-"e.g. United States."
-msgstr "Maa on nimitys alueelle, joka esiintyy (tai on esiintynyt) ISO 3166-1 -standardissa, esimerkiksi Yhdysvallat."
+"Country is used for areas included (or previously included) in ISO 3166-1, e."
+"g. United States."
+msgstr ""
+"Maa on nimitys alueelle, joka esiintyy (tai on esiintynyt) ISO 3166-1 -"
+"standardissa, esimerkiksi Yhdysvallat."
 
 #: DB:area_type/name:7
 msgctxt "area_type"
@@ -1969,7 +2252,10 @@ msgid ""
 "not the main administrative divisions but are also not municipalities, e.g. "
 "counties in the USA. These are not considered when displaying the parent "
 "areas for a given area."
-msgstr "Piirikunta on nimitys osa-aluetta pienemmälle hallinnolliselle aluelle, joka ei kuitenkaan ole kunta, esimerkiksi Yhdysvaltojen piirikunnat. Niitä ei oteta huomioon, kun näytetään mihin isompiin alueisiin jokin alue kuuluu."
+msgstr ""
+"Piirikunta on nimitys osa-aluetta pienemmälle hallinnolliselle aluelle, joka "
+"ei kuitenkaan ole kunta, esimerkiksi Yhdysvaltojen piirikunnat. Niitä ei "
+"oteta huomioon, kun näytetään mihin isompiin alueisiin jokin alue kuuluu."
 
 #: DB:work_attribute_type_allowed_value/value:608
 msgctxt "work_attribute_type_allowed_value"
@@ -2045,7 +2331,7 @@ msgstr "des-molli"
 #: DB:work_attribute_type_allowed_value/value:813
 msgctxt "work_attribute_type_allowed_value"
 msgid "D-sharp major"
-msgstr ""
+msgstr "Dis-duuri"
 
 #: DB:work_attribute_type_allowed_value/value:10
 msgctxt "work_attribute_type_allowed_value"
@@ -2070,7 +2356,7 @@ msgstr "DJ-miksaus"
 #: DB:medium_format/name:44
 msgctxt "medium_format"
 msgid "DTS CD"
-msgstr ""
+msgstr "DTS CD"
 
 #: DB:medium_format/name:2
 msgctxt "medium_format"
@@ -2085,7 +2371,7 @@ msgstr "DVD-Audio"
 #: DB:medium_format/name:92
 msgctxt "medium_format"
 msgid "DVD-R Video"
-msgstr ""
+msgstr "DVD-R Video"
 
 #: DB:medium_format/name:19
 msgctxt "medium_format"
@@ -2095,22 +2381,22 @@ msgstr "DVD-Video"
 #: DB:medium_format/name:47
 msgctxt "medium_format"
 msgid "DVDplus"
-msgstr ""
+msgstr "DVDplus"
 
 #: DB:medium_format/name:70
 msgctxt "medium_format"
 msgid "DVDplus (CD side)"
-msgstr ""
+msgstr "DVDplus (CD-puoli)"
 
 #: DB:medium_format/name:68
 msgctxt "medium_format"
 msgid "DVDplus (DVD-Audio side)"
-msgstr ""
+msgstr "DVDplus (DVD-Audio-puoli)"
 
 #: DB:medium_format/name:69
 msgctxt "medium_format"
 msgid "DVDplus (DVD-Video side)"
-msgstr ""
+msgstr "DVDplus (DVD-Video-puoli)"
 
 #: DB:work_attribute_type_allowed_value/value:343
 msgctxt "work_attribute_type_allowed_value"
@@ -2185,7 +2471,7 @@ msgstr ""
 #: DB:medium_format/name:128
 msgctxt "medium_format"
 msgid "DataPlay"
-msgstr ""
+msgstr "DataPlay"
 
 #: DB:release_group_secondary_type/name:10
 msgctxt "release_group_secondary_type"
@@ -2291,6 +2577,11 @@ msgstr "Dhēnuka"
 #: DB:release_packaging/name:17
 msgctxt "release_packaging"
 msgid "Digibook"
+msgstr "Digibook"
+
+#: DB:release_packaging/name:89
+msgctxt "release_packaging"
+msgid "Digifile"
 msgstr ""
 
 #: DB:release_packaging/name:3
@@ -2381,7 +2672,7 @@ msgstr ""
 #: DB:medium_format/name:46
 msgctxt "medium_format"
 msgid "Download Card"
-msgstr ""
+msgstr "Latauskortti"
 
 #: DB:medium_format/name:4
 msgctxt "medium_format"
@@ -2391,22 +2682,22 @@ msgstr "DualDisc"
 #: DB:medium_format/name:67
 msgctxt "medium_format"
 msgid "DualDisc (CD side)"
-msgstr ""
+msgstr "DualDisc (CD-puoli)"
 
 #: DB:medium_format/name:130
 msgctxt "medium_format"
 msgid "DualDisc (DVD side)"
-msgstr ""
+msgstr "DualDisc (DVD-puoli)"
 
 #: DB:medium_format/name:65
 msgctxt "medium_format"
 msgid "DualDisc (DVD-Audio side)"
-msgstr ""
+msgstr "DualDisc (DVD-Audio-puoli)"
 
 #: DB:medium_format/name:66
 msgctxt "medium_format"
 msgid "DualDisc (DVD-Video side)"
-msgstr ""
+msgstr "DualDisc (DVD-Video-puoli)"
 
 #: DB:work_attribute_type_allowed_value/value:612
 msgctxt "work_attribute_type_allowed_value"
@@ -2567,7 +2858,7 @@ msgstr "es-molli"
 #: DB:work_attribute_type_allowed_value/value:814
 msgctxt "work_attribute_type_allowed_value"
 msgid "E-sharp major"
-msgstr ""
+msgstr "Eis-duuri"
 
 #: DB:work_attribute_type_allowed_value/value:15
 msgctxt "work_attribute_type_allowed_value"
@@ -2592,7 +2883,7 @@ msgstr ""
 #: DB:place_type/name:7
 msgctxt "place_type"
 msgid "Educational institution"
-msgstr ""
+msgstr "Opetuslaitos"
 
 #: DB:instrument_type/name:4
 msgctxt "instrument_type"
@@ -2602,7 +2893,7 @@ msgstr "Sähköinen soitin"
 #: DB:medium_format/name:42
 msgctxt "medium_format"
 msgid "Enhanced CD"
-msgstr ""
+msgstr "Enhanced CD"
 
 #: DB:instrument_type/name:6
 msgctxt "instrument_type"
@@ -2627,7 +2918,7 @@ msgstr ""
 #: DB:editor_collection_type/name:4
 msgctxt "collection_type"
 msgid "Event collection"
-msgstr ""
+msgstr "Tapahtumakokoelma"
 
 #: DB:event_alias_type/name:1
 msgctxt "alias_type"
@@ -2727,7 +3018,7 @@ msgstr "Fes-duuri"
 #: DB:work_attribute_type_allowed_value/value:815
 msgctxt "work_attribute_type_allowed_value"
 msgid "F-flat minor"
-msgstr ""
+msgstr "fes-molli"
 
 #: DB:work_attribute_type_allowed_value/value:19
 msgctxt "work_attribute_type_allowed_value"
@@ -2802,11 +3093,16 @@ msgstr ""
 #: DB:event_type/name:2
 msgctxt "event_type"
 msgid "Festival"
-msgstr ""
+msgstr "Festivaali"
 
 #: DB:series_type/name:8
 msgctxt "series_type"
 msgid "Festival"
+msgstr "Festivaali"
+
+#: DB:place_type/name:45
+msgctxt "place_type"
+msgid "Festival stage"
 msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:372
@@ -2829,6 +3125,11 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Feth-i Hicaz"
 msgstr ""
 
+#: DB:release_group_secondary_type/name:12
+msgctxt "release_group_secondary_type"
+msgid "Field recording"
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:734
 msgctxt "work_attribute_type_allowed_value"
 msgid "Fireng-i Fer"
@@ -2838,26 +3139,25 @@ msgstr ""
 msgctxt "medium_format"
 msgid ""
 "Flat discs with grooves used in phonographs/gramophones. For shellac and "
-"vinyl records, use that specifically"
+"vinyl records, use that specifically."
 msgstr ""
 
 #: DB:medium_format/name:51
 msgctxt "medium_format"
 msgid "Flexi-disc"
-msgstr ""
+msgstr "Flexi-levy"
 
 #: DB:medium_format/description:51
 msgctxt "medium_format"
 msgid ""
-"Flexi-discs are phonograph records made of a thin, flexible vinyl sheet with"
-" a molded-in groove, designed to be playable on a normal phonograph "
-"turntable."
+"Flexi-discs are phonograph records made of a thin, flexible vinyl sheet with "
+"a molded-in groove, designed to be playable on a normal phonograph turntable."
 msgstr ""
 
 #: DB:medium_format/name:76
 msgctxt "medium_format"
 msgid "Floppy Disk"
-msgstr ""
+msgstr "Levyke"
 
 #: DB:gender/description:4
 msgctxt "gender"
@@ -2865,6 +3165,8 @@ msgid ""
 "For cases where gender just doesn't apply at all (like companies entered as "
 "artists)."
 msgstr ""
+"Tapauksiin, jossa sukupuoli ei päde lainkaan (kuten artisteiksi listatut "
+"yhtiöt)."
 
 #: DB:work_attribute_type/name:16
 msgctxt "work_attribute_type"
@@ -2914,7 +3216,7 @@ msgstr "Ges-duuri"
 #: DB:work_attribute_type_allowed_value/value:816
 msgctxt "work_attribute_type_allowed_value"
 msgid "G-flat minor"
-msgstr ""
+msgstr "ges-molli"
 
 #: DB:work_attribute_type_allowed_value/value:24
 msgctxt "work_attribute_type_allowed_value"
@@ -3435,22 +3737,22 @@ msgstr "Hybridi-SACD"
 #: DB:medium_format/name:63
 msgctxt "medium_format"
 msgid "Hybrid SACD (CD layer)"
-msgstr ""
+msgstr "Hybrid SACD (CD-kerros)"
 
 #: DB:medium_format/name:64
 msgctxt "medium_format"
 msgid "Hybrid SACD (SACD layer)"
-msgstr ""
+msgstr "Hybrid SACD (SACD-kerros)"
 
 #: DB:medium_format/name:87
 msgctxt "medium_format"
 msgid "Hybrid SACD (SACD layer, 2 channels)"
-msgstr ""
+msgstr "Hybrid SACD (SACD-kerros, stereo)"
 
 #: DB:medium_format/name:86
 msgctxt "medium_format"
 msgid "Hybrid SACD (SACD layer, multichannel)"
-msgstr ""
+msgstr "Hybrid SACD (SACD-kerros, monikanavainen)"
 
 #: DB:work_attribute_type_allowed_value/value:418
 msgctxt "work_attribute_type_allowed_value"
@@ -3577,6 +3879,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Canadian rights society SODRAC"
 msgstr ""
 
+#: DB:work_attribute_type/description:173
+msgctxt "work_attribute_type"
+msgid "ID for the Chilean rights society SCD"
+msgstr ""
+
 #: DB:work_attribute_type/description:71
 msgctxt "work_attribute_type"
 msgid "ID for the Chinese rights society MCSC"
@@ -3677,6 +3984,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Irish rights society IMRO"
 msgstr ""
 
+#: DB:work_attribute_type/description:206
+msgctxt "work_attribute_type"
+msgid "ID for the Israeli rights society ACUM"
+msgstr ""
+
 #: DB:work_attribute_type/description:36
 msgctxt "work_attribute_type"
 msgid "ID for the Italian rights society SIAE"
@@ -3705,6 +4017,11 @@ msgstr ""
 #: DB:work_attribute_type/description:63
 msgctxt "work_attribute_type"
 msgid "ID for the Latvian rights society AKKA/LAA"
+msgstr ""
+
+#: DB:work_attribute_type/description:207
+msgctxt "work_attribute_type"
+msgid "ID for the Lithuanian rights society LATGA"
 msgstr ""
 
 #: DB:work_attribute_type/description:49
@@ -3760,6 +4077,11 @@ msgstr ""
 #: DB:work_attribute_type/description:45
 msgctxt "work_attribute_type"
 msgid "ID for the Singaporean rights society COMPASS"
+msgstr ""
+
+#: DB:work_attribute_type/description:140
+msgctxt "work_attribute_type"
+msgid "ID for the Slovenian rights society SAZAS"
 msgstr ""
 
 #: DB:work_attribute_type/description:68
@@ -3827,6 +4149,11 @@ msgctxt "work_attribute_type"
 msgid "ID for the Venezuelan rights society SACVEN"
 msgstr ""
 
+#: DB:work_attribute_type/description:107
+msgctxt "work_attribute_type"
+msgid "ID for the Vietnamese rights society VCPMC"
+msgstr ""
+
 #: DB:work_attribute_type/description:38
 msgctxt "work_attribute_type"
 msgid "ID for the international (formerly US) rights society AMRA"
@@ -3875,13 +4202,12 @@ msgstr "Valmistajamerkki"
 #: DB:work_type/name:30
 msgctxt "work_type"
 msgid "Incidental music"
-msgstr ""
+msgstr "Taustamusiikki"
 
 #: DB:work_type/description:30
 msgctxt "work_type"
 msgid ""
-"Incidental music is music written as background for (usually) a theatre "
-"play."
+"Incidental music is music written as background for (usually) a theatre play."
 msgstr ""
 
 #: DB:area_type/name:9
@@ -3897,7 +4223,7 @@ msgstr "Sisähalli"
 #: DB:editor_collection_type/name:9
 msgctxt "collection_type"
 msgid "Instrument collection"
-msgstr ""
+msgstr "Soitinkokoelma"
 
 #: DB:instrument_alias_type/name:1
 msgctxt "alias_type"
@@ -3967,8 +4293,8 @@ msgstr "Saari"
 #: DB:area_type/description:6
 msgctxt "area_type"
 msgid ""
-"Island is used for islands and atolls which don't form subdivisions of their"
-" own, e.g. Skye. These are not considered when displaying the parent areas "
+"Island is used for islands and atolls which don't form subdivisions of their "
+"own, e.g. Skye. These are not considered when displaying the parent areas "
 "for a given area."
 msgstr ""
 
@@ -4528,6 +4854,14 @@ msgctxt "work_attribute_type_allowed_value"
 msgid "Kōmal riṣabh asāvēri"
 msgstr ""
 
+#: DB:work_attribute_type/name:207
+#, fuzzy
+#| msgctxt "work_attribute_type"
+#| msgid "APRA ID"
+msgctxt "work_attribute_type"
+msgid "LATGA ID"
+msgstr "APRA-tunniste"
+
 #: DB:editor_collection_type/name:10
 msgctxt "collection_type"
 msgid "Label collection"
@@ -4601,7 +4935,7 @@ msgstr "Latāngi"
 #: DB:event_type/name:3
 msgctxt "event_type"
 msgid "Launch event"
-msgstr ""
+msgstr "Julkaisutapahtuma"
 
 #: DB:work_attribute_type_allowed_value/value:160
 msgctxt "work_attribute_type_allowed_value"
@@ -4641,7 +4975,7 @@ msgstr ""
 #: DB:release_packaging/name:55
 msgctxt "release_packaging"
 msgid "Longbox"
-msgstr ""
+msgstr "Longbox"
 
 #: DB:work_attribute_type/name:49
 msgctxt "work_attribute_type"
@@ -4886,17 +5220,52 @@ msgstr ""
 #: DB:medium_format/name:83
 msgctxt "medium_format"
 msgid "Microcassette"
-msgstr ""
+msgstr "Mikrokasetti"
 
 #: DB:area_type/name:8
 msgctxt "area_type"
 msgid "Military base"
+msgstr "Sotilastukikohta"
+
+#: DB:medium_format/name:166
+msgctxt "medium_format"
+msgid "MiniDVD"
+msgstr ""
+
+#: DB:medium_format/name:168
+msgctxt "medium_format"
+msgid "MiniDVD-Audio"
+msgstr ""
+
+#: DB:medium_format/name:169
+msgctxt "medium_format"
+msgid "MiniDVD-Video"
 msgstr ""
 
 #: DB:medium_format/name:6
 msgctxt "medium_format"
 msgid "MiniDisc"
 msgstr "MiniDisc"
+
+#: DB:medium_format/name:165
+msgctxt "medium_format"
+msgid "Minimax CD"
+msgstr ""
+
+#: DB:medium_format/name:167
+msgctxt "medium_format"
+msgid "Minimax DVD"
+msgstr ""
+
+#: DB:medium_format/name:170
+msgctxt "medium_format"
+msgid "Minimax DVD-Audio"
+msgstr ""
+
+#: DB:medium_format/name:171
+msgctxt "medium_format"
+msgid "Minimax DVD-Video"
+msgstr ""
 
 #: DB:work_attribute_type_allowed_value/value:644
 msgctxt "work_attribute_type_allowed_value"
@@ -5074,7 +5443,7 @@ msgstr ""
 #: DB:work_type/name:29
 msgctxt "work_type"
 msgid "Musical"
-msgstr ""
+msgstr "Musikaali"
 
 #: DB:work_type/description:29
 msgctxt "work_type"
@@ -5516,7 +5885,7 @@ msgstr ""
 #: DB:gender/name:5
 msgctxt "gender"
 msgid "Non-binary"
-msgstr ""
+msgstr "Muunsukupuolinen"
 
 #: DB:release_group_secondary_type/description:3
 msgctxt "release_group_secondary_type"
@@ -5531,7 +5900,7 @@ msgstr "Ei mitään"
 #: DB:gender/name:4
 msgctxt "gender"
 msgid "Not applicable"
-msgstr ""
+msgstr "Ei sovellettavissa"
 
 #: DB:work_attribute_type_allowed_value/value:491
 msgctxt "work_attribute_type_allowed_value"
@@ -5693,6 +6062,11 @@ msgctxt "collection_type"
 msgid "Owned music"
 msgstr ""
 
+#: DB:editor_collection_type/name:17
+msgctxt "collection_type"
+msgid "Owned recordings"
+msgstr ""
+
 #: DB:work_attribute_type_allowed_value/value:762
 msgctxt "work_attribute_type_allowed_value"
 msgid "Oynak"
@@ -5746,7 +6120,7 @@ msgstr "Partita"
 #: DB:medium_format/name:58
 msgctxt "medium_format"
 msgid "Pathé disc"
-msgstr ""
+msgstr "Pathé-levy"
 
 #: DB:work_attribute_type_allowed_value/value:995
 msgctxt "work_attribute_type_allowed_value"
@@ -5827,7 +6201,7 @@ msgstr "Pianorulla"
 #: DB:editor_collection_type/name:11
 msgctxt "collection_type"
 msgid "Place collection"
-msgstr ""
+msgstr "Paikkakokoelma"
 
 #: DB:place_alias_type/name:1
 msgctxt "alias_type"
@@ -5852,11 +6226,16 @@ msgstr "Toista"
 #: DB:medium_format/name:74
 msgctxt "medium_format"
 msgid "PlayTape"
-msgstr ""
+msgstr "PlayTape"
 
 #: DB:medium_format/name:45
 msgctxt "medium_format"
 msgid "Playbutton"
+msgstr ""
+
+#: DB:series_type/name:80
+msgctxt "series_type"
+msgid "Podcast"
 msgstr ""
 
 #: DB:work_type/name:21
@@ -5897,17 +6276,17 @@ msgstr "Promo"
 #: DB:release_group_secondary_type/description:9
 msgctxt "release_group_secondary_type"
 msgid ""
-"Promotional in nature (but not necessarily free), mixtapes and street albums"
-" are often released by artists to promote new artists, or upcoming studio "
+"Promotional in nature (but not necessarily free), mixtapes and street albums "
+"are often released by artists to promote new artists, or upcoming studio "
 "albums by prominent artists. They are also sometimes used to keep fans' "
 "attention between studio releases and are most common in rap & hip hop "
-"genres. They are often not sanctioned by the artist's label, may lack proper"
-" sample or song clearances and vary widely in production and recording "
+"genres. They are often not sanctioned by the artist's label, may lack proper "
+"sample or song clearances and vary widely in production and recording "
 "quality. While mixtapes are generally DJ-mixed, they are distinct from "
 "commercial DJ-mixes (which are usually deemed compilations) and are defined "
 "by having a significant proportion of new material, including original "
-"production or original vocals over top of other artists' instrumentals. They"
-" are distinct from demos in that they are designed for release directly to "
+"production or original vocals over top of other artists' instrumentals. They "
+"are distinct from demos in that they are designed for release directly to "
 "the public and fans; not to labels."
 msgstr ""
 
@@ -6090,17 +6469,17 @@ msgstr "Ravicandrika"
 #: DB:cover_art_archive.art_type/name:14
 msgctxt "cover_art_type"
 msgid "Raw/Unedited"
-msgstr ""
+msgstr "Raaka/käsittelemätön"
 
 #: DB:series_type/name:48
 msgctxt "series_type"
 msgid "Recording award"
-msgstr ""
+msgstr "Äänitepalkinto"
 
 #: DB:editor_collection_type/name:12
 msgctxt "collection_type"
 msgid "Recording collection"
-msgstr ""
+msgstr "Äänitekokoelma"
 
 #: DB:recording_alias_type/name:1
 msgctxt "alias_type"
@@ -6135,17 +6514,17 @@ msgstr ""
 #: DB:editor_collection_type/name:1
 msgctxt "collection_type"
 msgid "Release collection"
-msgstr ""
+msgstr "Julkaisukokoelma"
 
 #: DB:series_type/name:47
 msgctxt "series_type"
 msgid "Release group award"
-msgstr ""
+msgstr "Julkaisuryhmäpalkinto"
 
 #: DB:editor_collection_type/name:13
 msgctxt "collection_type"
 msgid "Release group collection"
-msgstr ""
+msgstr "Julkaisuryhmäkokoelma"
 
 #: DB:release_group_alias_type/name:1
 msgctxt "alias_type"
@@ -6170,7 +6549,7 @@ msgstr ""
 #: DB:place_type/name:6
 msgctxt "place_type"
 msgid "Religious building"
-msgstr ""
+msgstr "Uskonnollinen rakennus"
 
 #: DB:work_attribute_type_allowed_value/value:765
 msgctxt "work_attribute_type_allowed_value"
@@ -6336,12 +6715,12 @@ msgstr "Super Audio CD"
 #: DB:medium_format/name:84
 msgctxt "medium_format"
 msgid "SACD (2 channels)"
-msgstr ""
+msgstr "SACD (2-kanava)"
 
 #: DB:medium_format/name:85
 msgctxt "medium_format"
 msgid "SACD (multichannel)"
-msgstr ""
+msgstr "SACD (monikanava)"
 
 #: DB:work_attribute_type/name:21
 msgctxt "work_attribute_type"
@@ -6383,10 +6762,20 @@ msgctxt "work_attribute_type"
 msgid "SAYCO ID"
 msgstr ""
 
+#: DB:work_attribute_type/name:140
+msgctxt "work_attribute_type"
+msgid "SAZAS ID"
+msgstr ""
+
+#: DB:work_attribute_type/name:173
+msgctxt "work_attribute_type"
+msgid "SCD ID"
+msgstr ""
+
 #: DB:medium_format/name:62
 msgctxt "medium_format"
 msgid "SD Card"
-msgstr ""
+msgstr "SD-kortti"
 
 #: DB:work_attribute_type/name:8
 msgctxt "work_attribute_type"
@@ -6667,7 +7056,7 @@ msgstr ""
 #: DB:medium_format/name:53
 msgctxt "medium_format"
 msgid "Shellac"
-msgstr ""
+msgstr "Sellakka"
 
 #: DB:medium_format/description:53
 msgctxt "medium_format"
@@ -6675,6 +7064,8 @@ msgid ""
 "Shellac records were the most predominant type of gramophone record during "
 "the first half of the 20th century."
 msgstr ""
+"Sellakkalevyt olivat vallitsevin gramofonilevytyyppi 1900-luvun "
+"ensimmäisellä puoliskolla."
 
 #: DB:work_attribute_type_allowed_value/value:236
 msgctxt "work_attribute_type_allowed_value"
@@ -6730,7 +7121,7 @@ msgstr ""
 #: DB:release_packaging/name:20
 msgctxt "release_packaging"
 msgid "Slidepack"
-msgstr ""
+msgstr "Slidepack"
 
 #: DB:release_packaging/name:2
 msgctxt "release_packaging"
@@ -6772,7 +7163,9 @@ msgctxt "series_ordering_type"
 msgid ""
 "Sorts the items in the series automatically by their number attributes, "
 "using a natural sort order."
-msgstr "Lajittelee sarjan kohteet automaattisesti niiden numeromääritteiden mukaan, käyttäen luonnollista lajittelujärjestystä."
+msgstr ""
+"Lajittelee sarjan kohteet automaattisesti niiden numeromääritteiden mukaan, "
+"käyttäen luonnollista lajittelujärjestystä."
 
 #: DB:release_group_secondary_type/name:2
 msgctxt "release_group_secondary_type"
@@ -6792,7 +7185,7 @@ msgstr "Selkäosa"
 #: DB:release_group_secondary_type/name:3
 msgctxt "release_group_secondary_type"
 msgid "Spokenword"
-msgstr "Puhe"
+msgstr "Spokenword"
 
 #: DB:place_type/name:4
 msgctxt "place_type"
@@ -6802,7 +7195,7 @@ msgstr "Stadion"
 #: DB:event_type/name:6
 msgctxt "event_type"
 msgid "Stage performance"
-msgstr ""
+msgstr "Lavaesitys"
 
 #: DB:cover_art_archive.art_type/name:10
 msgctxt "cover_art_type"
@@ -6827,10 +7220,13 @@ msgstr "Osa-alue"
 #: DB:area_type/description:2
 msgctxt "area_type"
 msgid ""
-"Subdivision is used for the main administrative divisions of a country, e.g."
-" California, Ontario, Okinawa. These are considered when displaying the "
+"Subdivision is used for the main administrative divisions of a country, e.g. "
+"California, Ontario, Okinawa. These are considered when displaying the "
 "parent areas for a given area."
-msgstr "Osa-alue on nimitys valtion korkeimman tason hallinnollisille alueille, esimerkiksi Kalifornia, Ontario, Okinawa. Ne otetaan huomioon, kun näytetään mihin isompiin alueisiin jokin alue kuuluu."
+msgstr ""
+"Osa-alue on nimitys valtion korkeimman tason hallinnollisille alueille, "
+"esimerkiksi Kalifornia, Ontario, Okinawa. Ne otetaan huomioon, kun näytetään "
+"mihin isompiin alueisiin jokin alue kuuluu."
 
 #: DB:work_attribute_type_allowed_value/value:244
 msgctxt "work_attribute_type_allowed_value"
@@ -7075,7 +7471,7 @@ msgstr "Tanarūpi"
 #: DB:work_attribute_type_allowed_value/value:668
 msgctxt "work_attribute_type_allowed_value"
 msgid "Tango"
-msgstr ""
+msgstr "Tango"
 
 #: DB:work_attribute_type_allowed_value/value:1040
 msgctxt "work_attribute_type_allowed_value"
@@ -7157,21 +7553,25 @@ msgctxt "medium_format"
 msgid ""
 "The CD layer of a DVDplus. The DVD layer should be added as a separate "
 "medium."
-msgstr "CD-kerros DVDplus-levyssä. DVD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"CD-kerros DVDplus-levyssä. DVD-kerros tulisi lisätä erillisenä tallenteena."
 
 #: DB:medium_format/description:67
 msgctxt "medium_format"
 msgid ""
 "The CD layer of a DualDisc. The DVD layer should be added as a separate "
 "medium."
-msgstr "CD-kerros DualDisc-levyssä. DVD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"CD-kerros DualDisc-levyssä. DVD-kerros tulisi lisätä erillisenä tallenteena."
 
 #: DB:medium_format/description:63
 msgctxt "medium_format"
 msgid ""
 "The CD layer of a hybrid SACD. The SACD layer should be added as a separate "
 "medium."
-msgstr "CD-kerros hybridi-SACD-levyssä. SACD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"CD-kerros hybridi-SACD-levyssä. SACD-kerros tulisi lisätä erillisenä "
+"tallenteena."
 
 #: DB:medium_format/description:82
 msgctxt "medium_format"
@@ -7194,14 +7594,18 @@ msgctxt "medium_format"
 msgid ""
 "The DVD (audio) layer of a DVDplus. The CD layer should be added as a "
 "separate medium."
-msgstr "DVD-Audio-kerros DVDplus-levyssä. CD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"DVD-Audio-kerros DVDplus-levyssä. CD-kerros tulisi lisätä erillisenä "
+"tallenteena."
 
 #: DB:medium_format/description:65
 msgctxt "medium_format"
 msgid ""
 "The DVD (audio) layer of a DualDisc. The CD layer should be added as a "
 "separate medium."
-msgstr "DVD-Audio-kerros DualDisc-levyssä. CD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"DVD-Audio-kerros DualDisc-levyssä. CD-kerros tulisi lisätä erillisenä "
+"tallenteena."
 
 #: DB:medium_format/description:69
 msgctxt "medium_format"
@@ -7215,7 +7619,9 @@ msgctxt "medium_format"
 msgid ""
 "The DVD (video) layer of a DualDisc. The CD layer should be added as a "
 "separate medium."
-msgstr "DVD-Video-kerros DualDisc-levyssä. CD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"DVD-Video-kerros DualDisc-levyssä. CD-kerros tulisi lisätä erillisenä "
+"tallenteena."
 
 #: DB:medium_format/description:130
 msgctxt "medium_format"
@@ -7228,8 +7634,8 @@ msgstr ""
 #: DB:medium_format/description:80
 msgctxt "medium_format"
 msgid ""
-"The DVD side of a vinyl + DVD VinylDisc. The vinyl side should be added as a"
-" separate medium."
+"The DVD side of a vinyl + DVD VinylDisc. The vinyl side should be added as a "
+"separate medium."
 msgstr ""
 
 #: DB:medium_format/description:64
@@ -7237,7 +7643,9 @@ msgctxt "medium_format"
 msgid ""
 "The SACD layer of a hybrid SACD. The CD layer should be added as a separate "
 "medium."
-msgstr "SACD-kerros hybridi-SACD-levyssä. CD-kerros tulisi lisätä erillisenä tallenteena."
+msgstr ""
+"SACD-kerros hybridi-SACD-levyssä. CD-kerros tulisi lisätä erillisenä "
+"tallenteena."
 
 #: DB:cover_art_archive.art_type/description:49
 msgctxt "cover_art_type"
@@ -7281,7 +7689,8 @@ msgstr ""
 #: DB:release_packaging/description:1
 msgctxt "release_packaging"
 msgid "The traditional CD case, made of hard, brittle plastic."
-msgstr "Perinteinen CD-kotelo, joka on valmistettu kovasta mutta hauraasta muovista."
+msgstr ""
+"Perinteinen CD-kotelo, joka on valmistettu kovasta mutta hauraasta muovista."
 
 #: DB:medium_format/description:81
 msgctxt "medium_format"
@@ -7413,7 +7822,7 @@ msgstr ""
 #: DB:series_type/name:7
 msgctxt "series_type"
 msgid "Tour"
-msgstr ""
+msgstr "Kiertue"
 
 #: DB:cover_art_archive.art_type/name:7
 msgctxt "cover_art_type"
@@ -7522,9 +7931,9 @@ msgstr ""
 #: DB:area_type/description:9
 msgctxt "area_type"
 msgid ""
-"Used for semi-autonomous territories governed by indigenous peoples, such as"
-" Indian reserves/reservations in North America and indigenous territories in"
-" Central and South America."
+"Used for semi-autonomous territories governed by indigenous peoples, such as "
+"Indian reserves/reservations in North America and indigenous territories in "
+"Central and South America."
 msgstr ""
 
 #: DB:work_attribute_type/name:17
@@ -7562,10 +7971,15 @@ msgctxt "medium_format"
 msgid "VCD"
 msgstr "Video-CD"
 
+#: DB:work_attribute_type/name:107
+msgctxt "work_attribute_type"
+msgid "VCPMC ID"
+msgstr ""
+
 #: DB:medium_format/name:59
 msgctxt "medium_format"
 msgid "VHD"
-msgstr ""
+msgstr "VHD"
 
 #: DB:medium_format/name:21
 msgctxt "medium_format"
@@ -7647,7 +8061,9 @@ msgctxt "medium_format"
 msgid ""
 "Video High Density (VHD) was a videodisc format which was marketed "
 "predominantly in Japan by JVC."
-msgstr "Video High Density (VHD) oli videodisc-formaatti, jota markkinoitiin pääosin Japanissa JVC:n toimesta."
+msgstr ""
+"Video High Density (VHD) oli videodisc-formaatti, jota markkinoitiin pääosin "
+"Japanissa JVC:n toimesta."
 
 #: DB:work_attribute_type_allowed_value/value:273
 msgctxt "work_attribute_type_allowed_value"
@@ -7672,22 +8088,22 @@ msgstr "Vinyyli"
 #: DB:medium_format/name:48
 msgctxt "medium_format"
 msgid "VinylDisc"
-msgstr ""
+msgstr "VinylDisc"
 
 #: DB:medium_format/name:82
 msgctxt "medium_format"
 msgid "VinylDisc (CD side)"
-msgstr ""
+msgstr "VinylDisc (CD-puoli)"
 
 #: DB:medium_format/name:80
 msgctxt "medium_format"
 msgid "VinylDisc (DVD side)"
-msgstr ""
+msgstr "VinylDisc (DVD-puoli)"
 
 #: DB:medium_format/name:81
 msgctxt "medium_format"
 msgid "VinylDisc (Vinyl side)"
-msgstr ""
+msgstr "VinylDisc (vinyylipuoli)"
 
 #: DB:work_attribute_type_allowed_value/value:259
 #: DB:work_attribute_type_allowed_value/value:1047
@@ -7738,22 +8154,22 @@ msgstr "Puhallinsoitin"
 #: DB:editor_collection_type/name:3
 msgctxt "collection_type"
 msgid "Wishlist"
-msgstr ""
+msgstr "Toivelista"
 
 #: DB:release_status/name:5
 msgctxt "release_status"
 msgid "Withdrawn"
-msgstr ""
+msgstr "Poisvedetty"
 
 #: DB:series_type/name:46
 msgctxt "series_type"
 msgid "Work award"
-msgstr ""
+msgstr "Teospalkinto"
 
 #: DB:editor_collection_type/name:15
 msgctxt "collection_type"
 msgid "Work collection"
-msgstr ""
+msgstr "Teoskokoelma"
 
 #: DB:work_alias_type/name:1
 msgctxt "alias_type"
@@ -7896,6 +8312,11 @@ msgstr ""
 #: DB:work_attribute_type_allowed_value/value:681
 msgctxt "work_attribute_type_allowed_value"
 msgid "ambiguous"
+msgstr "epäselvä"
+
+#: DB:medium_format/name:164
+msgctxt "medium_format"
+msgid "microSD"
 msgstr ""
 
 #: DB:medium_format/name:27

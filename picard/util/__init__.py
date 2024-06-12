@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2004 Robert Kaye
 # Copyright (C) 2006-2009, 2011-2012, 2014 Lukáš Lalinský
-# Copyright (C) 2008-2011, 2014, 2018-2022 Philipp Wolfer
+# Copyright (C) 2008-2011, 2014, 2018-2023 Philipp Wolfer
 # Copyright (C) 2009 Carlin Mangar
 # Copyright (C) 2009 david
 # Copyright (C) 2010 fatih
@@ -12,7 +12,7 @@
 # Copyright (C) 2012, 2014-2015 Wieland Hoffmann
 # Copyright (C) 2013 Ionuț Ciocîrlan
 # Copyright (C) 2013-2014 Sophist-UK
-# Copyright (C) 2013-2014, 2018-2021 Laurent Monin
+# Copyright (C) 2013-2014, 2018-2024 Laurent Monin
 # Copyright (C) 2014 Johannes Dewender
 # Copyright (C) 2016 Rahul Raturi
 # Copyright (C) 2016 barami
@@ -23,6 +23,8 @@
 # Copyright (C) 2020 Ray Bouchard
 # Copyright (C) 2021 Gabriel Ferreira
 # Copyright (C) 2021 Louis Sautier
+# Copyright (C) 2022 Kamil
+# Copyright (C) 2022 skelly37
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -38,8 +40,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-
-from collections import namedtuple
+try:
+    from charset_normalizer import detect
+except ImportError:
+    try:
+        from chardet import detect
+    except ImportError:
+        detect = None
+from collections import (
+    defaultdict,
+    namedtuple,
+)
 from collections.abc import Mapping
 from itertools import chain
 import json
@@ -56,19 +67,20 @@ import unicodedata
 
 from dateutil.parser import parse
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
+from PyQt6.QtGui import QDesktopServices
 
 from picard import log
-from picard.const import (
-    DEFAULT_COPY_TEXT,
-    DEFAULT_NUMBERED_TITLE_FORMAT,
-    MUSICBRAINZ_SERVERS,
-)
+from picard.const import MUSICBRAINZ_SERVERS
 from picard.const.sys import (
     FROZEN_TEMP_PATH,
     IS_FROZEN,
     IS_MACOS,
     IS_WIN,
+)
+from picard.i18n import (
+    gettext as _,
+    gettext_constants,
 )
 
 
@@ -87,25 +99,31 @@ WIN_MAX_NODE_LEN = 255
 WIN_LONGPATH_PREFIX = '\\\\?\\'
 
 
-class LockableObject(QtCore.QObject):
-
-    """Read/write lockable object."""
-
+class ReadWriteLockContext:
+    """Context for releasing a locked QReadWriteLock
+    """
     def __init__(self):
-        super().__init__()
         self.__lock = QtCore.QReadWriteLock()
 
     def lock_for_read(self):
-        """Lock the object for read operations."""
         self.__lock.lockForRead()
+        return self
 
     def lock_for_write(self):
-        """Lock the object for write operations."""
         self.__lock.lockForWrite()
+        return self
 
     def unlock(self):
-        """Unlock the object."""
         self.__lock.unlock()
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, type, value, tb):
+        self.__lock.unlock()
+
+    def __bool__(self):
+        return self._entered > 0
 
 
 def process_events_iter(iterable, interval=0.1):
@@ -211,7 +229,7 @@ def system_supports_long_paths():
         system_supports_long_paths._supported = supported
         return supported
     except OSError:
-        log.info('Failed reading LongPathsEnabled from registry')
+        log.info("Failed reading LongPathsEnabled from registry")
         return False
 
 
@@ -223,7 +241,7 @@ def normpath(path):
         # realpath can fail if path does not exist or is not accessible
         # or on Windows if drives are mounted without mount manager
         # (see https://tickets.metabrainz.org/browse/PICARD-2425).
-        log.warning('Failed getting realpath for "%s": %s', path, why)
+        log.warning("Failed getting realpath for `%s`: %s", path, why)
     # If the path is longer than 259 characters on Windows, prepend the \\?\
     # prefix. This enables access to long paths using the Windows API. See
     # https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
@@ -233,8 +251,16 @@ def normpath(path):
 
 
 def win_prefix_longpath(path):
+    """
+    For paths longer then WIN_MAX_FILEPATH_LEN enable long path support by prefixing with WIN_LONGPATH_PREFIX.
+
+    See https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+    """
     if len(path) > WIN_MAX_FILEPATH_LEN and not path.startswith(WIN_LONGPATH_PREFIX):
-        path = WIN_LONGPATH_PREFIX + path
+        if path.startswith(r'\\'):  # UNC path
+            path = WIN_LONGPATH_PREFIX + 'UNC' + path[1:]
+        else:
+            path = WIN_LONGPATH_PREFIX + path
     return path
 
 
@@ -278,31 +304,41 @@ def format_time(ms, display_zero=False):
 def sanitize_date(datestr):
     """Sanitize date format.
 
-    e.g.: "YYYY-00-00" -> "YYYY"
-          "YYYY-  -  " -> "YYYY"
+    e.g.: "1980-00-00" -> "1980"
+          "1980-  -  " -> "1980"
+          "1980-00-23" -> "1980-00-23"
           ...
     """
     date = []
-    for num in datestr.split("-"):
+    for num in reversed(datestr.split("-")):
         try:
             num = int(num.strip())
         except ValueError:
-            break
-        if num:
+            if num == '':
+                num = 0
+            else:
+                break
+        if num or (num == 0 and date):
             date.append(num)
+    date.reverse()
     return ("", "%04d", "%04d-%02d", "%04d-%02d-%02d")[len(date)] % tuple(date)
 
 
-_re_win32_incompat = re.compile(r'["*:<>?|]', re.UNICODE)
-def replace_win32_incompat(string, repl="_"):  # noqa: E302
+def replace_win32_incompat(string, repl="_", replacements=None):  # noqa: E302
     """Replace win32 filename incompatible characters from ``string`` by
        ``repl``."""
-    # Don't replace : with _ for windows drive
+    # Don't replace : for windows drive
     if IS_WIN and os.path.isabs(string):
-        drive, rest = ntpath.splitdrive(string)
-        return drive + _re_win32_incompat.sub(repl, rest)
+        drive, string = ntpath.splitdrive(string)
     else:
-        return _re_win32_incompat.sub(repl, string)
+        drive = ''
+
+    replacements = defaultdict(lambda: repl, replacements or {})
+    for char in {'"', '*', ':', '<', '>', '?', '|'}:
+        if char in string:
+            string = string.replace(char, replacements[char])
+
+    return drive + string
 
 
 _re_non_alphanum = re.compile(r'\W+', re.UNICODE)
@@ -348,7 +384,7 @@ def translate_from_sortname(name, sortname):
     """'Translate' the artist name by reversing the sortname."""
     for c in name:
         ctg = unicodedata.category(c)
-        if ctg[0] == "L" and unicodedata.name(c).find("LATIN") == -1:
+        if ctg[0] == "L" and unicodedata.name(c).find('LATIN') == -1:
             for separator in (" & ", "; ", " and ", " vs. ", " with ", " y "):
                 if separator in sortname:
                     parts = sortname.split(separator)
@@ -418,6 +454,14 @@ def run_executable(executable, *args, timeout=None):
     return ret.returncode, ret.stdout.decode(sys.stdout.encoding), ret.stderr.decode(sys.stderr.encoding)
 
 
+def open_local_path(path):
+    url = QtCore.QUrl.fromLocalFile(path)
+    if os.environ.get('SNAP'):
+        run_executable('xdg-open', url.toString())
+    else:
+        QDesktopServices.openUrl(url)
+
+
 _mbid_format = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 _re_mbid_val = re.compile(_mbid_format, re.IGNORECASE)
 def mbid_validate(string):  # noqa: E302
@@ -431,9 +475,9 @@ def parse_amazon_url(url):
     It returns a dict with host and asin keys on success, None else
     """
     r = re.compile(r'^https?://(?:www.)?(?P<host>.*?)(?:\:[0-9]+)?/.*/(?P<asin>[0-9B][0-9A-Z]{9})(?:[^0-9A-Z]|$)')
-    match = r.match(url)
-    if match is not None:
-        return match.groupdict()
+    match_ = r.match(url)
+    if match_ is not None:
+        return match_.groupdict()
     return None
 
 
@@ -495,17 +539,26 @@ class IgnoreUpdatesContext:
     updates if it is `False`.
     """
 
-    def __init__(self, onexit=None):
+    def __init__(self, on_exit=None, on_enter=None, on_first_enter=None, on_last_exit=None):
         self._entered = 0
-        self._onexit = onexit
+        self._on_exit = on_exit
+        self._on_last_exit = on_last_exit
+        self._on_enter = on_enter
+        self._on_first_enter = on_first_enter
 
     def __enter__(self):
         self._entered += 1
+        if self._on_enter:
+            self._on_enter()
+        if self._entered == 1 and self._on_first_enter:
+            self._on_first_enter()
 
-    def __exit__(self, type, value, tb):
+    def __exit__(self, exc_type, exc_value, traceback):
         self._entered -= 1
-        if self._onexit:
-            self._onexit()
+        if self._on_exit:
+            self._on_exit()
+        if self._entered == 0 and self._on_last_exit:
+            self._on_last_exit()
 
     def __bool__(self):
         return self._entered > 0
@@ -545,9 +598,9 @@ def tracknum_from_filename(base_filename):
     """
     filename, _ext = os.path.splitext(base_filename)
     for pattern in _tracknum_regexps:
-        match = pattern.search(filename)
-        if match:
-            n = int(match.group('number'))
+        match_ = pattern.search(filename)
+        if match_:
+            n = int(match_.group('number'))
             # Numbers above 1900 are often years, track numbers should be much
             # smaller even for extensive collections
             if n > 0 and n < 1900:
@@ -666,6 +719,17 @@ def album_artist_from_path(filename, album, artist):
     return album, artist
 
 
+def encoded_queryargs(queryargs):
+    """
+    Percent-encode all values from passed dictionary
+    Keys are left unmodified
+    """
+    return {
+        name: bytes(QtCore.QUrl.toPercentEncoding(str(value))).decode()
+        for name, value in queryargs.items()
+    }
+
+
 def build_qurl(host, port=80, path=None, queryargs=None):
     """
     Builds and returns a QUrl object from `host`, `port` and `path` and
@@ -678,11 +742,11 @@ def build_qurl(host, port=80, path=None, queryargs=None):
     url.setHost(host)
 
     if port == 443 or host in MUSICBRAINZ_SERVERS:
-        url.setScheme("https")
+        url.setScheme('https')
     elif port == 80:
-        url.setScheme("http")
+        url.setScheme('http')
     else:
-        url.setScheme("http")
+        url.setScheme('http')
         url.setPort(port)
 
     if path is not None:
@@ -763,7 +827,8 @@ def parse_json(reply):
 
 def restore_method(func):
     def func_wrapper(*args, **kwargs):
-        if not QtCore.QObject.tagger._no_restore:
+        tagger = QtCore.QCoreApplication.instance()
+        if not tagger._no_restore:
             return func(*args, **kwargs)
     return func_wrapper
 
@@ -834,23 +899,6 @@ def find_best_match(candidates, no_match):
     return BestMatch(similarity=best_match.similarity, result=best_match)
 
 
-def get_qt_enum(cls, enum):
-    """
-    List all the names of attributes inside a Qt enum.
-
-    Example:
-        >>> from PyQt5.Qt import Qt
-        >>> print(get_qt_enum(Qt, Qt.CoordinateSystem))
-        ['DeviceCoordinates', 'LogicalCoordinates']
-    """
-    values = []
-    for key in dir(cls):
-        value = getattr(cls, key)
-        if isinstance(value, enum):
-            values.append(key)
-    return values
-
-
 def limited_join(a_list, limit, join_string='+', middle_string='…'):
     """Join elements of a list with `join_string`
     If list is longer than `limit`, middle elements will be dropped,
@@ -885,6 +933,10 @@ def limited_join(a_list, limit, join_string='+', middle_string='…'):
     start = a_list[:half]
     end = a_list[-half:]
     return join_string.join(start + [middle_string] + end)
+
+
+def countries_shortlist(countries):
+    return limited_join(countries, 6, '+', '…')
 
 
 def extract_year_from_date(dt):
@@ -1021,12 +1073,17 @@ def _regex_numbered_title_fmt(fmt, title_repl, count_repl):
     )
 
 
+def _get_default_numbered_title_format():
+    from picard.const.defaults import DEFAULT_NUMBERED_TITLE_FORMAT
+    return gettext_constants(DEFAULT_NUMBERED_TITLE_FORMAT)
+
+
 def unique_numbered_title(default_title, existing_titles, fmt=None):
     """Generate a new unique and numbered title
        based on given default title and existing titles
     """
     if fmt is None:
-        fmt = _(DEFAULT_NUMBERED_TITLE_FORMAT)
+        fmt = _get_default_numbered_title_format()
 
     escaped_title = re.escape(default_title)
     reg_count = r'(\d+)'
@@ -1049,7 +1106,7 @@ def get_base_title_with_suffix(title, suffix, fmt=None):
        removing the suffix and number portion from the end.
     """
     if fmt is None:
-        fmt = _(DEFAULT_NUMBERED_TITLE_FORMAT)
+        fmt = _get_default_numbered_title_format()
 
     escaped_suffix = re.escape(suffix)
     reg_title = r'(?P<title>.*?)(?:\s*' + escaped_suffix + ')?'
@@ -1064,7 +1121,8 @@ def get_base_title_with_suffix(title, suffix, fmt=None):
 def get_base_title(title):
     """Extract the base portion of a title, using the standard suffix.
     """
-    suffix = _(DEFAULT_COPY_TEXT)
+    from picard.const.defaults import DEFAULT_COPY_TEXT
+    suffix = gettext_constants(DEFAULT_COPY_TEXT)
     return get_base_title_with_suffix(title, suffix)
 
 
@@ -1103,20 +1161,24 @@ def strxfrm(string):
 
 
 ENCODING_BOMS = {
+    b'\xff\xfe\x00\x00': 'utf-32-le',
+    b'\x00\x00\xfe\xff': 'utf-32-be',
+    b'\xef\xbb\xbf': 'utf-8-sig',
     b'\xff\xfe': 'utf-16-le',
     b'\xfe\xff': 'utf-16-be',
-    b'\00\00\xff\xfe': 'utf-32-le',
-    b'\00\00\xfe\xff': 'utf-32-be',
 }
 
 
-def detect_unicode_encoding(path):
-    """Attempts to guess the unicode encoding of a file based on the BOM.
+def detect_file_encoding(path, max_bytes_to_read=1024*256):
+    """Attempts to guess the unicode encoding of a file based on the BOM, and
+    depending on avalibility, using a charset detection method.
 
-    Assumes UTF-8 by default if there is no BOM.
+    Assumes UTF-8 by default if no other encoding is detected.
 
     Args:
         path: The path to the file
+        max_bytes_to_read: Maximum bytes to read from the file during encoding
+        detection.
 
     Returns: The encoding as a string, e.g. "utf-16-le" or "utf-8"
     """
@@ -1125,4 +1187,19 @@ def detect_unicode_encoding(path):
         for bom, encoding in ENCODING_BOMS.items():
             if first_bytes.startswith(bom):
                 return encoding
-        return 'utf-8'
+
+        if detect is None:
+            return 'utf-8'
+
+        f.seek(0)
+        result = detect(f.read(max_bytes_to_read))
+        if result['encoding'] is None:
+            log.warning("Couldn't detect encoding for file %r", path)
+            encoding = 'utf-8'
+        elif result['encoding'].lower() == 'ascii':
+            # Treat ASCII as UTF-8 (an ASCII document is also valid UTF-8)
+            encoding = 'utf-8'
+        else:
+            encoding = result['encoding'].lower()
+
+        return encoding

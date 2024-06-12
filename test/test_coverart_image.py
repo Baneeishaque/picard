@@ -2,7 +2,7 @@
 #
 # Picard, the next-generation MusicBrainz tagger
 #
-# Copyright (C) 2019, 2021-2022 Philipp Wolfer
+# Copyright (C) 2019, 2021-2024 Philipp Wolfer
 # Copyright (C) 2019-2021 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
@@ -30,13 +30,18 @@ from test.picardtestcase import (
     create_fake_png,
 )
 
-from picard.const import DEFAULT_COVER_IMAGE_FILENAME
+from picard.const.defaults import DEFAULT_COVER_IMAGE_FILENAME
 from picard.const.sys import IS_WIN
 from picard.coverart.image import (
     CoverArtImage,
     LocalFileCoverArtImage,
+    TagCoverArtImage,
 )
-from picard.coverart.utils import Id3ImageType
+from picard.coverart.utils import (
+    Id3ImageType,
+    types_from_id3,
+)
+from picard.file import File
 from picard.metadata import Metadata
 from picard.util import encode_filename
 from picard.util.filenaming import WinPathTooLong
@@ -54,7 +59,43 @@ def create_image(extra_data, types=None, support_types=False,
     )
 
 
+class TagCoverArtImageTest(PicardTestCase):
+    def test_repr_str_1(self):
+        image_type = Id3ImageType.COVER_FRONT
+        image = TagCoverArtImage(
+            file='testfilename',
+            tag='tag',
+            types=types_from_id3(image_type),
+            comment='description',
+            support_types=True,
+            data=None,
+            id3_type=image_type,
+            is_front=True,
+        )
+        expected = "TagCoverArtImage('testfilename', tag='tag', types=['front'], support_types=True, support_multi_types=False, is_front=True, comment='description')"
+        self.assertEqual(expected, repr(image))
+        expected = "TagCoverArtImage from 'testfilename' of type front and comment 'description'"
+        self.assertEqual(expected, str(image))
+
+
 class CoverArtImageTest(PicardTestCase):
+    def test_repr_str_1(self):
+        image = CoverArtImage(
+            url='url', types=["booklet", "front"],
+            comment='comment', support_types=True,
+            support_multi_types=True
+        )
+        expected = "CoverArtImage(url='url', types=['booklet', 'front'], support_types=True, support_multi_types=True, comment='comment')"
+        self.assertEqual(expected, repr(image))
+        expected = "CoverArtImage from url of type booklet,front and comment 'comment'"
+        self.assertEqual(expected, str(image))
+
+    def test_repr_str_2(self):
+        image = CoverArtImage()
+        expected = "CoverArtImage(support_types=False, support_multi_types=False)"
+        self.assertEqual(expected, repr(image))
+        expected = "CoverArtImage"
+        self.assertEqual(expected, str(image))
 
     def test_is_front_image_no_types(self):
         image = create_image(b'a')
@@ -83,6 +124,14 @@ class CoverArtImageTest(PicardTestCase):
         self.assertEqual("back", create_image(b'a', types=["back", "medium"], support_types=True).maintype)
         self.assertEqual("front", create_image(b'a', types=["back", "medium"], support_types=False).maintype)
 
+    def test_normalized_types(self):
+        self.assertEqual(("front",), create_image(b'a').normalized_types())
+        self.assertEqual(("-",), create_image(b'a', support_types=True).normalized_types())
+        self.assertEqual(("front",), create_image(b'a', types=["front"], support_types=True).normalized_types())
+        self.assertEqual(("front", "back",), create_image(b'a', types=["back", "front"], support_types=True).normalized_types())
+        self.assertEqual(("back", "medium",), create_image(b'a', types=["medium", "back"], support_types=True).normalized_types())
+        self.assertEqual(("front",), create_image(b'a', types=["back", "medium"], support_types=False).normalized_types())
+
     def test_id3_type_derived(self):
         self.assertEqual(Id3ImageType.COVER_FRONT, create_image(b'a').id3_type)
         self.assertEqual(Id3ImageType.COVER_FRONT, create_image(b'a', support_types=True).id3_type)
@@ -107,6 +156,15 @@ class CoverArtImageTest(PicardTestCase):
         for invalid_value in ('foo', 200, -1):
             with self.assertRaises(ValueError):
                 image.id3_type = invalid_value
+
+    def test_init_invalid_id3_type(self):
+        cases = (
+            (CoverArtImage, []),
+            (TagCoverArtImage, [File('test.mp3')]),
+        )
+        for image_class, args in cases:
+            image = image_class(*args, id3_type=255)
+            self.assertEqual(image.id3_type, Id3ImageType.OTHER)
 
     def test_compare_without_type(self):
         image1 = create_image(b'a', types=["front"])
@@ -142,6 +200,51 @@ class CoverArtImageTest(PicardTestCase):
         self.assertEqual(image2, image3)
         self.assertNotEqual(image2, image4)
 
+    def test_lt_type1(self):
+        image1 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True)
+        image2 = create_image(b'b', types=["booklet"], support_types=True, support_multi_types=True)
+        self.assertLess(image1, image2)
+
+    def test_lt_type2(self):
+        image1 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True)
+        image2 = create_image(b'b', types=["booklet", "front"], support_types=True, support_multi_types=True)
+        self.assertLess(image1, image2)
+
+    def test_lt_type3(self):
+        image1 = create_image(b'a', types=["back"], support_types=True, support_multi_types=True)
+        image2 = create_image(b'b', types=["-"], support_types=True, support_multi_types=True)
+        self.assertLess(image1, image2)
+
+    def test_lt_comment1(self):
+        image1 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True)
+        image2 = create_image(b'b', types=["front"], support_types=True, support_multi_types=True, comment='b')
+        self.assertLess(image1, image2)
+
+    def test_lt_comment2(self):
+        image1 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True, comment='a')
+        image2 = create_image(b'b', types=["front"], support_types=True, support_multi_types=True, comment='b')
+        self.assertLess(image1, image2)
+
+    def test_lt_comment3(self):
+        image1 = create_image(b'b', types=["back"], support_types=False, comment='a')  # not supporting types = front
+        image2 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True, comment='b')
+        self.assertLess(image1, image2)
+
+    def test_lt_datahash(self):
+        image1 = create_image(b'zz', types=["front"], support_types=True, support_multi_types=True, comment='a')
+        image2 = create_image(b'xx', types=["front"], support_types=True, support_multi_types=True, comment='a')
+        self.assertLess(image1, image2)
+
+    def test_sorted_images(self):
+        image1 = create_image(b'a', types=["front"], support_types=True, support_multi_types=True)
+        image2 = create_image(b'a', types=["booklet"], support_types=True, support_multi_types=True)
+        image3 = create_image(b'a', types=["front", "booklet"], support_types=True, support_multi_types=True, comment='a')
+        image4 = create_image(b'b', types=["front", "booklet"], support_types=True, support_multi_types=True, comment='b')
+
+        result = sorted([image4, image3, image2, image1])
+        self.maxDiff = None
+        self.assertEqual(result, [image1, image3, image4, image2])
+
     def test_set_data(self):
         imgdata = create_fake_png(b'a')
         imgdata2 = create_fake_png(b'xxx')
@@ -166,7 +269,10 @@ class CoverArtImageTest(PicardTestCase):
         self.set_config_values({
             'image_type_as_filename': True,
             'windows_compatibility': True,
+            'win_compat_replacements': {},
             'windows_long_paths': False,
+            'replace_spaces_with_underscores': False,
+            'replace_dir_separator': '_',
             'enabled_plugins': [],
             'ascii_filenames': False,
             'save_images_overwrite': False,
@@ -196,8 +302,11 @@ class CoverArtImageMakeFilenameTest(PicardTestCase):
         self.metadata = Metadata()
         self.set_config_values({
             'windows_compatibility': False,
+            'win_compat_replacements': {},
             'enabled_plugins': [],
             'ascii_filenames': False,
+            'replace_spaces_with_underscores': False,
+            'replace_dir_separator': '_',
         })
 
     def compare_paths(self, path1, path2):

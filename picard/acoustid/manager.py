@@ -5,8 +5,9 @@
 # Copyright (C) 2011 Lukáš Lalinský
 # Copyright (C) 2017 Sambhav Kothari
 # Copyright (C) 2018 Vishal Choudhary
-# Copyright (C) 2018, 2020-2021 Laurent Monin
-# Copyright (C) 2020, 2022 Philipp Wolfer
+# Copyright (C) 2018, 2020-2021, 2023-2024 Laurent Monin
+# Copyright (C) 2020, 2022-2023 Philipp Wolfer
+# Copyright (C) 2022 cybersphinx
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,10 +26,13 @@
 
 from functools import partial
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from picard import log
+from picard.i18n import N_
 from picard.util import load_json
+
+from picard.ui.enums import MainAction
 
 
 # Maximum difference between file duration and MB recording length.
@@ -37,7 +41,7 @@ from picard.util import load_json
 FINGERPRINT_MAX_ALLOWED_LENGTH_DIFF_MS = 30000
 
 
-class Submission(object):
+class Submission:
 
     def __init__(self, fingerprint, duration, recordingid=None, metadata=None):
         self.fingerprint = fingerprint
@@ -97,7 +101,7 @@ class Submission(object):
         return args
 
 
-class AcoustIDManager(QtCore.QObject):
+class AcoustIDManager:
 
     # AcoustID has a post limit of around 1 MB.
     MAX_PAYLOAD = 1000000
@@ -108,7 +112,7 @@ class AcoustIDManager(QtCore.QObject):
     BATCH_SIZE_REDUCTION_FACTOR = 0.7
 
     def __init__(self, acoustid_api):
-        super().__init__()
+        self.tagger = QtCore.QCoreApplication.instance()
         self._submissions = {}
         self._acoustid_api = acoustid_api
 
@@ -148,7 +152,7 @@ class AcoustIDManager(QtCore.QObject):
 
     def _check_unsubmitted(self):
         enabled = next(self._unsubmitted(), None) is not None
-        self.tagger.window.enable_submit(enabled)
+        self.tagger.window.enable_action(MainAction.SUBMIT_ACOUSTID, enabled)
 
     def submit(self):
         self.max_batch_size = self.MAX_PAYLOAD
@@ -156,7 +160,7 @@ class AcoustIDManager(QtCore.QObject):
         if not submissions:
             self._check_unsubmitted()
             return
-        log.debug("AcoustID: submitting total of %d fingerprints...", len(submissions))
+        log.debug("AcoustID: submitting total of %d fingerprints…", len(submissions))
         self._batch_submit(submissions)
 
     def _batch(self, submissions):
@@ -202,10 +206,10 @@ class AcoustIDManager(QtCore.QObject):
             self._check_unsubmitted()
             return
 
-        log.debug("AcoustID: submitting batch of %d fingerprints (%d remaining)...",
+        log.debug("AcoustID: submitting batch of %d fingerprints (%d remaining)…",
             len(batch), len(submissions))
         self.tagger.window.set_statusbar_message(
-            N_('Submitting AcoustIDs ...'),
+            N_("Submitting AcoustIDs …"),
             echo=None
         )
         if not errors:
@@ -227,7 +231,7 @@ class AcoustIDManager(QtCore.QObject):
             else:
                 try:
                     errordoc = load_json(document)
-                    message = errordoc["error"]["message"]
+                    message = errordoc['error']['message']
                 except BaseException:
                     message = ""
                 mparms = {
@@ -240,7 +244,7 @@ class AcoustIDManager(QtCore.QObject):
                 self.tagger.window.set_statusbar_message(
                     log_msg, mparms, echo=None, timeout=3000)
         else:
-            log.debug('AcoustID: %d fingerprints successfully submitted', len(batch))
+            log.debug("AcoustID: %d fingerprints successfully submitted", len(batch))
             for file, submission in batch:
                 submission.orig_recordingid = submission.recordingid
                 file.update()

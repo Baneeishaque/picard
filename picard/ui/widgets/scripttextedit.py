@@ -4,8 +4,8 @@
 #
 # Copyright (C) 2006-2007, 2009 Lukáš Lalinský
 # Copyright (C) 2014 m42i
-# Copyright (C) 2020-2021 Laurent Monin
-# Copyright (C) 2020-2022 Philipp Wolfer
+# Copyright (C) 2020-2024 Philipp Wolfer
+# Copyright (C) 2020-2024 Laurent Monin
 # Copyright (C) 2021-2022 Bob Swift
 #
 # This program is free software; you can redistribute it and/or
@@ -26,30 +26,29 @@
 import re
 import unicodedata
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
 )
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import (
+    QAction,
     QCursor,
     QKeySequence,
     QTextCursor,
 )
-from PyQt5.QtWidgets import (
-    QAction,
+from PyQt6.QtWidgets import (
     QCompleter,
     QTextEdit,
     QToolTip,
 )
 
-from picard.config import (
-    BoolOption,
-    get_config,
-)
+from picard.config import get_config
 from picard.const.sys import IS_MACOS
+from picard.i18n import gettext as _
 from picard.script import (
     ScriptFunctionDocError,
+    ScriptFunctionDocUnknownFunctionError,
     script_function_documentation,
     script_function_names,
 )
@@ -60,7 +59,7 @@ from picard.util.tags import (
 )
 
 from picard.ui import FONT_FAMILY_MONOSPACE
-from picard.ui.theme import theme
+from picard.ui.colors import interface_colors
 
 
 EXTRA_VARIABLES = (
@@ -94,60 +93,87 @@ EXTRA_VARIABLES = (
 
 
 def find_regex_index(regex, text, start=0):
-    match = regex.search(text[start:])
-    return start + match.start() if match else -1
+    m = regex.search(text[start:])
+    if m:
+        return start + m.start()
+    else:
+        return -1
+
+
+class HighlightRule:
+
+    def __init__(self, fmtname, regex, start_offset=0, end_offset=0):
+        self.fmtname = fmtname
+        self.regex = re.compile(regex)
+        self.start_offset = start_offset
+        self.end_offset = end_offset
+
+
+class HighlightFormat(QtGui.QTextCharFormat):
+
+    def __init__(self, fg_color=None, italic=False, bold=False):
+        super().__init__()
+        if fg_color is not None:
+            self.setForeground(interface_colors.get_qcolor(fg_color))
+        if italic:
+            self.setFontItalic(True)
+        if bold:
+            self.setFontWeight(QtGui.QFont.Weight.Bold)
 
 
 class TaggerScriptSyntaxHighlighter(QtGui.QSyntaxHighlighter):
 
     def __init__(self, document):
         super().__init__(document)
-        syntax_theme = theme.syntax_theme
-        self.func_re = re.compile(r"\$(?!noop)[_a-zA-Z0-9]*\(")
-        self.func_fmt = QtGui.QTextCharFormat()
-        self.func_fmt.setFontWeight(QtGui.QFont.Weight.Bold)
-        self.func_fmt.setForeground(syntax_theme.func)
-        self.var_re = re.compile(r"%[_a-zA-Z0-9:]*%")
-        self.var_fmt = QtGui.QTextCharFormat()
-        self.var_fmt.setForeground(syntax_theme.var)
-        self.unicode_re = re.compile(r"\\u[a-fA-F0-9]{4}")
-        self.unicode_fmt = QtGui.QTextCharFormat()
-        self.unicode_fmt.setForeground(syntax_theme.escape)
-        self.escape_re = re.compile(r"\\[^u]")
-        self.escape_fmt = QtGui.QTextCharFormat()
-        self.escape_fmt.setForeground(syntax_theme.escape)
-        self.special_re = re.compile(r"[^\\][(),]")
-        self.special_fmt = QtGui.QTextCharFormat()
-        self.special_fmt.setForeground(syntax_theme.special)
-        self.bracket_re = re.compile(r"[()]")
-        self.noop_re = re.compile(r"\$noop\(")
-        self.noop_fmt = QtGui.QTextCharFormat()
-        self.noop_fmt.setFontWeight(QtGui.QFont.Weight.Bold)
-        self.noop_fmt.setFontItalic(True)
-        self.noop_fmt.setForeground(syntax_theme.noop)
-        self.rules = [
-            (self.func_re, self.func_fmt, 0, -1),
-            (self.var_re, self.var_fmt, 0, 0),
-            (self.unicode_re, self.unicode_fmt, 0, 0),
-            (self.escape_re, self.escape_fmt, 0, 0),
-            (self.special_re, self.special_fmt, 1, -1),
-        ]
+
+        self.textcharformats = {
+            'escape': HighlightFormat(fg_color='syntax_hl_escape'),
+            'func': HighlightFormat(fg_color='syntax_hl_func', bold=True),
+            'noop': HighlightFormat(fg_color='syntax_hl_noop', bold=True, italic=True),
+            'special': HighlightFormat(fg_color='syntax_hl_special'),
+            'unicode': HighlightFormat(fg_color='syntax_hl_unicode'),
+            'unknown_func': HighlightFormat(fg_color='syntax_hl_error', italic=True),
+            'var': HighlightFormat(fg_color='syntax_hl_var'),
+        }
+
+        self.rules = list(self.func_rules())
+        self.rules.extend((
+            HighlightRule('unknown_func', r"\$(?!noop)[_a-zA-Z0-9]*\(", end_offset=-1),
+            HighlightRule('var', r"%[_a-zA-Z0-9:]*%"),
+            HighlightRule('unicode', r"\\u[a-fA-F0-9]{4}"),
+            HighlightRule('escape', r"\\[^u]"),
+            HighlightRule('special', r"(?<!\\)[(),]"),
+        ))
+
+    def func_rules(self):
+        for func_name in script_function_names():
+            if func_name != 'noop':
+                pattern = re.escape("$" + func_name + "(")
+                yield HighlightRule('func', pattern, end_offset=-1)
 
     def highlightBlock(self, text):
         self.setCurrentBlockState(0)
 
-        for expr, fmt, a, b in self.rules:
-            for match in expr.finditer(text):
-                index = match.start()
-                length = match.end() - match.start()
-                self.setFormat(index + a, length + b, fmt)
+        already_matched = set()
+        for rule in self.rules:
+            for m in rule.regex.finditer(text):
+                index = m.start() + rule.start_offset
+                length = m.end() - m.start() + rule.end_offset
+                if (index, length) not in already_matched:
+                    already_matched.add((index, length))
+                    fmt = self.textcharformats[rule.fmtname]
+                    self.setFormat(index, length, fmt)
+
+        noop_re = re.compile(r"\$noop\(")
+        noop_fmt = self.textcharformats['noop']
 
         # Ignore everything if we're already in a noop function
-        index = find_regex_index(self.noop_re, text) if self.previousBlockState() <= 0 else 0
+        index = find_regex_index(noop_re, text) if self.previousBlockState() <= 0 else 0
         open_brackets = self.previousBlockState() if self.previousBlockState() > 0 else 0
         text_length = len(text)
+        bracket_re = re.compile(r"[()]")
         while index >= 0:
-            next_index = find_regex_index(self.bracket_re, text, index)
+            next_index = find_regex_index(bracket_re, text, index)
 
             # Skip escaped brackets
             if next_index > 0 and text[next_index - 1] == '\\':
@@ -155,7 +181,7 @@ class TaggerScriptSyntaxHighlighter(QtGui.QSyntaxHighlighter):
 
             # Reached end of text?
             if next_index >= text_length:
-                self.setFormat(index, text_length - index, self.noop_fmt)
+                self.setFormat(index, text_length - index, noop_fmt)
                 break
 
             if next_index > -1 and text[next_index] == '(':
@@ -164,13 +190,13 @@ class TaggerScriptSyntaxHighlighter(QtGui.QSyntaxHighlighter):
                 open_brackets -= 1
 
             if next_index > -1:
-                self.setFormat(index, next_index - index + 1, self.noop_fmt)
+                self.setFormat(index, next_index - index + 1, noop_fmt)
             elif next_index == -1 and open_brackets > 0:
-                self.setFormat(index, text_length - index, self.noop_fmt)
+                self.setFormat(index, text_length - index, noop_fmt)
 
             # Check for next noop operation, necessary for multiple noops in one line
             if open_brackets == 0:
-                next_index = find_regex_index(self.noop_re, text, next_index)
+                next_index = find_regex_index(noop_re, text, next_index)
 
             index = next_index + 1 if next_index > -1 and next_index < text_length else -1
 
@@ -253,6 +279,12 @@ class FunctionScriptToken(DocumentedScriptToken):
         function = self._read_allowed_chars(position + 1)
         try:
             return script_function_documentation(function, 'html')
+        except ScriptFunctionDocUnknownFunctionError:
+            return _(
+                '<em>Function <code>$%s</code> does not exist.<br>'
+                '<br>'
+                'Are you missing a plugin?'
+                '</em>') % function
         except ScriptFunctionDocError:
             return None
 
@@ -287,9 +319,12 @@ class UnicodeEscapeScriptToken(DocumentedScriptToken):
         if self.unicode_escape_sequence.match(text):
             codepoint = int(text[2:], 16)
             char = chr(codepoint)
-            tooltip = unicodedata.name(char)
+            try:
+                tooltip = unicodedata.name(char)
+            except ValueError:
+                tooltip = f'U+{text[2:].upper()}'
             if unicodedata.category(char)[0] != "C":
-                tooltip += ': "%s"' % char
+                tooltip += f': "{char}"'
             return tooltip
         return None
 
@@ -309,11 +344,6 @@ def _replace_control_chars(text):
 
 class ScriptTextEdit(QTextEdit):
     autocomplete_trigger_chars = re.compile('[$%A-Za-z0-9_]')
-
-    options = [
-        BoolOption('persist', 'script_editor_wordwrap', False),
-        BoolOption('persist', 'script_editor_tooltips', True),
-    ]
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -346,7 +376,7 @@ class ScriptTextEdit(QTextEdit):
         menu.addSeparator()
         menu.addAction(self.wordwrap_action)
         menu.addAction(self.show_tooltips_action)
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
     def mouseMoveEvent(self, event):
         if self._show_tooltips:

@@ -3,8 +3,8 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2016 Rahul Raturi
-# Copyright (C) 2018-2021 Laurent Monin
-# Copyright (C) 2018-2022 Philipp Wolfer
+# Copyright (C) 2018-2023 Philipp Wolfer
+# Copyright (C) 2018-2024 Laurent Monin
 # Copyright (C) 2020 Ray Bouchard
 #
 # This program is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 
 from collections import namedtuple
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtNetwork,
@@ -32,6 +32,7 @@ from PyQt5 import (
 )
 
 from picard.config import get_config
+from picard.i18n import gettext as _
 from picard.util import (
     icontheme,
     restore_method,
@@ -43,15 +44,15 @@ from picard.ui.util import StandardButton
 
 class SearchBox(QtWidgets.QWidget):
 
-    def __init__(self, parent, force_advanced_search=None):
-        super().__init__(parent)
-        self.search_action = QtWidgets.QAction(icontheme.lookup('system-search'), _("Search"), self)
+    def __init__(self, force_advanced_search=None, parent=None):
+        super().__init__(parent=parent)
+        self.search_action = QtGui.QAction(icontheme.lookup('system-search'), _("Search"), self)
         self.search_action.setEnabled(False)
         self.search_action.triggered.connect(self.search)
         if force_advanced_search is None:
             config = get_config()
             self.force_advanced_search = False
-            self.use_advanced_search = config.setting["use_adv_search_syntax"]
+            self.use_advanced_search = config.setting['use_adv_search_syntax']
         else:
             self.force_advanced_search = True
             self.use_advanced_search = force_advanced_search
@@ -118,7 +119,7 @@ class SearchBox(QtWidgets.QWidget):
         self.use_advanced_search = self.use_adv_search_syntax.isChecked()
         if not self.force_advanced_search:
             config = get_config()
-            config.setting["use_adv_search_syntax"] = self.use_advanced_search
+            config.setting['use_adv_search_syntax'] = self.use_advanced_search
 
     def enable_search(self):
         if self.query:
@@ -139,7 +140,7 @@ class SearchBox(QtWidgets.QWidget):
     query = property(get_query, set_query)
 
 
-Retry = namedtuple("Retry", ["function", "query"])
+Retry = namedtuple('Retry', ['function', 'query'])
 
 
 class SearchDialog(TableBasedDialog):
@@ -162,22 +163,22 @@ class SearchDialog(TableBasedDialog):
             return self.force_advanced_search
         else:
             config = get_config()
-            return config.setting["use_adv_search_syntax"]
+            return config.setting['use_adv_search_syntax']
 
     def get_value_for_row_id(self, row, value):
         return row
 
     def setupUi(self):
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
-        self.verticalLayout.setObjectName("vertical_layout")
+        self.verticalLayout.setObjectName('vertical_layout')
         if self.show_search:
-            self.search_box = SearchBox(self, force_advanced_search=self.force_advanced_search)
-            self.search_box.setObjectName("search_box")
+            self.search_box = SearchBox(force_advanced_search=self.force_advanced_search, parent=self)
+            self.search_box.setObjectName('search_box')
             self.verticalLayout.addWidget(self.search_box)
         self.center_widget = QtWidgets.QWidget(self)
-        self.center_widget.setObjectName("center_widget")
+        self.center_widget.setObjectName('center_widget')
         self.center_layout = QtWidgets.QVBoxLayout(self.center_widget)
-        self.center_layout.setObjectName("center_layout")
+        self.center_layout.setObjectName('center_layout')
         self.center_layout.setContentsMargins(1, 1, 1, 1)
         self.center_widget.setLayout(self.center_layout)
         self.verticalLayout.addWidget(self.center_widget)
@@ -205,9 +206,9 @@ class SearchDialog(TableBasedDialog):
 
     def show_progress(self):
         progress_widget = QtWidgets.QWidget(self)
-        progress_widget.setObjectName("progress_widget")
+        progress_widget.setObjectName('progress_widget')
         layout = QtWidgets.QVBoxLayout(progress_widget)
-        text_label = QtWidgets.QLabel(_('<strong>Loading...</strong>'), progress_widget)
+        text_label = QtWidgets.QLabel(_('<strong>Loading…</strong>'), progress_widget)
         text_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignBottom)
         gif_label = QtWidgets.QLabel(progress_widget)
         movie = QtGui.QMovie(":/images/loader.gif")
@@ -228,7 +229,7 @@ class SearchDialog(TableBasedDialog):
             show_retry_button -- Whether to display retry button or not
         """
         error_widget = QtWidgets.QWidget(self)
-        error_widget.setObjectName("error_widget")
+        error_widget.setObjectName('error_widget')
         layout = QtWidgets.QVBoxLayout(error_widget)
         error_label = QtWidgets.QLabel(error, error_widget)
         error_label.setWordWrap(True)
@@ -249,14 +250,15 @@ class SearchDialog(TableBasedDialog):
         self.add_widget_to_center_layout(error_widget)
 
     def network_error(self, reply, error):
+        params = {
+            'url': reply.request().url().toString(QtCore.QUrl.UrlFormattingOption.RemoveUserInfo),
+            'error': reply.errorString(),
+            'qtcode': error,
+            'statuscode': reply.attribute(
+                QtNetwork.QNetworkRequest.Attribute.HttpStatusCodeAttribute)
+        }
         error_msg = _("<strong>Following error occurred while fetching results:<br><br></strong>"
-                      "Network request error for %s:<br>%s (QT code %d, HTTP code %s)<br>") % (
-                          reply.request().url().toString(QtCore.QUrl.UrlFormattingOption.RemoveUserInfo),
-                          reply.errorString(),
-                          error,
-                          repr(reply.attribute(
-                              QtNetwork.QNetworkRequest.Attribute.HttpStatusCodeAttribute))
-        )
+                      "Network request error for %(url)s:<br>%(error)s (QT code %(qtcode)d, HTTP code %(statuscode)r)<br>") % params
         self.show_error(error_msg, show_retry_button=True)
 
     def no_results_found(self):

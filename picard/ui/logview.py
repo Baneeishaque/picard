@@ -3,13 +3,14 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2007 Lukáš Lalinský
-# Copyright (C) 2008-2009, 2019-2022 Philipp Wolfer
+# Copyright (C) 2008-2009, 2019-2023 Philipp Wolfer
 # Copyright (C) 2012-2013 Michael Wiencek
-# Copyright (C) 2013-2014, 2018-2021 Laurent Monin
+# Copyright (C) 2013-2014, 2018-2024 Laurent Monin
 # Copyright (C) 2014 Sophist-UK
 # Copyright (C) 2016, 2018 Sambhav Kothari
 # Copyright (C) 2018 Wieland Hoffmann
 # Copyright (C) 2021 Gabriel Ferreira
+# Copyright (C) 2022 Kamil
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,17 +32,16 @@ import logging
 import os
 import re
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtWidgets,
 )
 
 from picard import log
-from picard.config import (
-    IntOption,
-    get_config,
-)
+from picard.config import get_config
+from picard.debug_opts import DebugOpt
+from picard.i18n import gettext as _
 from picard.util import (
     reconnect,
     wildcards_to_regex_pattern,
@@ -52,13 +52,14 @@ from picard.ui import (
     PicardDialog,
 )
 from picard.ui.colors import interface_colors
+from picard.ui.util import FileDialog
 
 
 class LogViewDialog(PicardDialog):
     defaultsize = QtCore.QSize(570, 400)
 
     def __init__(self, title, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.setWindowFlags(QtCore.Qt.WindowType.Window)
         self.setWindowTitle(title)
         self.doc = QtGui.QTextDocument()
@@ -72,8 +73,8 @@ class LogViewDialog(PicardDialog):
 
 class LogViewCommon(LogViewDialog):
 
-    def __init__(self, log_tail, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, log_tail, title, parent=None):
+        super().__init__(title, parent=parent)
         self.displaying = False
         self.log_tail = log_tail
         self._init_doc()
@@ -124,7 +125,7 @@ class LogViewCommon(LogViewDialog):
 
 
 class Highlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, string, parent=None):
+    def __init__(self, string, parent):
         super().__init__(parent)
 
         self.fmt = QtGui.QTextCharFormat()
@@ -144,10 +145,10 @@ class VerbosityMenu(QtWidgets.QMenu):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.action_group = QtWidgets.QActionGroup(self)
+        self.action_group = QtGui.QActionGroup(self)
         self.actions = {}
         for level, feat in log.levels_features.items():
-            action = QtWidgets.QAction(_(feat.name), self)
+            action = QtGui.QAction(_(feat.name), self)
             action.setCheckable(True)
             action.triggered.connect(partial(self.verbosity_changed.emit, level))
             self.action_group.addAction(action)
@@ -158,11 +159,24 @@ class VerbosityMenu(QtWidgets.QMenu):
         self.actions[level].setChecked(True)
 
 
-class LogView(LogViewCommon):
+class DebugOptsMenu(QtWidgets.QMenu):
 
-    options = [
-        IntOption("setting", "log_verbosity", logging.WARNING),
-    ]
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+        self.actions = {}
+        for debug_opt in DebugOpt:
+            action = QtGui.QAction(_(debug_opt.title), self, checkable=True, checked=debug_opt.enabled)
+            action.setToolTip(_(debug_opt.description))
+            action.triggered.connect(partial(self.debug_opt_changed, debug_opt))
+            self.addAction(action)
+            self.actions[debug_opt] = action
+
+    def debug_opt_changed(self, debug_opt, checked):
+        debug_opt.enabled = checked
+
+
+class LogView(LogViewCommon):
 
     def __init__(self, parent=None):
         super().__init__(log.main_tail, _("Log"), parent=parent)
@@ -175,13 +189,22 @@ class LogView(LogViewCommon):
         self.hbox = QtWidgets.QHBoxLayout()
         self.vbox.addLayout(self.hbox)
 
-        self.verbosity_menu_button = QtWidgets.QPushButton(_("Verbosity"))
+        self.verbosity_menu_button = QtWidgets.QPushButton()
+        self.verbosity_menu_button.setAccessibleName(_("Verbosity"))
         self.hbox.addWidget(self.verbosity_menu_button)
 
         self.verbosity_menu = VerbosityMenu()
-        self.verbosity_menu.set_verbosity(self.verbosity)
         self.verbosity_menu.verbosity_changed.connect(self._verbosity_changed)
         self.verbosity_menu_button.setMenu(self.verbosity_menu)
+
+        self.debug_opts_menu_button = QtWidgets.QPushButton(_("Debug Options"))
+        self.debug_opts_menu_button.setAccessibleName(_("Debug Options"))
+        self.hbox.addWidget(self.debug_opts_menu_button)
+
+        self.debug_opts_menu = DebugOptsMenu()
+        self.debug_opts_menu_button.setMenu(self.debug_opts_menu)
+
+        self._set_verbosity(self.verbosity)
 
         # highlight input
         self.highlight_text = QtWidgets.QLineEdit()
@@ -210,7 +233,7 @@ class LogView(LogViewCommon):
         self.clear_log_button.clicked.connect(self._clear_log_do)
 
         # save as
-        self.save_log_as_button = QtWidgets.QPushButton(_("Save As..."))
+        self.save_log_as_button = QtWidgets.QPushButton(_("Save As…"))
         self.hbox.addWidget(self.save_log_as_button)
         self.save_log_as_button.clicked.connect(self._save_log_as_do)
 
@@ -237,7 +260,7 @@ class LogView(LogViewCommon):
                 self.hl.setDocument(None)
                 self.hl = None
             if self.hl_text:
-                self.hl = Highlighter(self.hl_text, parent=self.doc)
+                self.hl = Highlighter(self.hl_text, self.doc)
             self.clear_highlight_button.setEnabled(bool(self.hl))
 
     def _setup_formats(self):
@@ -245,7 +268,7 @@ class LogView(LogViewCommon):
         self.formats = {}
         for level, feat in log.levels_features.items():
             text_fmt = QtGui.QTextCharFormat()
-            text_fmt.setFontFamily(FONT_FAMILY_MONOSPACE)
+            text_fmt.setFontFamilies([FONT_FAMILY_MONOSPACE])
             text_fmt.setForeground(interface_colors.get_qcolor(feat.color_key))
             self.formats[level] = text_fmt
 
@@ -253,10 +276,10 @@ class LogView(LogViewCommon):
         return self.formats[level]
 
     def _save_log_as_do(self):
-        path, ok = QtWidgets.QFileDialog.getSaveFileName(
-            self,
+        path, ok = FileDialog.getSaveFileName(
+            parent=self,
             caption=_("Save Log View to File"),
-            options=QtWidgets.QFileDialog.Option.DontConfirmOverwrite
+            options=QtWidgets.QFileDialog.Option.DontConfirmOverwrite,
         )
         if ok and path:
             if os.path.isfile(path):
@@ -270,7 +293,7 @@ class LogView(LogViewCommon):
                     return
 
             writer = QtGui.QTextDocumentWriter(path)
-            writer.setFormat(b"plaintext")
+            writer.setFormat(b'plaintext')
             success = writer.write(self.doc)
             if not success:
                 QtWidgets.QMessageBox.critical(
@@ -314,14 +337,23 @@ class LogView(LogViewCommon):
     def _set_verbosity(self, level):
         self.verbosity = level
         self.verbosity_menu.set_verbosity(self.verbosity)
+        self._update_verbosity_label()
 
     def _verbosity_changed(self, level):
         if level != self.verbosity:
             config = get_config()
             config.setting['log_verbosity'] = level
-            QtCore.QObject.tagger.set_log_level(level)
             self.verbosity = level
+            self._update_verbosity_label()
+            tagger = QtCore.QCoreApplication.instance()
+            tagger.set_log_level(level)
             self.display(clear=True)
+
+    def _update_verbosity_label(self):
+        feat = log.levels_features.get(self.verbosity)
+        label = _(feat.name) if feat else _("Verbosity")
+        self.verbosity_menu_button.setText(label)
+        self.debug_opts_menu_button.setEnabled(self.verbosity == logging.DEBUG)
 
 
 class HistoryView(LogViewCommon):

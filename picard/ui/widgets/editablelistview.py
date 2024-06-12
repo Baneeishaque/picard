@@ -3,7 +3,7 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2019-2022 Philipp Wolfer
-# Copyright (C) 2020-2021 Laurent Monin
+# Copyright (C) 2020-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-from PyQt5 import (
+from PyQt6 import (
     QtCore,
     QtGui,
     QtWidgets,
@@ -29,7 +29,7 @@ from PyQt5 import (
 
 class EditableListView(QtWidgets.QListView):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
 
@@ -42,7 +42,8 @@ class EditableListView(QtWidgets.QListView):
             super().keyPressEvent(event)
 
     def mouseDoubleClickEvent(self, event):
-        index = self.indexAt(QtCore.QPoint(event.x(), event.y()))
+        pos = event.pos()
+        index = self.indexAt(QtCore.QPoint(pos.x(), pos.y()))
         if index.isValid():
             super().mouseDoubleClickEvent(event)
         else:
@@ -83,7 +84,7 @@ class EditableListView(QtWidgets.QListView):
 
     def add_empty_row(self):
         # Setting the focus causes any open editor to getting closed
-        self.setFocus(True)
+        self.setFocus(QtCore.Qt.FocusReason.OtherFocusReason)
         index = self.add_item()
         self.setCurrentIndex(index)
         self.edit(index)
@@ -291,7 +292,7 @@ class EditableListModel(QtCore.QAbstractListModel):
 
 class AutocompleteItemDelegate(QtWidgets.QItemDelegate):
     def __init__(self, completions, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self._completions = completions
 
     def createEditor(self, parent, option, index):

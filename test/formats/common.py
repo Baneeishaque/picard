@@ -30,7 +30,6 @@ import mutagen
 from test.picardtestcase import PicardTestCase
 
 from picard import config
-from picard.file import File
 import picard.formats
 from picard.formats import ext_to_format
 from picard.formats.mutagenext.aac import AACAPEv2
@@ -38,6 +37,7 @@ from picard.formats.mutagenext.ac3 import AC3APEv2
 from picard.formats.mutagenext.tak import TAK
 from picard.formats.util import guess_format
 from picard.metadata import Metadata
+from picard.util.tags import FILE_INFO_TAGS
 
 
 settings = {
@@ -62,6 +62,9 @@ settings = {
     'write_wave_riff_info': True,
     'remove_wave_riff_info': False,
     'wave_riff_info_encoding': 'iso-8859-1',
+    'replace_spaces_with_underscores': False,
+    'replace_dir_separator': '_',
+    'win_compat_replacements': {},
 }
 
 
@@ -160,6 +163,7 @@ TAGS = {
     'podcast': '1',
     'podcasturl': 'Foo',
     'producer': 'Foo',
+    'releasedate': '2022-05-22',
     'releasecountry': 'XW',
     'releasestatus': 'Foo',
     'releasetype': 'Foo',
@@ -212,7 +216,7 @@ class CommonTests:
                 self.testfile_path = os.path.join('test', 'data', self.testfile)
                 self.testfile_ext = os.path.splitext(self.testfile)[1]
                 self.filename = self.copy_of_original_testfile()
-                self.format = ext_to_format(self.testfile_ext[1:])
+                self.format = ext_to_format(self.testfile_ext)
 
         def copy_of_original_testfile(self):
             return self.copy_file_tmp(self.testfile_path, self.testfile_ext)
@@ -231,7 +235,7 @@ class CommonTests:
         def test_info(self):
             if not self.expected_info:
                 raise unittest.SkipTest("Ratings not supported for %s" % self.format.NAME)
-            metadata = save_and_load_metadata(self.filename, Metadata())
+            metadata = load_metadata(self.filename)
             for key, expected_value in self.expected_info.items():
                 value = metadata.length if key == 'length' else metadata[key]
                 self.assertEqual(expected_value, value, '%s: %r != %r' % (key, expected_value, value))
@@ -314,7 +318,7 @@ class CommonTests:
 
         @skipUnlessTestfile
         def test_unsupported_tags_info_tags(self):
-            for tag in File.FILE_INFO_TAGS:
+            for tag in FILE_INFO_TAGS:
                 self.assertFalse(self.format.supports_tag(tag), 'Tag "%s" must not be supported' % tag)
 
         @skipUnlessTestfile

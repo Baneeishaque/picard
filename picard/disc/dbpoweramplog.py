@@ -3,6 +3,7 @@
 # Picard, the next-generation MusicBrainz tagger
 #
 # Copyright (C) 2022 Philipp Wolfer
+# Copyright (C) 2023-2024 Laurent Monin
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+
 import re
 
 from picard.disc.utils import (
@@ -25,7 +27,7 @@ from picard.disc.utils import (
     TocEntry,
     calculate_mb_toc_numbers,
 )
-from picard.util import detect_unicode_encoding
+from picard.util import detect_file_encoding
 
 
 RE_TOC_ENTRY = re.compile(
@@ -42,13 +44,13 @@ def filter_toc_entries(lines):
         if m:
             track_num = int(m['num'])
             if last_track_num + 1 != track_num:
-                raise NotSupportedTOCError(f'Non consecutive track numbers ({last_track_num} => {track_num}) in dBPoweramp log. Likely a partial rip, disc ID cannot be calculated')
+                raise NotSupportedTOCError(f"Non consecutive track numbers ({last_track_num} => {track_num}) in dBPoweramp log. Likely a partial rip, disc ID cannot be calculated")
             last_track_num = track_num
             yield TocEntry(track_num, int(m['start_sector']), int(m['end_sector'])-1)
 
 
 def toc_from_file(path):
     """Reads dBpoweramp log files, generates MusicBrainz disc TOC listing for use as discid."""
-    encoding = detect_unicode_encoding(path)
+    encoding = detect_file_encoding(path)
     with open(path, 'r', encoding=encoding) as f:
         return calculate_mb_toc_numbers(filter_toc_entries(f))
