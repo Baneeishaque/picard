@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: MusicBrainz\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-05-05 10:18+0200\n"
-"PO-Revision-Date: 2024-06-10 11:42+0000\n"
+"PO-Revision-Date: 2024-07-01 12:42+0000\n"
 "Last-Translator: Vaclovas Intas <gateway_31@protonmail.com>\n"
 "Language-Team: Lithuanian <https://translations.metabrainz.org/projects/"
 "picard/3/app/lt/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
 "11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
 " n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.5.4\n"
+"X-Generator: Weblate 5.6\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: picard/album.py:155
@@ -35,21 +35,21 @@ msgstr "Neatitinkantys failai"
 #: picard/album.py:521
 #, python-format
 msgid "Album %(id)s loaded: %(artist)s - %(album)s"
-msgstr "Pakrautas albumas %(id)s: %(artist)s – %(album)s"
+msgstr "Įkeltas albumas %(id)s: %(artist)s – %(album)s"
 
 #: picard/album.py:578
 #, python-format
 msgid "Loading album %(id)s …"
-msgstr "Kraunamas albumas %(id)s …"
+msgstr "Įkeliamas albumas %(id)s …"
 
 #: picard/album.py:795
 msgid "[loading album information]"
-msgstr "[kraunama albumo informacija]"
+msgstr "[įkeliama albumo informacija]"
 
 #: picard/album.py:797
 #, python-format
 msgid "[could not load album %s]"
-msgstr "[nepavyko pakrauti albumo %s]"
+msgstr "[nepavyko įkelti albumo %s]"
 
 #: picard/cluster.py:265 picard/cluster.py:266
 #, python-format
@@ -96,7 +96,7 @@ msgstr[3] "Pašalinta %(count)i leidinių iš kolekcijos „%(name)s“"
 #: picard/collection.py:137
 #, python-format
 msgid "Error loading collections: %(error)s"
-msgstr "Klaida kraunant kolekcijas: %(error)s"
+msgstr "Klaida įkeliant kolekcijas: %(error)s"
 
 #: picard/config_upgrade.py:112 picard/config_upgrade.py:125
 msgid "Various Artists file naming scheme removal"
@@ -109,9 +109,9 @@ msgid ""
 "Your file naming scheme has automatically been merged with that of single "
 "artist albums."
 msgstr ""
-"Šioje Picard versijoje pašalinta atskira failų pavadinimų schema įvairių "
+"Šioje „Picard“ versijoje pašalinta atskira failų pavadinimų schema įvairių "
 "atlikėjų albumams.\n"
-"Tavo failų pavadinimų schema automatiškai sujungiama su singlų atlikėjų "
+"Tavo failų pavadinimų schema automatiškai sujungiama su vieno atlikėjų "
 "albumų schema."
 
 #: picard/config_upgrade.py:126
@@ -123,11 +123,11 @@ msgid ""
 "Do you want to remove it or merge it with your file naming scheme for single "
 "artist albums?"
 msgstr ""
-"Šioje Picard versijoje pašalinta atskira failų pavadinimų schema įvairių "
+"Šioje „Picard“ versijoje pašalinta atskira failų pavadinimų schema įvairių "
 "atlikėjų albumams.\n"
 "Šiuo metu šios parinkties nenaudoji, bet turi apibrėžtą atskirą failo "
 "pavadinimo schemą.\n"
-"Ar nori ją pašalinti, ar sujungti su vieno atlikėjo albumų failų pavadinimų "
+"Ar nori ją pašalinti, ar sujungti su vieno atlikėjų albumų failų pavadinimų "
 "schema?"
 
 #: picard/config_upgrade.py:133
@@ -166,7 +166,7 @@ msgid ""
 "The file failed to parse, either the file is damaged or has an unsupported "
 "file format."
 msgstr ""
-"Failo nepavyko išanalizuoti, nes failas yra pažeistas arba jo formatas "
+"Nepavyko išanalizuoti failo, nes failas yra pažeistas arba jo formatas "
 "nepalaikomas."
 
 #: picard/file.py:869
@@ -234,15 +234,15 @@ msgstr "Išbaigtumo patikros ignoruoti: duomenų takeliai"
 
 #: picard/options.py:147
 msgid "Completeness check ignore: Pregap tracks"
-msgstr "Išbaigtumo patikros ignoruoti: prieštarpiniai takeliai"
+msgstr "Išbaigtumo patikros ignoruoti: prieštarpių takeliai"
 
 #: picard/options.py:148
 msgid "Completeness check ignore: Silent tracks"
-msgstr "Išbaigtumo patikros ignoruoti: tylūs takeliai"
+msgstr "Išbaigtumo patikros ignoruoti: tyliųjų takeliai"
 
 #: picard/options.py:149
 msgid "Completeness check ignore: Video tracks"
-msgstr "Išbaigtumo patikros ignoruoti: vaizdo kilpo takeliai"
+msgstr "Išbaigtumo patikros ignoruoti: vaizdo įrašų takeliai"
 
 #: picard/options.py:150 picard/ui/ui_options_advanced.py:149
 msgid "Ignore hidden files"
@@ -250,7 +250,7 @@ msgstr "Ignoruoti paslėptus failus"
 
 #: picard/options.py:151
 msgid "Ignore file paths matching a regular expression"
-msgstr "Ignoruoti failo adresus, atitinkantį reguliariąją reiškinį"
+msgstr "Ignoruoti failų kelius, atitinkančius reguliariąją reiškinį"
 
 #: picard/options.py:152
 msgid "Ignore track duration difference under x seconds"
@@ -258,7 +258,7 @@ msgstr "Ignoruoti takelio trukmės skirtumą iki x sekundžių"
 
 #: picard/options.py:153 picard/ui/ui_options_advanced.py:146
 msgid "Maximum number of entities to return per MusicBrainz query"
-msgstr "Didžiausias grąžintinų subjektų skaičius per MusicBrainz užklausą"
+msgstr "Didžiausias grąžintinų subjektų skaičius per „MusicBrainz“ užklausą"
 
 #: picard/options.py:154 picard/ui/ui_options_advanced.py:148
 msgid "Include sub-folders when adding files from folder"
@@ -279,7 +279,7 @@ msgstr "Įterpti tik vieną priekinį vaizdą"
 #: picard/options.py:165 picard/ui/ui_options_cover.py:107
 msgid "Always use the primary image type as the file name for non-front images"
 msgstr ""
-"Visada naudoti pirminis vaizdo tipą kaip failo pavadinimą ne priekyje "
+"Visada naudoti pirminį vaizdo tipą kaip failo pavadinimą ne priekyje "
 "esantiems vaizdams"
 
 #: picard/options.py:166
@@ -316,7 +316,7 @@ msgstr "Automatiškai klasterizuoti visus naujus failus"
 
 #: picard/options.py:197 picard/ui/ui_options_general.py:216
 msgid "Ignore MBIDs when loading new files"
-msgstr "Ignoruoti MBID, kai kraunami nauji failai"
+msgstr "Ignoruoti MBID, kai įkeliami nauji failai"
 
 #: picard/options.py:198
 msgid "Server address"
@@ -364,7 +364,7 @@ msgstr "Naudoti tik mano žanrus"
 
 #: picard/options.py:213 picard/ui/ui_options_genres.py:125
 msgid "Use genres from MusicBrainz"
-msgstr "Naudoti žanrus iš MusicBrainz"
+msgstr "Naudoti žanrus iš „MusicBrainz“"
 
 #: picard/options.py:217 picard/ui/ui_options_interface.py:130
 msgid "Allow selection of multiple directories"
@@ -380,11 +380,11 @@ msgstr "Automatiškai reguliuoti horizontalią poziciją failų naršyklėje"
 
 #: picard/options.py:220 picard/ui/ui_options_interface.py:135
 msgid "Show a confirmation dialog when saving files"
-msgstr "Rodyti patvirtinimo dialogo langą, kai išsaugomi failai"
+msgstr "Rodyti patvirtinimo dialogą, kai išsaugomi failai"
 
 #: picard/options.py:222 picard/ui/ui_options_interface.py:134
 msgid "Show a quit confirmation dialog for unsaved changes"
-msgstr "Rodyti neišsaugotų pakeitimų užbaigimo patvirtinimo dialogo langą"
+msgstr "Rodyti neišsaugotų pakeitimų užbaigimo patvirtinimo dialogą"
 
 #: picard/options.py:223 picard/ui/ui_options_interface.py:126
 msgid "Show icons in menus"
@@ -392,11 +392,11 @@ msgstr "Rodyti piktogramas meniu"
 
 #: picard/options.py:224
 msgid "Show a usage warning dialog when Picard starts"
-msgstr "Rodyti įspėjimą apie naudojimą dialogo langą, kai paleidžiamas Picard"
+msgstr "Rodyti įspėjimą apie naudojimą dialogą, kai paleidžiamas „Picard“"
 
 #: picard/options.py:225
 msgid "Begin browsing in a specific directory"
-msgstr "Pradėti naršyti tam tikrame kataloge"
+msgstr "Pradėti naršyti konkrečiame kataloge"
 
 #: picard/options.py:226
 msgid "Directory to begin browsing"
@@ -440,15 +440,15 @@ msgstr "Automatinis atsarginės kopijos paskirties katalogas"
 
 #: picard/options.py:251 picard/options.py:262
 msgid "Minimal similarity for cluster lookups"
-msgstr "Minimalus klasterių peržiūros panašumas"
+msgstr "Mažiausias klasterių paieškos skaičius panašumas"
 
 #: picard/options.py:252 picard/options.py:263
 msgid "Minimal similarity for file lookups"
-msgstr "Minimalus failų peržiūros panašumas"
+msgstr "Mažiausias failų paieškos skaičius panašumas"
 
 #: picard/options.py:253 picard/options.py:264
 msgid "Minimal similarity for matching files to tracks"
-msgstr "Minimalus panašumas failų atitikimui su takeliais"
+msgstr "Mažiausias failų atitikimo takeliams panašumas"
 
 #: picard/options.py:257 picard/options.py:268
 msgid "Translation locales"
@@ -457,12 +457,13 @@ msgstr "Vertimo lokalės"
 #: picard/options.py:258 picard/ui/ui_options_metadata.py:142
 #: picard/options.py:269
 msgid "Convert Unicode punctuation characters to ASCII"
-msgstr "Konvertuoti Unicode skyrybos ženklus į ASCII"
+msgstr "Konvertuoti Unikodo skyrybos ženklus į ASCII"
 
 #: picard/options.py:259 picard/ui/ui_options_metadata.py:145
 #: picard/options.py:270
 msgid "Guess track number and title from filename if empty"
-msgstr "Atspėti takelio numerį ir pavadinimą iš failo pavadinimo, jei tuščias"
+msgstr ""
+"Atspėti takelio numerį ir pavadinimą iš failo pavadinimo, jei yra tuščias"
 
 #: picard/options.py:260 picard/options.py:271
 msgid "Standalone recordings name"
@@ -480,12 +481,12 @@ msgstr "Vertimo rašto išimtys"
 #: picard/options.py:263 picard/ui/ui_options_metadata.py:140
 #: picard/options.py:274
 msgid "Use standardized artist names"
-msgstr "Naudoti standartizuotus atlikėjų vardus"
+msgstr "Naudoti tipinius atlikėjų pavadinimus"
 
 #: picard/options.py:264 picard/ui/ui_options_metadata.py:141
 #: picard/options.py:275
 msgid "Use standardized instrument and vocal credits"
-msgstr "Naudoti standartizuotus instrumentų ir vokalo kūrėjus"
+msgstr "Naudoti tipinius instrumentų ir vokalo kūrėjus"
 
 #: picard/options.py:265 picard/options.py:276
 msgid "Use track and release relationships"
@@ -493,11 +494,11 @@ msgstr "Naudoti takelio ir leidinio santykius"
 
 #: picard/options.py:266 picard/options.py:277
 msgid "Translate artist names"
-msgstr "Versti atlikėjų vardus"
+msgstr "Versti atlikėjų pavadinimus"
 
 #: picard/options.py:267 picard/options.py:278
 msgid "Translate artist names exception"
-msgstr "Versti atlikėjų vardus išimtis"
+msgstr "Versti atlikėjų pavadinimus išimtis"
 
 #: picard/options.py:268 picard/options.py:279
 msgid "Various Artists name"
@@ -560,7 +561,7 @@ msgstr "El. paštas, kurį naudoti išsaugant vertinimus"
 #: picard/options.py:301 picard/ui/ui_options_ratings.py:56
 #: picard/options.py:312
 msgid "Submit ratings to MusicBrainz"
-msgstr "Siųsti vertinimus į MusicBrainz"
+msgstr "Siųsti vertinimus į „MusicBrainz“"
 
 #: picard/options.py:305 picard/ui/ui_options_releases.py:117
 #: picard/options.py:316
@@ -618,17 +619,17 @@ msgstr "Pakeisti tarpelius su pabraukimais"
 
 #: picard/options.py:323 picard/options.py:334
 msgid "Replacement characters used for Windows compatibility"
-msgstr "Keičiamieji simboliai, naudojami Windows suderinamumui užtikrinti"
+msgstr "Keičiamieji simboliai, naudojami „Windows“ suderinamumui"
 
 #: picard/options.py:324 picard/ui/ui_options_renaming_compat.py:96
 #: picard/ui/ui_win_compat_dialog.py:197 picard/options.py:335
 msgid "Windows compatibility"
-msgstr "Windows suderinamumas"
+msgstr "„Windows“ suderinamumas"
 
 #: picard/options.py:325 picard/ui/options/renaming_compat.py:120
 #: picard/options.py:336
 msgid "Windows long path support"
-msgstr "Windows ilgo adreso palaikymas"
+msgstr "„Windows“ ilgo kelio palaikymas"
 
 #: picard/options.py:330 picard/options.py:341
 msgid "Enable tagger scripts"
@@ -640,7 +641,7 @@ msgstr "Žymeklio skriptai"
 
 #: picard/options.py:335 picard/ui/ui_options_tags.py:80 picard/options.py:346
 msgid "Clear existing tags"
-msgstr "Išvalyti esamas žymes"
+msgstr "Valyti esamas žymes"
 
 #: picard/options.py:336 picard/options.py:347
 msgid "Don't write tags"
@@ -700,7 +701,7 @@ msgstr "ID3v2 teksto kodavimas"
 #: picard/options.py:358 picard/ui/ui_options_tags_compatibility_id3.py:131
 #: picard/options.py:369
 msgid "Save iTunes compatible grouping and work"
-msgstr "Išsaugoti iTunes suderintą grupavimą ir kūrinį"
+msgstr "Išsaugoti „iTunes“ suderintą grupavimą ir kūrinį"
 
 #: picard/options.py:359 picard/options.py:370
 msgid "Write ID3v1 tags"
@@ -731,12 +732,12 @@ msgstr "Pasirinktas failų pavadinimų skriptas"
 #: picard/pluginmanager.py:277
 #, python-format
 msgid "Unable to load plugin '%s'"
-msgstr "Nepavyksta pakrauti įskiepio „%s“."
+msgstr "Nepavyksta įkelti įskiepio „%s“."
 
 #: picard/pluginmanager.py:308
 #, python-format
 msgid "Failed loading plugin \"%(plugin)s\""
-msgstr "Nepavyko pakrauti įskiepio „%(plugin)s“."
+msgstr "Nepavyko įkelti įskiepio „%(plugin)s“."
 
 #: picard/pluginmanager.py:355
 #, python-format
@@ -744,7 +745,7 @@ msgid ""
 "Plugin \"%(plugin)s\" from \"%(filename)s\" is not compatible with this "
 "version of Picard."
 msgstr ""
-"Įskiepis „%(plugin)s“ iš „%(filename)s“ nepalaikomas su šia Picard versija."
+"Įskiepis „%(plugin)s“ iš „%(filename)s“ nepalaikomas su šia „Picard“ versija."
 
 #: picard/pluginmanager.py:360
 #, python-format
@@ -765,7 +766,7 @@ msgstr "Nepavyko pakrauti užpakalinio įskiepio „%(plugin)s“ iš „%(filen
 #: picard/pluginmanager.py:518
 #, python-format
 msgid "Error loading plugins list: %(error)s"
-msgstr "Klaida kraunant įskiepių sąrašą: %(error)s"
+msgstr "Klaida įkeliant įskiepių sąrašą: %(error)s"
 
 #: picard/releasegroup.py:57 picard/ui/searchdialog/album.py:149
 msgid "Tracks"
@@ -817,7 +818,7 @@ msgstr "[nėra leidinio informacijos]"
 #: picard/tagger.py:650 picard/ui/ui_options_general.py:210
 #: picard/tagger.py:654
 msgid "MusicBrainz Account"
-msgstr "MusicBrainz paskyra"
+msgstr "„MusicBrainz“ paskyra"
 
 #: picard/tagger.py:651 picard/tagger.py:655
 msgid "Authorization code:"
@@ -849,11 +850,11 @@ msgstr "Visi palaikomi žurnalo failai"
 
 #: picard/tagger.py:1194 picard/tagger.py:1209
 msgid "EAC / XLD / Whipper / fre:ac log files"
-msgstr "EAC / XLD / Whipper / fre:ac žurnalo failai"
+msgstr "EAC / XLD / „Whipper“ / „fre:ac“ žurnalo failai"
 
 #: picard/tagger.py:1195 picard/tagger.py:1210
 msgid "dBpoweramp log files"
-msgstr "dBpoweramp žurnalo failai"
+msgstr "„dBpoweramp“ žurnalo failai"
 
 #: picard/script/serializer.py:350 picard/tagger.py:1196
 #: picard/ui/coverartbox.py:615 picard/ui/mainwindow.py:1256
@@ -874,27 +875,27 @@ msgstr "Klaidos eilutė %(lineno)d: %(error)s"
 
 #: picard/track.py:398
 msgid "[loading recording information]"
-msgstr "[kraunama įrašo informacija]"
+msgstr "[įkeliama įrašo informacija]"
 
 #: picard/track.py:447
 #, python-format
 msgid "[could not load recording %s]"
-msgstr "[nepavyko pakrauti įrašo %s.]"
+msgstr "[nepavyko įkelti įrašo %s]"
 
 #: picard/acoustid/__init__.py:112
 #, python-format
 msgid "AcoustID lookup network error for '%(filename)s'!"
-msgstr "AcoustID paieškos tinklo klaida dėl „%(filename)s“."
+msgstr "„AcoustID“ paieškos tinklo klaida dėl „%(filename)s“."
 
 #: picard/acoustid/__init__.py:135
 #, python-format
 msgid "AcoustID lookup failed for '%(filename)s'!"
-msgstr "AcoustID paieška nepavyko dėl „%(filename)s“."
+msgstr "„AcoustID“ paieška nepavyko dėl „%(filename)s“."
 
 #: picard/acoustid/__init__.py:179
 #, python-format
 msgid "AcoustID lookup returned no result for file '%(filename)s'"
-msgstr "AcoustID paieška negrąžino jokio rezultato failui „%(filename)s“."
+msgstr "„AcoustID“ paieška negrąžino jokio rezultato failui „%(filename)s“."
 
 #: picard/acoustid/__init__.py:190
 #, python-format
@@ -904,32 +905,32 @@ msgstr "Ieškoma failo „%(filename)s“ atspaudų…"
 #: picard/acoustid/manager.py:186 picard/acoustid/manager.py:188
 msgid ""
 "AcoustID submission finished, but not all fingerprints have been submitted"
-msgstr "AcoustID pateikimas baigtas, bet ne visi atspaudai buvo pateikti."
+msgstr "„AcoustID“ pateikimas baigtas, bet ne visi atspaudai buvo pateikti."
 
 #: picard/acoustid/manager.py:188 picard/acoustid/manager.py:190
 msgid "AcoustID submission finished successfully"
-msgstr "AcoustID pateikimas sėkmingai baigtas"
+msgstr "„AcoustID“ pateikimas sėkmingai baigtas."
 
 #: picard/acoustid/manager.py:199 picard/acoustid/manager.py:201
 msgid ""
 "AcoustID submission failed permanently, maximum batch size reduced to zero"
 msgstr ""
-"AcoustID pateikimas nepavyko visam laikui, maksimalus paketo dydis "
-"sumažintas iki nulio"
+"„AcoustID“ pateikimas nepavyko negrįžtamai. Didžiausias paketo dydis "
+"sumažintas iki nulio."
 
 #: picard/acoustid/manager.py:201 picard/acoustid/manager.py:203
 msgid "AcoustID submission failed permanently, probably too many retries"
 msgstr ""
-"AcoustID pateikimas nepavyko visam laikui, tikriausiai per daug bandymų"
+"„AcoustID“ pateikimas nepavyko negrįžtamai. Tikriausiai per daug bandymų."
 
 #: picard/acoustid/manager.py:211 picard/acoustid/manager.py:213
 msgid "Submitting AcoustIDs …"
-msgstr "Teikimi AcoustID …"
+msgstr "Teikimi „AcoustID“…"
 
 #: picard/acoustid/manager.py:241 picard/acoustid/manager.py:243
 #, python-format
 msgid "AcoustID submission failed with error '%(error)s': %(message)s"
-msgstr "AcoustID pateikimas nepavyko su klaida „%(error)s“: %(message)s."
+msgstr "„AcoustID“ pateikimas nepavyko su klaida „%(error)s“: %(message)s."
 
 #: picard/browser/addrelease.py:145
 msgid "Add cluster as release"
@@ -958,13 +959,17 @@ msgstr "Pridėti failą kaip įrašą…"
 #: picard/coverart/__init__.py:102
 #, python-format
 msgid "Cover art of type '%(type)s' downloaded for %(albumid)s from %(host)s"
-msgstr "Viršelio tipas „%(type)s“ atsisiųstas %(albumid)s iš %(host)s."
+msgstr ""
+"Viršelio apipavidalinimo tipas „%(type)s“ atsisiųstas albumui %(albumid)s iš "
+"%(host)s."
 
 #: picard/coverart/__init__.py:188
 #, python-format
 msgid ""
 "Downloading cover art of type '%(type)s' for %(albumid)s from %(host)s …"
-msgstr "Atsisiunčiamas %(albumid)s viršelio tipas „%(type)s“ iš %(host)s …"
+msgstr ""
+"Atsisiunčiamas %(albumid)s viršelio apipavidalinimo tipas „%(type)s“ iš "
+"%(host)s…"
 
 #: picard/coverart/utils.py:43
 msgid "Unknown"
@@ -988,15 +993,15 @@ msgstr "Pilnas dydis"
 
 #: picard/coverart/providers/caa.py:120
 msgid "Cover Art Archive"
-msgstr "Cover Art Archive"
+msgstr "„Cover Art Archive“"
 
 #: picard/coverart/providers/caa.py:189
 msgid "Cover Art Archive: Release"
-msgstr "Cover Art Archive: leidinys"
+msgstr "„Cover Art Archive“: leidinys"
 
 #: picard/coverart/providers/caa_release_group.py:45
 msgid "Cover Art Archive: Release Group"
-msgstr "Cover Art Archive: leidinio grupė"
+msgstr "„Cover Art Archive“: leidinio grupė"
 
 #: picard/coverart/providers/local.py:72
 msgid "Local Files"
@@ -1012,7 +1017,7 @@ msgid ""
 "settings, tagging scripts or plugins."
 msgstr ""
 "Šis iš anksto nustatytas failų pavadinimų skripto pavyzdys nereikalauja "
-"jokių specialių nustatymų, žymėjimo skriptų ar įskiepių."
+"jokių ypatingų nustatymų, žymėjimo skriptų ar įskiepių."
 
 #: picard/script/__init__.py:149
 #, python-format
@@ -1021,16 +1026,16 @@ msgstr "Išankstinis nustatymas %(number)d: %(title)s"
 
 #: picard/script/__init__.py:156
 msgid "Default file naming script"
-msgstr "Numatytasis failų pavadinimų skriptas"
+msgstr "Numatytas failų pavadinimų skriptas"
 
 #: picard/script/__init__.py:168
 msgid "[album artist]/[album]/[track #]. [title]"
-msgstr "[albumo atlikėjas]/[albumas]/[takelis #]. [pavadinimas]"
+msgstr "[albumo atlikėjas]/[albumas]/[# takelis]. [pavadinimas]"
 
 #: picard/script/__init__.py:182
 msgid "[album artist]/[album]/[disc and track #] [artist] - [title]"
 msgstr ""
-"[albumo atlikėjas]/[albumas]/[diskas ir takelis #] [atlikėjas] – "
+"[albumo atlikėjas]/[albumas]/[# diskas ir takelis] [atlikėjas] – "
 "[pavadinimas]"
 
 #: picard/script/functions.py:191
@@ -1041,7 +1046,7 @@ msgid ""
 msgstr ""
 "`$if(jei,tada,kitaip)`\n"
 "\n"
-"Jeigu `jei` nėra tuščias, jis grąžina `tada`, priešingu atveju grąžina "
+"Jei `jei` nėra tuščias, jis grąžina `tada`. Priešingu atveju grąžina "
 "`kitaip`."
 
 #: picard/script/functions.py:204
@@ -1050,7 +1055,7 @@ msgid ""
 "\n"
 "Returns first non empty argument."
 msgstr ""
-"`$if2(a1,a2,a3,...)`\n"
+"`$if2(a1,a2,a3,…)`\n"
 "\n"
 "Grąžina pirmąjį ne tuščią argumentą."
 
@@ -1128,10 +1133,10 @@ msgid ""
 msgstr ""
 "`$strip(tekstas)`\n"
 "\n"
-"Pakeičia visus baltuosius tarpus `tekstas` su vienu tarpu ir pašalina "
-"pradinius ir galinius tarpus.\n"
-"Baltųjų tarpų simboliai įtraukia kelis iš eilės einančius tarpus ir įvairius "
-"kitus unikodo simbolius."
+"Pakeičia visus matomus tarpus funkcijoje `tekstas` su vienu tarpu ir "
+"pašalina priekinius ir galinius tarpus.\n"
+"Matomųjų tarpų simboliai įtraukia kelis iš eilės einančius tarpus ir "
+"įvairius kitus unikodo simbolius."
 
 #: picard/script/functions.py:291
 msgid ""
@@ -1140,9 +1145,9 @@ msgid ""
 "Replaces occurrences of `search` in `text` with value of `replace` and "
 "returns the resulting string."
 msgstr ""
-"`$replace(tekstas,ieškoti,keisti)`\n"
+"`$replace(tekstas,ieškoti,pakeisti)`\n"
 "\n"
-"Pakeičia `ieškoti` pasikartojimus `tekstas` reikšme `keisti` ir grąžina "
+"Pakeičia `ieškoti` pasikartojimus `tekstas` reikšme `pakeisti` ir grąžina "
 "gautą eilutę."
 
 #: picard/script/functions.py:300
@@ -1158,9 +1163,10 @@ msgid ""
 "\n"
 "    $replacemulti(%genre%,Idm,IDM)\n"
 msgstr ""
-"`$replacemulti(pavadinimas,ieškoti,keisti,skirtukas=\"; \")`\n"
+"`$replacemulti(pavadinimas,ieškoti,pakeisti,skirtukas=\"; \")`\n"
 "\n"
-"Pakeičia `ieškoti` su `keisti` daugiareikšmiame kintamajame `pavadinimas`.\n"
+"Pakeičia `ieškoti` su `pakeisti` daugiareikšmiame kintamajame `pavadinimas`."
+"\n"
 "Tušti elementai pašalinami automatiškai.\n"
 "\n"
 "Pavyzdys:\n"
@@ -1189,10 +1195,10 @@ msgid ""
 msgstr ""
 "`$inmulti(%x%,y)`\n"
 "\n"
-"Grąžina tiesa, jei daugiareikšmiame kintamajame `x` viena iš reikšmių yra "
+"Grąžina tiesą, jei daugiareikšmiame kintamajame `x` viena iš reikšmių yra "
 "būtent `y`.\n"
 "\n"
-"_Nuo Picard 1.0_"
+"_Nuo „Picard“ 1.0_"
 
 #: picard/script/functions.py:354
 msgid ""
@@ -1201,10 +1207,10 @@ msgid ""
 "[Regular expression](https://docs.python.org/3/library/re.html#regular-"
 "expression-syntax) replace."
 msgstr ""
-"`$rreplace(tekstas,šablonas,keisti)`\n"
+"`$rreplace(tekstas,šablonas,pakeisti)`\n"
 "\n"
-"[Reguliarį reiškinį](https://docs.python.org/3/library/re.html#regular-"
-"expression-syntax) pakeisti."
+"Pakeisti [reguliarią reiškinį](https://docs.python.org/3/library/re.html"
+"#regular-expression-syntax)."
 
 #: picard/script/functions.py:366
 msgid ""
@@ -1216,7 +1222,7 @@ msgid ""
 msgstr ""
 "`$rsearch(tekstas,šablonas)`\n"
 "\n"
-"[Reguliaro reiškinio](https://docs.python.org/3/library/re.html#regular-"
+"[Reguliarios reiškinio](https://docs.python.org/3/library/re.html#regular-"
 "expression-syntax) paieška.\n"
 "    Ši funkcija grąžins pirmąją atitinkančią grupę."
 
@@ -1242,7 +1248,7 @@ msgstr ""
 "`$unset(pavadinimas)`\n"
 "\n"
 "Panaikina kintamojo `pavadinimas` nustatymą.\n"
-"Leidžia naudoti pakaitinius ženklus tam tikroms žymėms panaikinti (veikia su "
+"Leidžia naudoti pakaitos simbolius tam tikroms žymėms panaikinti (veikia su "
 "„performer:\\*“, „comment:\\*“ ir „lyrics:\\*“).\n"
 "Pavyzdžiui, `$unset(performer:*)` panaikintų visas atlikėjo žymes."
 
@@ -1260,15 +1266,15 @@ msgid ""
 msgstr ""
 "`$delete(pavadinimas)`\n"
 "\n"
-"Panaikina kintamojo `pavadinimas` nustatymą ir pažymi, kad žymė bus "
-"ištrinta.\n"
-"Tai panašu į `$$unset(pavadinimas)`, bet taip pat žymi žymę ištrynimui. "
-"Pvz.,\n"
+"Panaikina kintamojo `pavadinimas` nustatymą ir pažymi, kad žymė bus ištrinta."
+"\n"
+"Tai panašu į `$$unset(pavadinimas)`, bet taip pat žymi žymę ištrynimui. Pvz.,"
+"\n"
 "    paleidus `$delete(žanras)` iš tikrųjų bus pašalinta žanro žymė iš failo, "
 "kai\n"
 "    jis bus išsaugotas.\n"
 "\n"
-"_Nuo Picard 2.1_"
+"_Nuo „Picard“ 2.1_"
 
 #: picard/script/functions.py:437
 #, python-format
@@ -1290,9 +1296,9 @@ msgstr ""
 "\n"
 "Pastaba: norint sukurti kintamąjį, kuris gali būti naudojamas failo "
 "pavadinimo eilutei, bet\n"
-"    kuris nebus įrašytas į failą kaip žymė, priešdėlėk kintamojo "
-"pavadinimą \n"
-"    su pabrauktuku. `%kažkas%` sukurs žymę „kažkas“, o\n"
+"    kuris nebus įrašytas į failą kaip žymė, priešdėlėk kintamojo pavadinimą "
+"\n"
+"    su pabraukimu. `%kažkas%` sukurs žymę „kažkas“, o\n"
 "    `%_kažkas%` to nepadarys."
 
 #: picard/script/functions.py:455
@@ -1328,7 +1334,7 @@ msgstr ""
 "\n"
 "    $setmulti(genre,$lower(%genre%))\n"
 "\n"
-"_Nuo Picard 1.0_"
+"_Nuo „Picard“ 1.0_"
 
 #: picard/script/functions.py:473
 msgid ""
@@ -1336,9 +1342,9 @@ msgid ""
 "\n"
 "Returns the variable `name` (equivalent to `%name%`)."
 msgstr ""
-"`$get(vardas)`\n"
+"`$get(pavadinimas)`\n"
 "\n"
-"Grąžina kintamąjį `vardas` (atitinka `%vardas%`)."
+"Grąžina kintamąjį `pavadinimas` (atitinka `%pavadinimas%`)."
 
 #: picard/script/functions.py:483
 #, python-format
@@ -1358,7 +1364,7 @@ msgstr ""
 "kopijuoja\n"
 "    daugiareikšmius kintamuosius, jų neišlygindami.\n"
 "\n"
-"_Nuo Picard 0.9_"
+"_Nuo „Picard“ 0.9_"
 
 #: picard/script/functions.py:499
 msgid ""
@@ -1378,15 +1384,15 @@ msgstr ""
 "\n"
 "Sujungia metaduomenis iš kintamojo `senas` į `naujas`, pašalinant dublikatus "
 "ir\n"
-"    pridedant prie pabaigos, taip išlaikant pradinę tvarką. Kaip ir `$copy`, "
-"ši\n"
+"    pridedant prie pabaigos, taip išlaikant originalų tvarką. Kaip ir `$copy`"
+", ši\n"
 "    funkcija taip pat nukopijuos daugiareikšmius kintamuosius jų "
 "nesulygindama.\n"
 "\n"
-"Jei yra nustatyta `keep_duplicates`, dublikatai iš rezultato nebus "
-"pašalinti.\n"
+"Jei yra nustatyta `keep_duplicates`, dublikatai iš rezultato nebus pašalinti."
 "\n"
-"_Nuo Picard 1.0_"
+"\n"
+"_Nuo „Picard“ 1.0_"
 
 #: picard/script/functions.py:519
 msgid ""
@@ -1395,10 +1401,10 @@ msgid ""
 "Trims all leading and trailing whitespaces from `text`.\n"
 "    The optional second parameter `char` specifies the character to trim."
 msgstr ""
-"`$trim(tekstas[,simbolis])`\n"
+"`$trim(tekstas[,simb.])`\n"
 "\n"
-"Iš `tekstas` pašalina visas pradines ir galines baltąsias tarpus.\n"
-"    Pasirinktinis antrasis parametras `simbolis` nurodo trynimo simbolį."
+"Iš `tekstas` pašalina visas pradines ir galines matomus tarpus.\n"
+"    Pasirinktinis antrasis parametras `simb.` nurodo pašalinimo simbolį."
 
 #: picard/script/functions.py:532
 msgid ""
@@ -1451,6 +1457,14 @@ msgid ""
 "\n"
 "    $div(x,y,z) = ((x / y) / z)\n"
 msgstr ""
+"`$div(x,y,…)`\n"
+"\n"
+"Padalina `x` iš `y`.\n"
+"Galima naudoti su bet kokiu argumentų skaičiumi.\n"
+"\n"
+"Pavyzdys:\n"
+"\n"
+"    $div(x,y,z) = ((x / y) / z)\n"
 
 #: picard/script/functions.py:588
 msgid ""
@@ -1463,6 +1477,14 @@ msgid ""
 "\n"
 "    $mod(x,y,z) = ((x % y) % z)\n"
 msgstr ""
+"`$mod(x,y,…)`\n"
+"\n"
+"Grąžina likusią `x` padalytą iš `y`.\n"
+"Galima naudoti su bet kokiu argumentų skaičiumi.\n"
+"\n"
+"Pavyzdys:\n"
+"\n"
+"    $mod(x,y,z) = ((x % y) % z)\n"
 
 #: picard/script/functions.py:606
 msgid ""
@@ -1475,6 +1497,14 @@ msgid ""
 "\n"
 "    $mul(x,y,z) = ((x * y) * z)\n"
 msgstr ""
+"`$mul(x,y,…)`\n"
+"\n"
+"Daugina `x` iš `y`.\n"
+"Galima naudoti su bet kokiu argumentų skaičiumi.\n"
+"\n"
+"Pavyzdys:\n"
+"\n"
+"    $mul(x,y,z) = ((x * y) * z)\n"
 
 #: picard/script/functions.py:624
 msgid ""
@@ -1484,6 +1514,11 @@ msgid ""
 "    Can be used with an arbitrary number of arguments.\n"
 "    The result is true if ANY of the arguments is not empty."
 msgstr ""
+"`$or(x,y,…)`\n"
+"\n"
+"Grąžina tiesą, jei `x` arba `y` nėra tušti.\n"
+"    Galima naudoti su bet kokiu argumentų skaičiumi.\n"
+"    Rezultatas yra tiesa, jei bet kuris iš argumentų nėra tuščias."
 
 #: picard/script/functions.py:638
 msgid ""
@@ -1493,6 +1528,11 @@ msgid ""
 "    Can be used with an arbitrary number of arguments.\n"
 "    The result is true if ALL of the arguments are not empty."
 msgstr ""
+"`$and(x,y,...)`\n"
+"\n"
+"Grąžina tiesą, jei `x` ir `y` nėra tušti.\n"
+"    Galima naudoti su bet kokiu argumentų skaičiumi.\n"
+"    Rezultatas yra tiesa, jei visi argumentai nėra tuščias."
 
 #: picard/script/functions.py:652
 msgid ""
@@ -1500,6 +1540,9 @@ msgid ""
 "\n"
 "Returns true if `x` is empty."
 msgstr ""
+"`$not(x)`\n"
+"\n"
+"Grąžina tiesą, jei `x` yra tuščias."
 
 #: picard/script/functions.py:664
 msgid ""
@@ -1507,6 +1550,9 @@ msgid ""
 "\n"
 "Returns true if `x` equals `y`."
 msgstr ""
+"`$eq(x,y)`\n"
+"\n"
+"Grąžina tiesą, jei `x` lygus `y`."
 
 #: picard/script/functions.py:676
 msgid ""
@@ -1514,6 +1560,9 @@ msgid ""
 "\n"
 "Returns true if `x` does not equal `y`."
 msgstr ""
+"`$ne(x,y)`\n"
+"\n"
+"Grąžina tiesą, jei `x` nelygus `y`."
 
 #: picard/script/functions.py:721
 msgid ""
@@ -1533,6 +1582,19 @@ msgid ""
 "preference:\n"
 "\"int\", \"float\" and \"text\"."
 msgstr ""
+"`$lt(x,y[,tipas])`\n"
+"\n"
+"Grąžina tiesą, jei `x` yra mažesnis už `y`, naudojant palyginimą, nurodytą "
+"`tipas`.\n"
+"Galimos `tipas` reikšmės yra „int“ (sveikasis skaičius), „float“ (slankiojo "
+"kablelis), „text“\n"
+"(skirtas raidžių lygio tekstas), „nocase“ (skirtas raidžių nelygio tekstas) "
+"ir „auto“ (automatiškai\n"
+"nustato pateiktų argumentų tipą), o „auto“ naudojamas kaip numatytasis "
+"palyginimo metodas, jei `tipas` nenurodytas.  Pasirinkus „auto“ tipą, bus "
+"naudojamas pirmasis tipas, kuris taikomas abiem argumentams tokia pirmenybės "
+"tvarka:\n"
+"„int“, „float“ ir „text“."
 
 #: picard/script/functions.py:736
 msgid ""
@@ -1552,6 +1614,19 @@ msgid ""
 "preference:\n"
 "\"int\", \"float\" and \"text\"."
 msgstr ""
+"`$lte(x,y[,tipas])`\n"
+"\n"
+"Grąžina tiesą, jei `x` yra mažesnis arba lygus `y`, naudojant palyginimą, "
+"nurodytą `tipas`.\n"
+"Galimos `tipas` reikšmės yra „int“ (sveikasis skaičius), „float“ (slankiojo "
+"kablelis), „text“\n"
+"(skirtas raidžių lygio tekstas), „nocase“ (skirtas raidžių nelygio tekstas) "
+"ir „auto“ (automatiškai\n"
+"nustato pateiktų argumentų tipą), o „auto“ naudojamas kaip numatytasis "
+"palyginimo metodas, jei `tipas` nenurodytas.  Pasirinkus „auto“ tipą, bus "
+"naudojamas pirmasis tipas, kuris taikomas abiem argumentams tokia pirmenybės "
+"tvarka:\n"
+"„int“, „float“ ir „text“."
 
 #: picard/script/functions.py:751
 msgid ""
@@ -1571,6 +1646,19 @@ msgid ""
 "preference:\n"
 "\"int\", \"float\" and \"text\"."
 msgstr ""
+"`$gt(x,y[,tipas])`\n"
+"\n"
+"Grąžina tiesą, jei `x` yra didesnis už `y`, naudojant palyginimą, nurodytą "
+"`tipas`.\n"
+"Galimos `tipas` reikšmės yra „int“ (sveikasis skaičius), „float“ (slankiojo "
+"kablelis), „text“\n"
+"(skirtas raidžių lygio tekstas), „nocase“ (skirtas raidžių nelygio tekstas) "
+"ir „auto“ (automatiškai\n"
+"nustato pateiktų argumentų tipą), o „auto“ naudojamas kaip numatytasis "
+"palyginimo metodas, jei `tipas` nenurodytas.  Pasirinkus „auto“ tipą, bus "
+"naudojamas pirmasis tipas, kuris taikomas abiem argumentams tokia pirmenybės "
+"tvarka:\n"
+"„int“, „float“ ir „text“."
 
 #: picard/script/functions.py:766
 msgid ""
@@ -1590,6 +1678,19 @@ msgid ""
 "preference:\n"
 "\"int\", \"float\" and \"text\"."
 msgstr ""
+"`$gte(x,y[,tipas])`\n"
+"\n"
+"Grąžina tiesą, jei `x` yra didesnis arba lygus `y`, naudojant palyginimą, "
+"nurodytą `tipas`.\n"
+"Galimos `tipas` reikšmės yra „int“ (sveikasis skaičius), „float“ (slankiojo "
+"kablelis), „text“\n"
+"(skirtas raidžių lygio tekstas), „nocase“ (skirtas raidžių nelygio tekstas) "
+"ir „auto“ (automatiškai\n"
+"nustato pateiktų argumentų tipą), o „auto“ naudojamas kaip numatytasis "
+"palyginimo metodas, jei `tipas` nenurodytas.  Pasirinkus „auto“ tipą, bus "
+"naudojamas pirmasis tipas, kuris taikomas abiem argumentams tokia pirmenybės "
+"tvarka:\n"
+"„int“, „float“ ir „text“."
 
 #: picard/script/functions.py:781
 msgid ""
@@ -1597,6 +1698,9 @@ msgid ""
 "\n"
 "Returns the number of characters in `text`."
 msgstr ""
+"`$len(tekstas)`\n"
+"\n"
+"Grąžina simbolių skaičių `tekstas`."
 
 #: picard/script/functions.py:790
 msgid ""
@@ -1612,6 +1716,17 @@ msgid ""
 "\n"
 "    $lenmulti(One; Two; Three) = 3\n"
 msgstr ""
+"`$lenmulti(pavadinimas,skirtukas=\"; \")`\n"
+"\n"
+"Grąžina elementų skaičių daugiareikšmėje žymėje `pavadinimas`. Vietoje "
+"`pavadinimas` gali būti\n"
+"    įrašyta pažodinė daugiareikšmė reikšmė, naudojant\n"
+"    `skirtukas` (arba „; “, jei jis neperduotas), kad reikšmė taptų tinkama\n"
+"    daugiareikšme žyme.\n"
+"\n"
+"Pavyzdys:\n"
+"\n"
+"    $lenmulti(Vienas; Du; Trys) = 3\n"
 
 #: picard/script/functions.py:807
 msgid ""
@@ -1627,6 +1742,17 @@ msgid ""
 "\n"
 "_Since Picard 0.10_"
 msgstr ""
+"`$performer(šablonas=\"\",jungimas=\", \")`\n"
+"\n"
+"Grąžina atlikėjus, kurių atlikimo tipas (pvz., „vokalas“) atitinka `šablonas`"
+", sujungtus `jungimas`.\n"
+"Gali nurodyti reguliariąją reiškinį formatu `/šablonas/gairelės`. `gairelės` "
+"yra pasirinktinis. Šiuo metu\n"
+"vienintelė palaikoma gairelė yra „i“ (ignoruoti raidžių lygį). Pavyzdžiui, "
+"`$performer(/^guitars?$/i)` atitinka\n"
+"atlikimo tipą „guitar“ arba „Guitars“, bet ne, pavyzdžiui, „bass guitar“.\n"
+"\n"
+"_Nuo „Picard“ 0.10_"
 
 #: picard/script/functions.py:831
 msgid ""
@@ -1637,6 +1763,12 @@ msgid ""
 "\n"
 "_Since Picard 0.12_"
 msgstr ""
+"`$matchedtracks()`\n"
+"\n"
+"Grąžina atitinkančių leidinio takelių skaičių.\n"
+"    **Veikia tik failų pavadinimų skriptose.**\n"
+"\n"
+"_Nuo „Picard“ 0.12_"
 
 #: picard/script/functions.py:847
 msgid ""
@@ -1645,6 +1777,10 @@ msgid ""
 "Returns true if every track in the album is matched to a single file.\n"
 "**Only works in File Naming scripts.**"
 msgstr ""
+"`$is_complete()`\n"
+"\n"
+"Grąžina tiesą, jei kiekvienas albumo takelis atitinka vieną failą.\n"
+"**Veikia tik failų pavadinimų skriptose.**"
 
 #: picard/script/functions.py:862
 msgid ""
