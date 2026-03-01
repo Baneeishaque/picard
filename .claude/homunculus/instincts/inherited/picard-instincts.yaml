@@ -1,0 +1,553 @@
+# Instincts generated from https://github.com/Baneeishaque/picard
+# Generated: 2026-03-01T23:15:26.792Z
+# Version: 2.0
+
+---
+id: picard-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Commit Length
+
+## Action
+
+Write moderate-length commit messages (~50 characters)
+
+## Evidence
+
+- Average commit message length: 50 chars
+- Based on 200 commits
+
+---
+id: picard-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: picard-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: picard-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: picard-workflow-dependency-management-update
+trigger: "when doing dependency management update"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Dependency Management Update
+
+## Action
+
+Follow the dependency-management-update workflow:
+1. Update pyproject.toml
+2. Update requirements files
+3. Regenerate uv.lock
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: pyproject.toml, requirements-dev.txt, uv.lock
+
+---
+id: picard-workflow-github-actions-workflow-update
+trigger: "when doing github actions workflow update"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Github Actions Workflow Update
+
+## Action
+
+Follow the github-actions-workflow-update workflow:
+1. Update workflow YAML files
+2. Update artifact handling
+3. Update action versions
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: .github/workflows/package-macos.yml, .github/workflows/package-pypi.yml, .github/workflows/package-windows.yml
+
+---
+id: picard-workflow-image-resource-addition
+trigger: "when doing image resource addition"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Image Resource Addition
+
+## Action
+
+Follow the image-resource-addition workflow:
+1. Create/update SVG source
+2. Generate PNG files at multiple resolutions
+3. Update resources.py
+4. Update picard.qrc resource file
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: picard/resources.py, resources/images/*.png, resources/img-src/*.svg
+
+---
+id: picard-workflow-id3-format-enhancement
+trigger: "when doing id3 format enhancement"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Id3 Format Enhancement
+
+## Action
+
+Follow the id3-format-enhancement workflow:
+1. Update picard/formats/id3.py
+2. Add corresponding tests
+3. Update related format files if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: picard/formats/id3.py, test/formats/test_id3.py
+
+---
+id: picard-workflow-translation-update
+trigger: "when doing translation update"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Translation Update
+
+## Action
+
+Follow the translation-update workflow:
+1. Update .po files
+2. Update constants translations
+3. Regenerate translation templates
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: po/*.po, po/constants/*.po, po/attributes/*.po
+
+---
+id: picard-workflow-ui-options-modification
+trigger: "when doing ui options modification"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Ui Options Modification
+
+## Action
+
+Follow the ui-options-modification workflow:
+1. Update option page Python files
+2. Update related UI components
+3. Update styling if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: picard/ui/options/*.py, picard/ui/mainwindow/__init__.py
+
+---
+id: picard-snake-case-files
+trigger: "When creating new Python files"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Snake Case Files
+
+## Action
+
+Use snake_case naming convention for file names
+
+## Evidence
+
+- Consistent snake_case in picard/ directory
+- Files like test_id3.py, mainwindow/__init__.py
+
+---
+id: picard-camel-case-functions
+trigger: "When defining functions in Python code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Camel Case Functions
+
+## Action
+
+Use camelCase naming convention for function names
+
+## Evidence
+
+- Naming convention analysis shows camelCase for functions
+- Consistent pattern in picard/formats/
+
+---
+id: picard-pascal-case-classes
+trigger: "When defining classes in Python code"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Pascal Case Classes
+
+## Action
+
+Use PascalCase naming convention for class names
+
+## Evidence
+
+- Naming convention analysis shows PascalCase for classes
+- Standard Python class naming in codebase
+
+---
+id: picard-screaming-snake-constants
+trigger: "When defining constants in Python code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Screaming Snake Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Naming convention analysis shows SCREAMING_SNAKE_CASE for constants
+- Standard Python constant naming
+
+---
+id: picard-test-file-pairing
+trigger: "When modifying format handling files"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test File Pairing
+
+## Action
+
+Update corresponding test file in test/formats/ directory
+
+## Evidence
+
+- picard/formats/id3.py paired with test/formats/test_id3.py
+- Separate test location architecture
+
+---
+id: picard-test-prefix
+trigger: "When creating test files"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test Prefix
+
+## Action
+
+Prefix test files with 'test_' followed by module name
+
+## Evidence
+
+- test_id3.py pattern
+- Standard pytest naming convention in test/ directory
+
+---
+id: picard-freeform-commits
+trigger: "When making commits"
+confidence: 0.75
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Freeform Commits
+
+## Action
+
+Use descriptive freeform commit messages around 50 characters
+
+## Evidence
+
+- Average length 50 characters
+- Examples like 'test: FileIdentity tests', 'macOS: Fix background-only app'
+
+---
+id: picard-component-prefix-commits
+trigger: "When committing changes to specific components"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Component Prefix Commits
+
+## Action
+
+Prefix commit with component name (test:, macOS:, etc.)
+
+## Evidence
+
+- 'test: FileIdentity tests'
+- 'macOS: Fix background-only app'
+- Platform/component prefixes in examples
+
+---
+id: picard-dependency-update-sequence
+trigger: "When updating Python dependencies"
+confidence: 0.92
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Dependency Update Sequence
+
+## Action
+
+Update pyproject.toml, then requirements files, then regenerate uv.lock
+
+## Evidence
+
+- 4x/month frequency
+- Consistent sequence in dependency-management-update workflow
+
+---
+id: picard-workflow-artifact-update
+trigger: "When updating GitHub Actions workflows"
+confidence: 0.89
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Workflow Artifact Update
+
+## Action
+
+Update YAML files, artifact handling, and action versions together
+
+## Evidence
+
+- 3x/month frequency
+- Multiple workflow files updated together
+- Artifact handling updates in commits
+
+---
+id: picard-image-resource-workflow
+trigger: "When adding new images to the application"
+confidence: 0.87
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Image Resource Workflow
+
+## Action
+
+Create SVG source, generate PNG files, update resources.py and picard.qrc
+
+## Evidence
+
+- 2x/month frequency
+- Multi-resolution PNG generation
+- Resource registry updates
+
+---
+id: picard-id3-test-pairing
+trigger: "When modifying ID3 format handling"
+confidence: 0.83
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Id3 Test Pairing
+
+## Action
+
+Update both picard/formats/id3.py and test/formats/test_id3.py
+
+## Evidence
+
+- 2x/month frequency
+- Paired file updates in id3-format-enhancement workflow
+
+---
+id: picard-translation-batch-update
+trigger: "When updating translations from Weblate"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Translation Batch Update
+
+## Action
+
+Update .po files, constants translations, and regenerate templates together
+
+## Evidence
+
+- 3x/month frequency
+- Multiple po/ subdirectories updated together
+- Weblate integration pattern
+
+---
+id: picard-ui-options-grouping
+trigger: "When modifying UI options and settings"
+confidence: 0.81
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Ui Options Grouping
+
+## Action
+
+Update option page files and related UI components together
+
+## Evidence
+
+- 2x/month frequency
+- picard/ui/options/ and mainwindow updates grouped
+
+---
+id: picard-qrc-resource-sync
+trigger: "When adding image resources"
+confidence: 0.85
+domain: architecture
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Qrc Resource Sync
+
+## Action
+
+Update both picard.qrc resource file and resources.py registry
+
+## Evidence
+
+- Resource files updated together in image-resource-addition
+- Qt resource system requires both files
+
+---
+id: picard-separate-test-structure
+trigger: "When creating new modules"
+confidence: 0.9
+domain: architecture
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Separate Test Structure
+
+## Action
+
+Place tests in separate test/ directory mirroring source structure
+
+## Evidence
+
+- Separate test location architecture
+- test/formats/ mirrors picard/formats/
+
