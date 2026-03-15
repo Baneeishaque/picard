@@ -1,0 +1,562 @@
+# Instincts generated from https://github.com/Baneeishaque/picard
+# Generated: 2026-02-25T23:15:37.303Z
+# Version: 2.0
+
+---
+id: picard-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 48 chars
+- Based on 200 commits
+
+---
+id: picard-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: picard-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: picard-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: picard-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: **/*.test.*
+
+---
+id: picard-workflow-translation-update
+trigger: "when doing translation update"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Translation Update
+
+## Action
+
+Follow the translation-update workflow:
+1. Update PO files via Weblate hook
+2. Update POT template file
+3. Update constants/attributes translations
+4. Merge translation pull requests
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: po/*.po, po/picard.pot, po/attributes/*.po
+
+---
+id: picard-workflow-ui-action-enhancement
+trigger: "when doing ui action enhancement"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Ui Action Enhancement
+
+## Action
+
+Follow the ui-action-enhancement workflow:
+1. Modify action definitions
+2. Update main window integration
+3. Add to toolbar options
+4. Update UI enums if needed
+5. Add resources/icons if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: picard/ui/mainwindow/actions.py, picard/ui/mainwindow/__init__.py, picard/ui/options/interface_toolbar.py
+
+---
+id: picard-workflow-icon-resource-addition
+trigger: "when doing icon resource addition"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Icon Resource Addition
+
+## Action
+
+Follow the icon-resource-addition workflow:
+1. Create SVG source file
+2. Generate PNG files in multiple sizes
+3. Update resources.py
+4. Update picard.qrc resource file
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: resources/img-src/*.svg, resources/images/16x16/*.png, resources/images/22x22/*.png
+
+---
+id: picard-workflow-code-modernization
+trigger: "when doing code modernization"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Code Modernization
+
+## Action
+
+Follow the code-modernization workflow:
+1. Identify files with outdated patterns
+2. Replace patterns (e.g., dict() with {})
+3. Create individual commits per file
+4. Merge all changes in final commit
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: picard/*/*.py, picard/ui/*/*.py, picard/util/*.py
+
+---
+id: picard-workflow-configuration-persistence
+trigger: "when doing configuration persistence"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Configuration Persistence
+
+## Action
+
+Follow the configuration-persistence workflow:
+1. Update config upgrade logic
+2. Modify options handling
+3. Implement persistence in UI widgets
+4. Add version tracking
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: picard/config_upgrade.py, picard/options.py, picard/ui/widgets/*.py
+
+---
+id: picard-snake-case-files
+trigger: "When creating new Python files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Snake Case Files
+
+## Action
+
+Use snake_case naming convention for file names
+
+## Evidence
+
+- File pattern observed across picard module
+- Consistent in test/ directory structure
+
+---
+id: picard-camel-case-functions
+trigger: "When defining functions in Python files"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Camel Case Functions
+
+## Action
+
+Use camelCase naming convention for function names
+
+## Evidence
+
+- Function naming pattern in picard/ui/ modules
+- Consistent across mainwindow actions
+
+---
+id: picard-pascal-case-classes
+trigger: "When defining classes in Python files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Pascal Case Classes
+
+## Action
+
+Use PascalCase naming convention for class names
+
+## Evidence
+
+- Class naming in picard/ui/widgets/
+- Pattern in picard/util/ modules
+
+---
+id: picard-screaming-snake-constants
+trigger: "When defining constants in Python files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Screaming Snake Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE naming convention for constants
+
+## Evidence
+
+- Constant definitions in picard/enums.py
+- Configuration constants pattern
+
+---
+id: picard-mixed-import-style
+trigger: "When adding imports to Python files"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Mixed Import Style
+
+## Action
+
+Use mixed import style appropriate to context (absolute for external, relative for internal)
+
+## Evidence
+
+- Import patterns in picard/ui/ modules
+- Mixed style observed in main package
+
+---
+id: picard-separate-test-location
+trigger: "When creating test files"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Separate Test Location
+
+## Action
+
+Place test files in separate test/ directory mirroring source structure
+
+## Evidence
+
+- test/ directory exists separate from picard/
+- Commit 'test: FileIdentity tests' shows pattern
+
+---
+id: picard-test-file-naming
+trigger: "When naming test files"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test File Naming
+
+## Action
+
+Use *.test.* or test_*.py naming pattern for test files
+
+## Evidence
+
+- **/*.test.* pattern in workflow files
+- Test directory structure
+
+---
+id: picard-freeform-commit-messages
+trigger: "When writing commit messages"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Freeform Commit Messages
+
+## Action
+
+Use descriptive freeform messages without strict prefix requirements
+
+## Evidence
+
+- No consistent prefixes in commit examples
+- Average length of 48 characters
+- Descriptive messages like 'macOS: Fix background-only app'
+
+---
+id: picard-translation-weblate-commits
+trigger: "When translation files are updated from Weblate"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Translation Weblate Commits
+
+## Action
+
+Use 'Translated using Weblate' or 'Update translation files' commit format
+
+## Evidence
+
+- Commit 'Translated using Weblate (Catalan)'
+- Commit 'Update translation files'
+- Translation workflow pattern
+
+---
+id: picard-update-pot-with-translations
+trigger: "When updating translations"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Update Pot With Translations
+
+## Action
+
+Update picard.pot template file alongside PO files
+
+## Evidence
+
+- Commit 'Update picard.pot'
+- Translation workflow involves po/picard.pot
+- Pattern in translation-update workflow
+
+---
+id: picard-ui-action-sequence
+trigger: "When adding new UI actions"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Ui Action Sequence
+
+## Action
+
+Modify actions.py, update mainwindow, add toolbar options, update enums and resources
+
+## Evidence
+
+- UI action workflow pattern
+- Files picard/ui/mainwindow/actions.py and interface_toolbar.py
+- UI enhancement workflow frequency
+
+---
+id: picard-icon-multi-size-generation
+trigger: "When adding new icons"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Icon Multi Size Generation
+
+## Action
+
+Create SVG source and generate PNG files in multiple sizes (16x16, 22x22)
+
+## Evidence
+
+- Icon workflow includes resources/images/16x16/ and 22x22/
+- SVG sources in img-src/
+- Resource integration pattern
+
+---
+id: picard-resource-qrc-update
+trigger: "When adding new resources or icons"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Resource Qrc Update
+
+## Action
+
+Update both picard/resources.py and resources/picard.qrc files
+
+## Evidence
+
+- Icon workflow involves both resources.py and picard.qrc
+- Resource system pattern
+- Dual file update requirement
+
+---
+id: picard-modernization-individual-commits
+trigger: "When modernizing code patterns across multiple files"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Modernization Individual Commits
+
+## Action
+
+Create individual commits per file then merge changes in final commit
+
+## Evidence
+
+- Code modernization workflow pattern
+- Individual commits per file approach
+- Example: dict() to {} replacement
+
+---
+id: picard-config-upgrade-versioning
+trigger: "When implementing configuration persistence"
+confidence: 0.75
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Config Upgrade Versioning
+
+## Action
+
+Update config_upgrade.py and add version tracking to configuration changes
+
+## Evidence
+
+- Configuration persistence workflow
+- picard/config_upgrade.py involvement
+- Version tracking requirement
+
+---
+id: picard-merge-pr-format
+trigger: "When merging pull requests"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Merge Pr Format
+
+## Action
+
+Use 'Merge pull request #XXXX from user/branch' format
+
+## Evidence
+
+- Commit 'Merge pull request #3052 from zas/fix_dict_list_calls'
+- Standard GitHub merge format
+
