@@ -1,0 +1,554 @@
+# Instincts generated from https://github.com/Baneeishaque/picard
+# Generated: 2026-02-26T11:15:27.841Z
+# Version: 2.0
+
+---
+id: picard-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 48 chars
+- Based on 200 commits
+
+---
+id: picard-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: picard-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: picard-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: picard-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: **/*.test.*
+
+---
+id: picard-workflow-dependency-management
+trigger: "when doing dependency management"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Dependency Management
+
+## Action
+
+Follow the dependency-management workflow:
+1. Update pyproject.toml
+2. Regenerate requirements files
+3. Update lock file
+4. Update CI workflows if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: pyproject.toml, requirements*.txt, uv.lock
+
+---
+id: picard-workflow-translation-update
+trigger: "when doing translation update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Translation Update
+
+## Action
+
+Follow the translation-update workflow:
+1. Update picard.pot template
+2. Update all po files
+3. Update constants translations
+4. Commit individual language updates
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: po/picard.pot, po/*.po, po/attributes/*.po
+
+---
+id: picard-workflow-code-refactoring
+trigger: "when doing code refactoring"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Code Refactoring
+
+## Action
+
+Follow the code-refactoring workflow:
+1. Identify pattern to fix
+2. Apply fix to individual files
+3. Create consolidated commit
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: picard/**/*.py
+
+---
+id: picard-workflow-ui-feature-development
+trigger: "when doing ui feature development"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Ui Feature Development
+
+## Action
+
+Follow the ui-feature-development workflow:
+1. Add new icons and resources
+2. Update actions.py
+3. Update mainwindow
+4. Update toolbar options
+5. Update resource files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: picard/ui/mainwindow/actions.py, picard/ui/mainwindow/__init__.py, picard/ui/options/interface_toolbar.py
+
+---
+id: picard-workflow-release-preparation
+trigger: "when doing release preparation"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/picard
+---
+
+# Picard Workflow Release Preparation
+
+## Action
+
+Follow the release-preparation workflow:
+1. Update changelog/NEWS.md
+2. Update version numbers
+3. Update translations
+4. Final testing
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: NEWS.md, po/**/*.po
+
+---
+id: picard-naming-files
+trigger: "When creating new Python files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Consistent pattern across all Python files in picard/
+- Files like crash_handler, file_identity
+
+---
+id: picard-naming-functions
+trigger: "When defining functions or methods"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Naming Functions
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Pattern observed in UI module organization
+- Mixed style present in codebase
+
+---
+id: picard-naming-classes
+trigger: "When defining classes"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Naming Classes
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Standard Python convention observed in architecture
+- Class organization follows PascalCase
+
+---
+id: picard-naming-constants
+trigger: "When defining constants"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Naming Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE naming convention
+
+## Evidence
+
+- Standard Python convention defined in codeStyle
+- Consistent across configuration
+
+---
+id: picard-test-location
+trigger: "When writing tests"
+confidence: 0.95
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test Location
+
+## Action
+
+Place tests in separate test/ directory
+
+## Evidence
+
+- test/ folder in architecture
+- test:  FileIdentity tests commit
+- test/test_file_identity.py in workflow example
+
+---
+id: picard-test-naming
+trigger: "When creating test files"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test Naming
+
+## Action
+
+Name test files with test_ prefix
+
+## Evidence
+
+- test/test_file_identity.py in workflow
+- **/*.test.* pattern in workflows
+
+---
+id: picard-test-with-feature
+trigger: "When implementing new features"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Test With Feature
+
+## Action
+
+Add corresponding tests in same commit sequence
+
+## Evidence
+
+- feature-development workflow shows 'Add tests for feature' step
+- Commit sequence includes test addition
+
+---
+id: picard-commit-ticket-prefix
+trigger: "When fixing bugs or implementing features with tickets"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Commit Ticket Prefix
+
+## Action
+
+Start commit message with PICARD-XXXX: format
+
+## Evidence
+
+- PICARD-3205: fix fpcalc error not resetting background color
+- PICARD-3204: Drop PyQt6-Qt6 dependency
+- PICARD-2670: Add columns file directory, name and extension
+
+---
+id: picard-commit-descriptive
+trigger: "When writing commit messages"
+confidence: 0.75
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Commit Descriptive
+
+## Action
+
+Write descriptive messages averaging 48 characters
+
+## Evidence
+
+- averageLength: 48 in commit analysis
+- Examples show detailed descriptions
+
+---
+id: picard-commit-scope-prefix
+trigger: "When committing test-only changes"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Commit Scope Prefix
+
+## Action
+
+Start commit with 'test:' prefix
+
+## Evidence
+
+- test:  FileIdentity tests commit example
+
+---
+id: picard-workflow-dependency-update
+trigger: "When updating dependencies"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Workflow Dependency Update
+
+## Action
+
+Update pyproject.toml, regenerate requirements, update lock file, then update CI workflows
+
+## Evidence
+
+- dependency-management workflow frequency 3
+- Specific file sequence in workflow steps
+
+---
+id: picard-workflow-translation-sequence
+trigger: "When updating translations"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Workflow Translation Sequence
+
+## Action
+
+Update picard.pot template first, then update all po files, then constants translations
+
+## Evidence
+
+- translation-update workflow with po/ file patterns
+- Specific commit sequence defined
+
+---
+id: picard-workflow-ui-resources
+trigger: "When adding UI features"
+confidence: 0.88
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Workflow Ui Resources
+
+## Action
+
+Add icons/resources first, then update actions.py, mainwindow, toolbar options, and resource files
+
+## Evidence
+
+- ui-feature-development workflow
+- Specific files: actions.py, mainwindow/__init__.py, picard.qrc
+
+---
+id: picard-workflow-release-prep
+trigger: "When preparing releases"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Workflow Release Prep
+
+## Action
+
+Update NEWS.md changelog, update version numbers, update translations, then final testing
+
+## Evidence
+
+- release-preparation workflow
+- NEWS.md and po files involved
+- Frequency 2x/month
+
+---
+id: picard-architecture-single-package
+trigger: "When organizing project structure"
+confidence: 0.95
+domain: architecture
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Architecture Single Package
+
+## Action
+
+Use single-package layout with main picard/ directory
+
+## Evidence
+
+- folderStructure type: single-package
+- Main picard/ folder in commonFolders
+
+---
+id: picard-platform-specific-commits
+trigger: "When fixing platform-specific issues"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/picard
+---
+
+# Picard Platform Specific Commits
+
+## Action
+
+Include platform name in commit message
+
+## Evidence
+
+- macOS: Fix background-only app by disabling console for exe_plugins commit
+
